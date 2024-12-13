@@ -1,0 +1,50 @@
+local_identifier	row_number	parameter	description	method	pi
+tara_campaign	1	Campaign of event (Campaign)	NA	NA	NA
+tara_station	2	Station label (Station)	TARA_station	NA	Pesant
+date_time	3	Date/Time of event (Date/Time)	NA	NA	NA
+date_time2	4	Date/Time of event 2 (Date/Time 2)	NA	NA	NA
+latitude	5	Latitude of event (Latitude)	NA	NA	NA
+longitude	6	Longitude of event (Longitude)	NA	NA	NA
+lat_north	7	Latitude, northbound (Latitude north)	NA	NA	Pesant
+lat_south	8	Latitude, southbound (Latitude south)	NA	NA	Pesant
+long_east	9	Longitude, eastbound (Longitude east)	NA	NA	Pesant
+long_west	10	Longitude, westbound (Longitude west)	NA	NA	Pesant
+time_day	11	Time of day (Time of day)	of sampling effort	NA	Pesant
+PANGAEA.842237_012	12	Depth, bathymetric [m] (Bathy depth)	mean value	extracted from IHO-IOC GEBCO Gazetteer of Undersea Feature Names (URI: http://www.gebco.net)	Guidi
+PANGAEA.842237_013	13	Depth, bathymetric [m] (Bathy depth)	maximum value	extracted from IHO-IOC GEBCO Gazetteer of Undersea Feature Names (URI: http://www.gebco.net)	Guidi
+PANGAEA.842237_014	14	Distance [km] (Distance)	from coast, minimum	NA	Speich
+PANGAEA.842237_015	15	Geographic name/locality (Locality)	of marine biomes	Longhurst (2007) (URI: http://www.sciencedirect.com/science/book/9780124555211)	Pesant
+PANGAEA.842237_016	16	Geographic name/locality (Locality)	of ocean and sea regions	IHO General Sea Areas (1953) registered at www.marineregions.org (URI: http://marineregions.org/)	Pesant
+PANGAEA.842237_017	17	Uniform resource locator/link to reference (URL ref)	of ocean and sea regions	IHO General Sea Areas (1953) registered at www.marineregions.org (URI: http://marineregions.org/)	Pesant
+PANGAEA.842237_018	18	Geographic name/locality (Locality)	of biogeographical provinces	Longhurst (2007) registered at marineregions.org (URI: http://marineregions.org/)	Pesant
+PANGAEA.842237_019	19	Uniform resource locator/link to reference (URL ref)	of biogeographical provinces	Longhurst (2007) registered at marineregions.org (URI: http://marineregions.org/)	Pesant
+PANGAEA.842237_020	20	Geographic name/locality (Locality)	of IHO marine ecoregions and provinces in a search radius=5 degrees	IHO General Sea Areas (1953) registered at www.marineregions.org (URI: http://marineregions.org/)	Pesant
+PANGAEA.842237_021	21	Geographic name/locality (Locality)	of exclusive economic zone	codes for Geographical Entities, NATO STANAG 1059 INT (Ed. 9 Ratification, 2005)	Pesant
+PANGAEA.842237_022	22	Authorisation (Authorisation)	to sample in exclusive economic zone	legal request	Pesant
+PANGAEA.842237_023	23	Uniform resource locator/link to file (URL file)	of authorisation to sample in exclusive economic zone	published at PANGAEA, Data Publisher for Earth and Environmental Science (URI: https://www.pangaea.de/)	Pesant
+PANGAEA.842237_024	24	National legislation (Nat leg)	regarding national Access and Benefit Sharing (ABS)	legal request	Pesant
+PANGAEA.842237_025	25	Sampling (Sampling)	effort ranked on a scale (1, 2 or 3) proportional to nb. dephs sampled	NA	Pesant
+PANGAEA.842237_026	26	Depth, nominal (Depth nominal)	corresponding to a surface water layer [ENVO:00002042] in the epipelagic mixed layer [ENVO:01000061]	NA	Pesant
+PANGAEA.842237_027	27	Depth, nominal (Depth nominal)	corresponding to a deep chlorophyll maximum layer [ENVO:01000326] in the epipelagic mixed layer [ENVO:01000061]	NA	Pesant
+PANGAEA.842237_028	28	Depth, nominal (Depth nominal)	corresponding to a layer with no specific feature in the epipelagic mixed layer [ENVO:01000061]	NA	Pesant
+PANGAEA.842237_029	29	Depth, nominal (Depth nominal)	corresponding to a mesopelagic layer [ENVO:00000213]	NA	Pesant
+PANGAEA.842237_030	30	Depth, nominal (Depth nominal)	corresponding to an oxygen minimum zone (ENVO:01000065)	NA	Pesant
+PANGAEA.842237_031	31	Number (No)	of events with sampling device [RADIOMETRE-TSRB]	NA	Pesant
+PANGAEA.842237_032	32	Number (No)	of events with sampling device [SECCHI]	NA	Pesant
+PANGAEA.842237_033	33	Number (No)	of events with sampling device [BUCKET]	NA	Pesant
+PANGAEA.842237_034	34	Number (No)	of events with sampling device [CABLE] [sbe19] [NISKIN]	NA	Pesant
+PANGAEA.842237_035	35	Number (No)	of events with sampling device [CABLE] [sbe9S] [NISKIN]	NA	Pesant
+PANGAEA.842237_036	36	Number (No)	of events with sampling device [RVSS]	NA	Pesant
+PANGAEA.842237_037	37	Number (No)	of events with sampling device [HVP-PUMP]	NA	Pesant
+PANGAEA.842237_038	38	Number (No)	of events with sampling device [NET-SINGLE-5]+[SIEVE-20]	NA	Pesant
+PANGAEA.842237_039	39	Number (No)	of events with sampling device [NET-DOUBLE-20]+[SIEVE-180]	NA	Pesant
+PANGAEA.842237_040	40	Number (No)	of events with sampling device [NET-WPII-50]	NA	Pesant
+PANGAEA.842237_041	41	Number (No)	of events with sampling device [NET-BONGO-180]+[SIEVE-2000]	NA	Pesant
+PANGAEA.842237_042	42	Number (No)	of events with sampling device [NET-WPII-200]	NA	Pesant
+PANGAEA.842237_043	43	Number (No)	of events with sampling device [NET-BONGO-300]	NA	Pesant
+PANGAEA.842237_044	44	Number (No)	of events with sampling device [NET-MULTI-300]	NA	Pesant
+PANGAEA.842237_045	45	Number (No)	of events with sampling device [NET-REGENT-680]	NA	Pesant
+PANGAEA.842237_046	46	Number (No)	of events with sampling device [NET-MANTA-500]	NA	Pesant
+PANGAEA.842237_047	47	Uniform resource locator/link to file (URL file)	of oceanographic context report (pdf)	published at PANGAEA, Data Publisher for Earth and Environmental Science (URI: https://www.pangaea.de/)	Pesant
+PANGAEA.842237_048	48	Uniform resource locator/link to reference (URL ref)	of related environmental data	published at PANGAEA, Data Publisher for Earth and Environmental Science (URI: https://www.pangaea.de/)	Pesant
+PANGAEA.842237_049	49	Uniform resource locator/link to reference (URL ref)	of related nucleotides data	published at the European Nucleotides Archive (URI: http://www.ebi.ac.uk/ena)	Pesant

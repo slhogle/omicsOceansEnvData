@@ -1,0 +1,51 @@
+project:
+  type: website
+  resources:
+    - "css/"
+    - "js/"
+    - "*.html"
+  output-dir: docs
+
+website:
+  title: "omicOceansEnvData"
+  sidebar:
+    style: "docked"
+    background: light
+    search: true
+    contents:
+    - section: "1. Tara oceans workflow"
+      contents:
+      - text: "1) BioSamples at NCBI"
+        file: R/tara/01_download_data_ncbi.qmd
+      - text: "2) Env data at Pangaea.de"
+        file: R/tara/02_download_data_pangaea.qmd
+      - text: "3) Harmonize env and 'omics data"
+        file: R/tara/03_harmonize_ncbi_pangaea.qmd
+
+format:
+  html:
+    theme:
+      - cosmo
+    # include table of contents
+    toc: true
+    # when printing dataframes use rmarkdown::paged_table())
+    df-print: paged
+    # set default dimensions for figures
+    fig-width: 8
+    fig-height: 6
+    # tidy format R code upon render
+    tidy: false
+    # include line numbers in code blocks
+    code-line-numbers: true
+    # The code-link option enables hyper-linking of functions within code blocks to their online documentation:
+    #code-link: true
+    number-sections: true
+    code-fold: show
+    code-summary: "Show/hide code"
+    code-tools: true
+  
+# auto: re-render only when source changes   
+execute:
+  freeze: false 
+  
+editor: source

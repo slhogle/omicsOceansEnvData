@@ -1,0 +1,69 @@
+local_identifier	row_number	parameter	description	method	pi
+tara_barcode_num	1	Sample ID	TARA_barcode	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+biosample_acc_num	2	Sample ID	BioSamples accession number (SAMEA)	registered at the BioSamples database (http://www.ebi.ac.uk/biosamples/)	Pesant
+ena_acc_num	3	Sample ID	ENA sample accession number (ERS)	registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	Pesant
+tara_station	4	Station label	TARA_station	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+tara_event	5	Event label	TARA_event-datetime_station_event-type	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+env_ontology	6	Environmental feature	[abbreviation], full name (ENVO:ID) from which this sample was collected	terms registered at EnvO, the Environmental Ontology (http://environmentontology.org/)	Pesant
+depth	7	Depth, nominal	from which this sample was collected	NA	Pesant
+depth_min	8	Depth, top/min	from which this sample was collected	NA	Pesant
+depth_max	9	Depth, bottom/max	from which this sample was collected	NA	Pesant
+size_frac_low	10	Size fraction, lower threshold	used on board to prepare samples	described in (Pesant et al. 2017)	Pesant
+size_frac_high	11	Size fraction, upper threshold	used on board to prepare samples	described in (Pesant et al. 2017)	Pesant
+tara_id01	12	Sample material	TARA_station_environmental-feature_size-fraction	NA	Pesant
+tara_id02	13	Sample method	short label describing the target analysis (BGC=biogeochemistry, IMG=imaging, SEQ=sequencing) and specifics of the methodology and sampling device (N=net, W=pump/bottles/bucket, CW=concentrated by tangential filtration)	described in (Pesant et al. 2017)	Pesant
+tara_id03	14	Sample code/label	TARA_event-datetime_station_event-type_environmental-feature_(depth)_protocol-label_size-fraction_sample-barcode	NA	Pesant
+PANGAEA.875567_015	15	File name	from which in situ sensor data were obtained to describe the environmental feature	NA	Guidi
+PANGAEA.875567_016	16	Distance	interval between the location at which the sample was collected and that of the closest environmental context information	NA	Guidi
+PANGAEA.875567_017	17	Duration	interval between the date/time at which the sample was collected and that of the closest environmental context information	ISO 8601	Guidi
+PANGAEA.875567_018	18	Number of observations	that meet the criteria: 10 m around the environmental feature nominal depth, distance lag <100 km and date/time lag <2 days	NA	Guidi
+PANGAEA.875567_019	19	pH	minimum value in the selected environmental feature around the sampling date and location, total scale	calculated from measurements on water samples	Guidi
+PANGAEA.875567_020	20	pH	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location, total scale	calculated from measurements on water samples	Guidi
+PANGAEA.875567_021	21	pH	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location, total scale	calculated from measurements on water samples	Guidi
+PANGAEA.875567_022	22	pH	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location, total scale	calculated from measurements on water samples	Guidi
+PANGAEA.875567_023	23	pH	maximum value in the selected environmental feature around the sampling date and location, total scale	calculated from measurements on water samples	Guidi
+PANGAEA.875567_024	24	Carbon dioxide	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_025	25	Carbon dioxide	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_026	26	Carbon dioxide	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_027	27	Carbon dioxide	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_028	28	Carbon dioxide	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_029	29	Carbon dioxide, partial pressure	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_030	30	Carbon dioxide, partial pressure	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_031	31	Carbon dioxide, partial pressure	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_032	32	Carbon dioxide, partial pressure	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_033	33	Carbon dioxide, partial pressure	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_034	34	Fugacity of carbon dioxide in seawater	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_035	35	Fugacity of carbon dioxide in seawater	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_036	36	Fugacity of carbon dioxide in seawater	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_037	37	Fugacity of carbon dioxide in seawater	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_038	38	Fugacity of carbon dioxide in seawater	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_039	39	Bicarbonate ion	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_040	40	Bicarbonate ion	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_041	41	Bicarbonate ion	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_042	42	Bicarbonate ion	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_043	43	Bicarbonate ion	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_044	44	Carbonate ion	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_045	45	Carbonate ion	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_046	46	Carbonate ion	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_047	47	Carbonate ion	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_048	48	Carbonate ion	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_049	49	Carbon, total	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_050	50	Carbon, total	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_051	51	Carbon, total	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_052	52	Carbon, total	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_053	53	Carbon, total	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_054	54	Alkalinity, total	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_055	55	Alkalinity, total	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_056	56	Alkalinity, total	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_057	57	Alkalinity, total	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_058	58	Alkalinity, total	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_059	59	Calcite saturation state	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_060	60	Calcite saturation state	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_061	61	Calcite saturation state	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_062	62	Calcite saturation state	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_063	63	Calcite saturation state	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_064	64	Aragonite saturation state	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_065	65	Aragonite saturation state	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_066	66	Aragonite saturation state	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_067	67	Aragonite saturation state	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi
+PANGAEA.875567_068	68	Aragonite saturation state	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples	Guidi

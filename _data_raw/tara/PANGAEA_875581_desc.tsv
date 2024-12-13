@@ -1,0 +1,25 @@
+local_identifier	row_number	parameter	description	method	pi
+tara_barcode_num	1	Sample ID	TARA_barcode_num	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+biosample_acc_num	2	Sample ID	BioSamples accession number (SAMEA_num)	registered at the BioSamples database (http://www.ebi.ac.uk/biosamples/)	Pesant
+ena_acc_num	3	Sample ID	ENA sample accession number (ERS_num)	registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	Pesant
+tara_station	4	Station label	TARA_station_num	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+tara_event	5	Event label	TARA_event-datetime_station_num_event-type	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+env_ontology	6	Environmental feature	[abbreviation], full name (ENVO:ID) from which this sample was collected	terms registered at EnvO, the Environmental Ontology (http://environmentontology.org/)	Pesant
+depth	7	Depth, nominal	from which this sample was collected	NA	Pesant
+depth_min	8	Depth, top/min	from which this sample was collected	NA	Pesant
+depth_max	9	Depth, bottom/max	from which this sample was collected	NA	Pesant
+size_frac_low	10	Size fraction, lower threshold	used on board to prepare samples	described in (Pesant et al. 2017)	Pesant
+size_frac_high	11	Size fraction, upper threshold	used on board to prepare samples	described in (Pesant et al. 2017)	Pesant
+tara_id01	12	Sample material	TARA_station_num_environmental-feature_size-fraction	NA	Pesant
+tara_id02	13	Sample method	short label describing the target analysis (BGC=biogeochemistry, IMG=imaging, SEQ=sequencing), methodological specificity (e.g. volume, time, preservative, destination), and size fraction (N=sample material collected with a net, W=water collected with a pump/bottles/bucket, CW=water concentrated by tangential filtration)	described in (Pesant et al. 2017)	Pesant
+tara_id03	14	Sample code/label	TARA_event-datetime_station_num_event-type_environmental-feature_(depth)_protocol-label_size-fraction_sample-barcode	NA	Pesant
+PANGAEA.875581_015	15	Analysis ID	ENA study accession number (PRJ_num)	registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	Alberti
+PANGAEA.875581_016	16	Analysis method	nucleic acids preparation	NA	Alberti
+PANGAEA.875581_017	17	Analysis method	18S and 16S rDNA amplicons generation	NA	Alberti
+PANGAEA.875581_018	18	Analysis method	Illumina libraries preparation	NA	Alberti
+PANGAEA.875581_019	19	Analysis label	library name	NA	pesant
+PANGAEA.875581_020	20	Analysis ID	ENA experiment accession number (ERX_num)	registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	Alberti
+PANGAEA.875581_021	21	Analysis ID	ENA run accession number (ERR_num)	registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	Alberti
+PANGAEA.875581_022	22	Analysis label	ENA run alias	registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	Alberti
+PANGAEA.875581_023	23	Uniform resource locator/link to metadata file	nucleotides data file (fastq format) from ENA's sequence read archive	published at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	pesant
+PANGAEA.875581_024	24	Uniform resource locator/link to metadata file	nucleotides data file from ENA's sequence read archive	published at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	pesant

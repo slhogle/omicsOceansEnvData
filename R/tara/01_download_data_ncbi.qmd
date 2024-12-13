@@ -1,0 +1,299 @@
+---
+title: "Map NCBI sequencing and Tara identifiers"
+subtitle: "Tara Oceans workflow"
+author: "Shane Hogle"
+date: today
+abstract: "Code in this notebook accesses NCBI entrez using rentrez with targeted NCBI bioproject identifiers, then maps these BioProjects to individual BioSamples and scrapes the associated metadata and environmental data from entrez, finally joining into a single dataframe."
+---
+
+# Setup
+
+This code loads required libraries and sets global variables
+
+```{r}
+#| output: false
+library(tidyverse)
+library(here)
+library(fs)
+library(readxl)
+library(sf)
+library(mapview)
+library(rentrez)
+library(xml2)
+```
+
+# Listing of all sequenced samples
+
+Frustratingly, I cannot find any single compiled "official" source that contains all Tara Oceans samples across both the Standard and Polar campaigns and for amplicon, WGS, metagenomic, and metatranscriptomic sequencing.
+
+The best option appears to be the NCBI landing page for the ["Tara-oceans samples barcoding and shotgun sequencing Project"](https://www.ncbi.nlm.nih.gov/bioproject/173486), which contains 26 distinct NCBI bioprojects with unassembled sequencing data. These 26 bioprojects include amplicon sequencing, metranscriptomics, and protist single-cell amplified genome sequencing. (A similar landing page probably exists also for ENA but I haven't checked...)
+
+Thus, it seems easier to start from NCBI with the BioProjects of your target sequencing libraries, then convert the BioProjects of these to biosamples from which we wish to obtain key identifying information (e.g., the Tara Sampling Station), which we can then match to environmental data stored in Pangaea database.  
+
+Here we have 7 different shotgun metagenome NCBI bioprojects that need to be analyzed. This includes:
+
+| NCBI Bioproject ID | NCBI Bioproject Accession                             | Name | Campaign                 | Source material | Size fraction   |
+|--------|-------------------------------------------------------------------|------|--------------------------|-----------------|-----------------|
+| 196960 | [PRJEB1787](https://www.ncbi.nlm.nih.gov/bioproject/196960)       | APY  | Tara Oceans              | DNA             | prokaryotes     |
+| 196958 | [PRJEB1788](https://www.ncbi.nlm.nih.gov/bioproject/196958)       | ANB  | Tara Oceans              | DNA             | large DNA virus |
+| 213098 | [PRJEB4352](https://www.ncbi.nlm.nih.gov/bioproject/213098)       | AHX  | Tara Oceans              | DNA             | protist         |
+| 214077 | [PRJEB4419](https://www.ncbi.nlm.nih.gov/bioproject/214077)       | APX  | Tara Oceans              | DNA             | small DNA virus |
+| 287904 | [PRJEB9691](https://www.ncbi.nlm.nih.gov/bioproject/287904)       | BHN  | Tara Oceans Polar Circle | DNA             | protist         |
+| 288558 | [PRJEB9740](https://www.ncbi.nlm.nih.gov/bioproject/288558)       | BMI  | Tara Oceans Polar Circle | DNA             | prokaryotes     |
+| 288560 | [PRJEB9742](https://www.ncbi.nlm.nih.gov/bioproject/288560)       | BNA  | Tara Oceans Polar Circle | DNA             | small DNA virus |
+
+Here we wish to access the biosamples contained within these bioprojects programatically. We will then extract the Tara station identifier (in the form `TARA_XYZ`). 
+
+# Get Tara Metadata from BioProject identifier
+
+## Functions
+```{r}
+get_biosamples_from_bioproject <- function(bioproject_id) {
+  entrez_hit <- rentrez::entrez_link(dbfrom = "bioproject", id = bioproject_id, db = "biosample")
+  entrez_hit$links$bioproject_biosample_all
+}
+
+get_biosamples_xml <- function(biosample_ids){
+  # sleep for 3 seconds. This is necessary so to not send to many entrez
+  # requests in a time interval entrez will not allow more than 3 requests per
+  # second. Using 3 seconds is the smallest time I tested that didn't allow too
+  # many entrez requests to overlap
+  Sys.sleep(3)
+  rentrez::entrez_fetch(db="biosample", id = biosample_ids, rettype = "xml") %>% 
+    xml2::read_xml()
+}
+
+get_xml_field <- function(input_xml, attr_reg_exp) {
+  input_xml %>% 
+    xml2::xml_find_all(xpath = attr_reg_exp) %>%
+    xml2::xml_text()
+}
+
+get_attribute_name_dumb_regex <- function(biosample_xml, search_string){
+  # stupid edge cases for when attribute names are different for different
+  # biosamples in the same bioproject!
+  low_upp_find <- c(get_xml_field(biosample_xml, paste0("//*[@attribute_name='", search_string, "']")),
+                    get_xml_field(biosample_xml, paste0("//*[@attribute_name='", str_to_title(search_string), "']")))
+  ifelse(rlang::is_empty(low_upp_find), NA_character_, low_upp_find)
+}
+
+biosampid_to_biosamp_tibble <- function(biosample_ids){
+  biosample_xml <- get_biosamples_xml(biosample_ids)
+  # prepare for dividing xml document into tibble structure where each row
+  # is a different bioproject
+  rows <- xml2::xml_find_all(biosample_xml, xpath = "//BioSample") 
+  # this is stupid but I can't figure out a better way to do this. Tibbles can
+  # not accept exotic column types like nodeset To put the xml nodeset into a
+  # tibble it must be converted into a list first, because tibbles can accept
+  # lists. Then I reconvert it back to an xml document using `as_xml_document`
+  # but this must be inside a larger list structure that assigns a name to the
+  # content hence the call to `list(BioSample = .)`
+  rows_df <- tibble::tibble(row = seq_along(rows),
+                  nodeset = xml2::as_list(rows),
+                  biosample_id = biosample_ids) %>% 
+  mutate(nodeset = purrr::map(nodeset,~ xml2::as_xml_document(list(BioSample = .))))
+  
+  # now do the final xml extraction and field placement into a tibble
+  dplyr::mutate(rows_df, 
+      biosample_acc_num = purrr::map(nodeset, ~ get_xml_field(., "./Ids/Id[@db='BioSample']")),
+      sra_acc_num       = purrr::map(nodeset, ~ get_xml_field(., "./Ids/Id[@db='SRA']")),
+      external_id       = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "external id")),
+      tara_station      = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "sampling station")),
+      sample_name       = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "sample name")),
+      tara_event        = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "event label")),
+      campaign          = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "sampling campaign")),
+      marine_region     = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "marine region")),
+      latitude          = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "latitude start")),
+      longitude         = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "longitude start")),
+      depth             = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "depth")),
+      env_feature       = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "environment (feature)")),
+      size_low_thresh   = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "size fraction lower threshold")),
+      size_high_thresh  = purrr::map(nodeset, ~ get_attribute_name_dumb_regex(., "size fraction upper threshold"))
+      ) %>% 
+    dplyr::select(-nodeset) %>% 
+    tidyr::unnest(cols = everything())
+}
+
+bioproj_to_biosamp_tibble <- function(bioproject_id){
+  biosample_ids <- get_biosamples_from_bioproject(bioproject_id)
+  # split into chunks of 100 entries per chunk. This is to prevent too many
+  # overlapping entrez requests
+  biosample_ids_chunked <- split(biosample_ids, ceiling(seq_along(biosample_ids)/100))
+  purrr::map(biosample_ids_chunked, biosampid_to_biosamp_tibble) %>% 
+    purrr::list_rbind()
+}
+```
+
+## Get BioSamples and Tara stations from NCBI
+
+BioSamples are kind of the master record linking sequencing data at ENA, NCBI, and Pangaea.de, thus it's important we get this information.
+
+Loop over all different bioprojects and read into a single tibble. NCBI Entrez servers can be kind of pissy sometimes and will reject your requests. I don't know why this happens, but usually just keep trying until it works. Once it works save the output so that we don't need to do this again...
+
+```{r}
+#| eval: false
+#| echo: true
+#| include: true
+all_tara_samps <- purrr::map(c(196960, 196958, 213098, 214077, 287904, 288558, 288560), 
+                             bioproj_to_biosamp_tibble) %>% 
+  purrr::list_rbind()
+
+readr::write_rds(all_tara_samps, here::here("_data_raw", "tara", "all_tara_samps.rds"))
+```
+
+```{r}
+#| eval: true
+#| echo: false
+#| include: false
+all_tara_samps <- readr::read_rds(here::here("_data_raw", "tara", "all_tara_samps.rds"))
+```
+
+## Inspect downloaded data
+
+Sanity check. The `External Id` present in the xml Attributes should be equivalent to the BioSample accession present in the xml Ids.
+
+```{r}
+# This checks out...
+all_tara_samps %>% 
+  # some external ids are NA
+  dplyr::filter(!is.na(external_id)) %>% 
+  dplyr::filter(biosample_acc_num != external_id)
+```
+
+Good - there are no cases where External Id and BioSample do not match. 
+
+## Fill missing Tara Stations
+
+There should be a Tara station ID for all these because that is critical for connecting to Pangaea environmental data. Find those without Tara Station
+
+```{r}
+all_tara_samps %>% 
+  dplyr::filter(is.na(tara_station))
+```
+
+What the hell BioSample `SAMEA6823711` appears to actually be some human ear metagenome!? So that sample should be excluded. The other missing stations only have the `sample_name` populated. Indeed at NCBI and ENA these samples don't have any distinguishing metadata other than this `sample_name` key. After doing some googling I found [this paper](https://doi.org/10.1038/s41586-023-05962-4) and Supplementary Table 1 in the supplementary material contains these sample names that can allow us to hopefully match up these samples to Tara stations.
+
+```{r}
+# create temporary location to decompress
+tmpfile <- fs::file_temp()
+
+download.file("https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-023-05962-4/MediaObjects/41586_2023_5962_MOESM3_ESM.xlsx", 
+              tmpfile, 
+              "curl", quiet = FALSE, mode = "w",
+              cacheOK = TRUE,
+              extra = getOption("download.file.extra"),
+              headers = NULL)
+
+supp01 <- readxl::read_excel(tmpfile, sheet = 1, skip=2) %>% 
+  dplyr::rename_with(~stringr::str_to_lower(.), dplyr::everything())
+
+supp02 <- readxl::read_excel(tmpfile, sheet = 2, skip=2) %>% 
+  dplyr::rename_with(~stringr::str_to_lower(.), dplyr::everything()) %>% 
+  dplyr::rename(sample_name = metagenome_id, size_category = size_categorie)
+
+# Remove temp location
+fs::file_delete(tmpfile)
+```
+
+
+```{r}
+all_tara_samps %>% 
+  dplyr::filter(is.na(tara_station)) %>% 
+  dplyr::select(biosample_acc_num, sample_name) %>% 
+  tidyr::separate(sample_name, into = c("a", "b", "c", "sample_name", "e"), sep = "_") %>% 
+  dplyr::filter(!is.na(sample_name)) %>% 
+  dplyr::distinct(sample_name) %>% 
+  dplyr::left_join(supp02)
+```
+Damn, so even some of these sample IDs are missing from the supplementary of that paper.
+
+Actually, now I see that these sample_names are codes with meanings. The first number is the Tara Station, next is depth range (either SURface or DCM), next number I assume is some kind of replicate, then there is a size fraction code, and then everything ends with 11 for some reason.
+
+We can parse this information to fill in the missing sample information
+
+```{r}
+missing_samps <- all_tara_samps %>% 
+  dplyr::filter(is.na(tara_station)) %>% 
+  dplyr::select(row, biosample_id, biosample_acc_num, sra_acc_num, external_id, sample_name) %>% 
+  tidyr::separate(sample_name, into = c("a", "b", "c", "sample_name", "e"), sep = "_") %>% 
+  dplyr::filter(!is.na(sample_name)) %>% 
+  dplyr::mutate(tara_station = stringr::str_extract(sample_name, "^(\\d+)(SUR|DCM)(\\d)([A-Z]+)\\d\\d", group = 1),
+                  depthrange = stringr::str_extract(sample_name, "^(\\d+)(SUR|DCM)(\\d)([A-Z]+)\\d\\d", group = 2),
+                   replicate = stringr::str_extract(sample_name, "^(\\d+)(SUR|DCM)(\\d)([A-Z]+)\\d\\d", group = 3),
+                 filter_code = stringr::str_extract(sample_name, "^(\\d+)(SUR|DCM)(\\d)([A-Z]+)\\d\\d", group = 4)) %>% 
+  dplyr::mutate(tara_station = paste0("TARA_", stringr::str_pad(tara_station, 3, side = "left", pad = 0))) %>% 
+  dplyr::left_join(
+    # this is just the information mapping filter code to actual size fractions
+    tibble::tibble(filter_code = c("QQSS", "GGMM", "MMQQ", "SSUU"),
+       size_low_thresh = c("20",   "0.8", "5",  "180"),
+       size_high_thresh = c("180", "5",   "20", "2000"))
+    ) %>% 
+  dplyr::select(-a, -b, -c, -e, -filter_code) %>% 
+  dplyr::mutate(env_feature = dplyr::case_when(depthrange == "DCM" ~ "deep chlorophyll maximum layer (ENVO:xxxxxxxx)",
+                                               depthrange == "SUR" ~ "surface water (ENVO:00002042) layer "))
+
+missing_stations <- dplyr::pull(dplyr::distinct(missing_samps, tara_station))
+```
+
+Now add the missing samples back to the Tara samples with Tara station IDs
+
+```{r}
+all_tara_samps_fmt <- all_tara_samps %>% 
+  dplyr::filter(!is.na(tara_station)) %>% 
+  dplyr::bind_rows(missing_samps) %>% 
+  dplyr::arrange(tara_station, env_feature, size_low_thresh, size_high_thresh) %>% 
+  dplyr::mutate(depth_class = dplyr::case_when(
+    stringr::str_detect(env_feature, "surface water") ~ "SRF",
+    stringr::str_detect(env_feature, "deep chlorophyll maximum") ~ "DCM",
+    stringr::str_detect(env_feature, "mesopelagic") ~ "MES",
+    stringr::str_detect(env_feature, "epipelagic") ~ "MIX",
+    TRUE ~ "NONE")
+    ) %>% 
+  dplyr::group_by(tara_station) %>%
+  tidyr::fill(marine_region, campaign) %>% 
+  dplyr::group_by(tara_station, depth_class) %>%
+  tidyr::fill(depth, latitude, longitude) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(-depthrange, -replicate)
+```
+
+Now join that information to the bioproject ID's that I was provided by my collaborator
+
+```{r}
+all_tara_samps_fmt_joined <- readr::read_tsv(here::here("_data_raw", "tara", "bioproject_ids_rogier.tsv")) %>% 
+  dplyr::rename(biosample_acc_num = sample_accession) %>% 
+  dplyr::left_join(all_tara_samps_fmt) %>%
+  dplyr::arrange(tara_station) %>% 
+  dplyr::select(-row, -external_id)
+
+readr::write_rds(all_tara_samps_fmt_joined, here::here("_data_raw", "tara", "tara_biosamples_mapped.rds"))
+```
+
+# Plot TARA samples with metagenomes
+
+This produces an interactive plot of the target locations/depths based on the target BioProjects I was provided
+
+```{r}
+my_sites_sf <- all_tara_samps_fmt_joined %>% 
+  dplyr::select(tara_station, biosample_acc_num,  latitude, longitude,
+                depth_class, depth, size_low_thresh, size_high_thresh,
+                marine_region) %>% 
+  dplyr::distinct() %>% 
+  tidyr::drop_na() %>% 
+  sf::st_as_sf(
+    coords = c("longitude","latitude"),
+    # lat/long coordinate reference system
+    crs = 4326
+)
+```
+
+So now we can see that we have NBCI BioSamples and SRA identifiers from both the Original Tara Campaign and the Tara Polar Campaign
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+mapview::mapview(my_sites_sf, map.types = c("Esri.WorldImagery", "CartoDB.Positron"), col.regions = "red")
+```
+
+

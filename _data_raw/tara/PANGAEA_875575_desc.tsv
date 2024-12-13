@@ -1,0 +1,39 @@
+local_identifier	row_number	parameter	description	method	pi
+tara_barcode_num	1	Sample ID	TARA_barcode_num	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+biosample_acc_num	2	Sample ID	BioSamples accession number (SAMEA_num)	registered at the BioSamples database (http://www.ebi.ac.uk/biosamples/)	Pesant
+ena_acc_num	3	Sample ID	ENA sample accession number (ERS_num)	registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)	Pesant
+tara_station	4	Station label	TARA_station_num	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+tara_event	5	Event label	TARA_event-datetime_station_num_event-type	registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)	Pesant
+env_ontology	6	Environmental feature	[abbreviation], full name (ENVO:ID) from which this sample was collected	terms registered at EnvO, the Environmental Ontology (http://environmentontology.org/)	Pesant
+depth	7	Depth, nominal	from which this sample was collected	NA	Pesant
+depth_min	8	Depth, top/min	from which this sample was collected	NA	Pesant
+depth_max	9	Depth, bottom/max	from which this sample was collected	NA	Pesant
+size_frac_low	10	Size fraction, lower threshold	used on board to prepare samples	described in (Pesant et al. 2017)	Pesant
+size_frac_high	11	Size fraction, upper threshold	used on board to prepare samples	described in (Pesant et al. 2017)	Pesant
+tara_id01	12	Sample material	TARA_station_num_environmental-feature_size-fraction	NA	Pesant
+tara_id02	13	Sample method	short label describing the target analysis (BGC=biogeochemistry, IMG=imaging, SEQ=sequencing) and specifics of the methodology and sampling device (N=net, W=pump/bottles/bucket, CW=concentrated by tangential filtration)	described in (Pesant et al. 2017)	Pesant
+tara_id03	14	Sample code/label	TARA_event-datetime_station_num_event-type_environmental-feature_(depth)_protocol-label_size-fraction_sample-barcode	NA	Pesant
+PANGAEA.875575_015	15	File name	from which water sample data were obtained to describe the environmental feature	NA	Guidi
+PANGAEA.875575_016	16	Distance	interval between the location at which the sample was collected and that of the closest environmental context information	NA	Guidi
+PANGAEA.875575_017	17	Duration(ISO)	interval between the date/time at which the sample was collected and that of the closest environmental context information	ISO 8601	Guidi
+PANGAEA.875575_018	18	Number of observations	that meet the criteria: 10 m around the environmental feature nominal depth, distance lag <100 km and date/time lag <2 days	NA	Guidi
+PANGAEA.875575_019	19	Nitrite	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_020	20	Nitrite	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_021	21	Nitrite	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_022	22	Nitrite	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_023	23	Nitrite	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_024	24	Phosphate	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_025	25	Phosphate	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_026	26	Phosphate	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_027	27	Phosphate	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_028	28	Phosphate	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_029	29	Nitrate and Nitrite	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_030	30	Nitrate and Nitrite	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_031	31	Nitrate and Nitrite	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_032	32	Nitrate and Nitrite	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_033	33	Nitrate and Nitrite	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_034	34	Silicate	minimum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_035	35	Silicate	lower quartile value (25th percentile, first quartile, Q1) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_036	36	Silicate	median value (50th percentile, second quartile, Q2) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_037	37	Silicate	upper quartile value (75th percentile, third quartile, Q3) in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
+PANGAEA.875575_038	38	Silicate	maximum value in the selected environmental feature around the sampling date and location	calculated from measurements on water samples (Tara Oceans; http://dx.doi.org/10.1594/PANGAEA.836319)	Guidi
