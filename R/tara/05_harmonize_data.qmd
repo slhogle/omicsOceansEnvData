@@ -1,0 +1,526 @@
+---
+title: "Harmonize environmental data and sequencing identifiers"
+subtitle: "Tara Oceans workflow"
+author: "Shane Hogle"
+date: today
+abstract: "Code in this notebook collates environmental parameters from different Pangaea.de, Darwin model, and PISCES model datasets with the NCBI sequencing datasets. ~~It then fills missing values from Pangaea with Darwin Model output for the nearest coordinate/depth/date. Finally, a small number of observations are imputed. The goal is to be able to associate an NCBI sequencing run accession number with environmental data for later statistical analysis. We do not want any missing data so we must try and patch missing data from other sources.~~"
+---
+
+# Setup
+
+This code loads required libraries and sets global variables
+
+```{r}
+#| output: false
+library(tidyverse)
+library(here)
+library(arrow)
+library(lubridate)
+library(fuzzyjoin)
+```
+
+# Read data
+
+Read NCBI BioSample data with unique Tara Ocean Barcodes
+
+```{r}
+#| output: false
+tara_biosamples <- readr::read_tsv(here::here("data", "tara", "biosamples", "ncbi2tara_barcode.tsv"))
+```
+
+Read previously saved environmental data and metadata downloaded from Pangaea.de
+
+```{r}
+# tara stations
+PANGAEA_842237 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_842237.parquet"))
+# carbonate chemistry
+PANGAEA_875567 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875567.parquet"))
+# nutrients
+PANGAEA_875575 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875575.parquet"))
+# phytoplankton pigments
+PANGAEA_875569 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875569.parquet"))
+# CTD sensor data
+PANGAEA_875576 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875576.parquet"))
+# mesoscale features
+PANGAEA_875577 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875577.parquet"))
+# whole water column features
+PANGAEA_875579 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875579.parquet"))
+```
+
+# Pangaea environmental data: Collate, filter, and harmonize
+
+In the final metagenomic tables we are interested in the following environmental variables:
+
+1.  Density
+2.  Temperature
+3.  Salinity
+4.  Chlorophyll a
+5.  Dissolved oxygen (O2)
+6.  Total inorganic nitrogen (NO3 + NO2)
+7.  Nitrite (NO2)
+8.  Silica (SiO2)
+9.  Phosphate (PO4)
+10. Total dissolved iron (FeT)
+
+Thus we need to access the following environmental variables from various Pangaea dataframes for the final product
+
+| Variable | Dataset | Variable |
+|------------------------------|------------------------|------------------|
+| Density | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_047 |
+| Salinity | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_037 |
+| Temperature | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_027 |
+| Dissolved Oxygen | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_057 |
+| Chlorophyll a | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_077 |
+| Dissolved inorganic nitrogen (DIN = NO3 + NO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_031 |
+| Nitrite (NO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_021 |
+| Phosphate (PO4) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_026 |
+| Silica (SiO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_036 |
+| Darwin Model Total dissolved Iron (FeT) | Modeled variables (PANGAEA.875577) | PANGAEA.875577_039 |
+| Darwin Model NO2 | Modeled variables (PANGAEA.875577) | PANGAEA.875577_043 |
+| Darwin Model DIN | Modeled variables (PANGAEA.875577) | PANGAEA.875577_045 |
+| Temp \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_054 |
+| Temp \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_057 |
+| Temp \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_059 |
+| Salinity \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_064 |
+| Salinity \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_067 |
+| Salinity \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_069 |
+| Density \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_074 |
+| Density \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_077 |
+| Density \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_079 |
+| Chlorophyll a \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_094 |
+| Chlorophyll a \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_097 |
+| Chlorophyll a \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_099 |
+| Dissolved Oxygen \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_104 |
+| Dissolved Oxygen \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_107 |
+| Dissolved Oxygen \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_109 |
+| DIN \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_114 |
+| DIN \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_117 |
+| DIN \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_119 |
+
+## Combine all Pangaea datasets with BioSamples
+
+```{r}
+tara_biosamples_joined01 <- left_join(tara_biosamples, PANGAEA_875575, by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_875576, tara_barcode_num, tara_station, date_time, 21:last_col()), 
+            by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_875577, tara_barcode_num, tara_station, 21:last_col()), by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_875579, tara_barcode_num, tara_station, 21:last_col()), by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_842237, tara_station, latitude, longitude), by = join_by(tara_station))
+```
+
+## Fill missing observations with adjacent data
+
+There are 7 cases where there is not single recorded depth for an observation, but rather a depth range (`depth_min` to `depth_max`).
+
+```{r}
+tara_biosamples_joined01 %>% 
+  filter(is.na(depth)) %>% 
+  distinct(tara_barcode_num, tara_station, env_ontology, depth, depth_min, depth_max, date_time)
+```
+
+Later it will make our lives easier if there are actual values for these depths and not NAs. We fill these depths with the mean of the depth range.
+
+Also in some cases nutrients or sensor data will not be joined even though there is a measurement at that particular station/depth. We will group by station and depth and then fill those observations from the same station/depth.
+
+```{r}
+tara_biosamples_joined02 <- tara_biosamples_joined01 %>% 
+  mutate(depth = if_else(is.na(depth), (depth_max - depth_min)/2, depth)) %>% 
+  arrange(tara_station, depth) %>% 
+  group_by(tara_station, depth, depth_min, depth_max) %>% 
+  fill(20:last_col(), .direction = "downup") %>% 
+  ungroup()
+```
+
+## Fill missing observations with "whole water column" data (PANGAEA.875579)
+
+Now we will fill missing observations with direct observations taken from the "whole water column."
+
+1.  We will take bottle samples as the starting point (PANGAEA_875575)
+
+2.  If a bottle observation is missing fill with the closes CTD sensor observation (PANGAEA_875576)
+
+3.  If CTD sensor observation is missing fill with "whole water column" data (PANGAEA.875579). TBH I actually don't understand where this data comes from. The PI listed is Sabrina Speich who is different than the most common PIs (Pesant and Guidi). But from what I can tell this is not the output of a model but somehow a direct observation corresponding to a Tara station. Perhaps these are CTD sensor observations from a different Tara-esque cruise in the same location. It only includes variables for Temp, Salinity, Density, ChlA, dO2, and Nitrate.
+
+4.  ~~Finally, if none of the three above exist we will fill the data with the output from the MIT Darwin model available in Pangaea.~~ Due to some questionable Darwin outputs we will instead create a new variable for Darwin biogeochemical variables that were available in Pangaea. Later we will add Darwin output that is taken from Simons CMAP.
+
+This function creates a new variable replacing a variable from either PANGAEA_875575 or PANGAEA_875576 with the corresponding SRF/MIX/DCM/MES measurement from PANGAEA.875579
+
+```{r}
+replace_w_875579 <- function(.data, varname, target, srf, mix, dcm){
+  .data %>% 
+    mutate("{varname}" := if_else(!is.na({{ target }}), {{ target }},
+          if_else(str_detect(env_ontology, "SRF"), {{ srf }},
+                  if_else(str_detect(env_ontology, "MIX"), {{ mix }}, 
+                          if_else(str_detect(env_ontology, "DCM"), {{ dcm }}, NA_real_)))))
+}
+
+simple_replace <- function(.data, varname, target, replace){
+  .data %>% 
+    mutate("{varname}" := if_else(is.na({{ target }}), {{ replace }}, {{ target }}))
+}
+```
+
+Call the above function for each of the 10 variables of interest
+
+```{r}
+tara_biosamples_joined02_replaced <- tara_biosamples_joined02 %>%
+  replace_w_875579("density",     PANGAEA.875576_047, PANGAEA.875579_074, PANGAEA.875579_077, PANGAEA.875579_079) %>% 
+  replace_w_875579("temperature", PANGAEA.875576_027, PANGAEA.875579_064, PANGAEA.875579_067, PANGAEA.875579_069) %>% 
+  replace_w_875579("salinity",    PANGAEA.875576_037, PANGAEA.875579_054, PANGAEA.875579_057, PANGAEA.875579_059) %>% 
+  replace_w_875579("chl_a",       PANGAEA.875576_077, PANGAEA.875579_094, PANGAEA.875579_097, PANGAEA.875579_099) %>% 
+  replace_w_875579("dO2",         PANGAEA.875576_057, PANGAEA.875579_104, PANGAEA.875579_107, PANGAEA.875579_109) %>% 
+  replace_w_875579("DIN",         PANGAEA.875575_031, PANGAEA.875579_114, PANGAEA.875579_117, PANGAEA.875579_119) %>% 
+    #simple_replace("DIN",         DIN, PANGAEA.875577_045) %>% 
+    #simple_replace("NO2",         PANGAEA.875575_021, PANGAEA.875577_043) %>% 
+  mutate(FeT_dw_pg = PANGAEA.875577_039,
+         DIN_dw_pg = PANGAEA.875577_045,
+         NO2_dw_pg = PANGAEA.875577_043,
+         PO4 = PANGAEA.875575_026,
+         SiO2 = PANGAEA.875575_036,
+         NO2 = PANGAEA.875575_021) %>% 
+  relocate(tara_barcode_num, tara_station, env_ontology, latitude, longitude, date_time, depth, depth_min, depth_max, 
+           density, temperature, salinity, chl_a, dO2, DIN, NO2, PO4, SiO2, FeT_dw_pg, DIN_dw_pg, NO2_dw_pg)
+```
+
+Fix some stuff with dates
+
+```{r}
+statistical_mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+tara_biosamples_joined02_replaced <- tara_biosamples_joined02_replaced %>% 
+  # convert the date_time to only date. This ensures that when you are grouping
+  # by tara_station and date_time that you don't expand the results to include
+  # multiple times within a single station
+  mutate(date_time = lubridate::as_date(stringr::str_extract(date_time, "^\\d{4}-\\d{2}-\\d{2}"))) %>% 
+  group_by(tara_station) %>% 
+  # in the case that there are multiple days sampled at a station take the most
+  # common day to represent the whole station
+  mutate(date_time = statistical_mode(date_time)) %>% 
+  ungroup()
+```
+
+Now after we have filled observations with data internally available from the Tara Pangaea collection, we need to find which stations still have missing data observations for one or more these variables.
+
+```{r}
+target_vars <- c("density", "temperature", "salinity", "chl_a", "dO2", "DIN", "NO2", "PO4", "SiO2", "FeT_dw_pg", "DIN_dw_pg", "NO2_dw_pg")
+
+missing <- tara_biosamples_joined02_replaced %>% 
+  filter(if_any(all_of(target_vars), is.na)) %>%
+  summarise(across(all_of(target_vars), ~any(is.na(.))),
+            .by = c(tara_station, env_ontology, depth, depth_min, depth_max, latitude, longitude, date_time))
+```
+
+Most missing observations are because of PO4 and SiO2
+
+```{r}
+missing %>% 
+  summarize(across(all_of(target_vars), sum))
+```
+
+And this is for 58 different tara stations
+
+```{r}
+distinct(missing, tara_station) %>% 
+  count()
+```
+
+This level of completion is pretty OK I think. I will make available this current data set corresponding to all data collated from Pangaea. This represents a "master record" for Tara and uses only data that Tara people themselves have made available in Pangaea.
+
+## Additional geographic infofrmation
+
+Next we want to add some geographic information to the dataset like longhurst code, ocean identifier, and the distance to the coast. We will calculate the distance to the nearest coast using [`ggOceanMaps::dist2land`](https://mikkovihtakari.github.io/ggOceanMaps/reference/dist2land.html). [Inspired by this blogpost](https://blogs.ubc.ca/yiwang28/2024/01/06/my-r-learning-notes-3-how-to-calculate-the-shortest-distance-to-coast/)
+
+```{r}
+#| output: false
+library(ggOceanMaps)
+library(rnaturalearth)
+library(sf)
+```
+
+Load coastline data at the largest most coarse scale (110) and also subset `PANGAEA_842237` to only coordinates and station identifier
+
+```{r}
+coast <- rnaturalearth::ne_coastline(scale=110, returnclass = "sf")
+data <- dplyr::select(PANGAEA_842237, tara_station, latitude, longitude)
+```
+
+Plot to check
+
+```{r}
+plot(coast['featurecla'])
+```
+
+This function calculates great circle spherical distances (in kilometers) from a coordinate in the ocean to the nearest coastline using the [`st_distance`](https://r-spatial.github.io/sf/reference/geos_measures.html) function.
+
+```{r}
+dist2land_df <- ggOceanMaps::dist2land(data, shapefile = coast) %>% 
+  dplyr::select(tara_station, dist_to_coastline = ldist)
+```
+
+Join the distance to coastline to other general large scale features like longhurst provinces
+
+```{r}
+ocean_feats_df <- PANGAEA_842237 %>%
+  dplyr::select(tara_station, ocean_id = PANGAEA.842237_016, longhurst_biome = PANGAEA.842237_015, 
+                longhurst_code = PANGAEA.842237_018, bathy_depth = PANGAEA.842237_012) %>% 
+  left_join(dist2land_df, by = join_by(tara_station))
+```
+
+## Finalize Pangaea environmental data master record
+
+Pangaea variable descriptions:
+
+-   `tara_barcode_num` - Unique TARA barcode number registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)
+-   `sra_acc_num` - NCBI Sequence Read Archive BioSample accession number
+-   `sra_biosample_acc_num` - NCBI BioSample accession number
+-   `sra_run_acc_num` - NCBI Sequence Read Archive sequencing run accession number
+-   `sra_exp_acc_num` - NCBI Sequence Read Archive sequencing experiment accession number
+-   `sra_study_acc_num` - NCBI BioProject accession number
+-   `biosample_acc_num` - Biosample accession number registered at the EBI BioSamples database (http://www.ebi.ac.uk/biosamples/). From Pangaea
+-   `ena_acc_num` - ENA sample accession number (ERS_num) registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)
+-   `tara_station` - Tara station identifier
+-   `env_ontology` - \[abbreviation\], full name (ENVO:ID) from which this sample was collected terms registered at EnvO, the Environmental Ontology (http://environmentontology.org/)
+-   `latitude` - Latitude of Tara station
+-   `longitude` - Longitude of Tara station
+-   `date_time` - Sampling date at Tara station
+-   `size_low_thresh` - Lower threshold of the size fraction (µm) used on board to prepare sample
+-   `size_high_thresh` - Upper threshold of the size fraction (µm) used on board to prepare sample
+-   `ocean_id` - Geographic name/locality (Locality) of ocean and sea regions. Extracted from IHO General Sea Areas (1953) registered at www.marineregions.org (URI: http://marineregions.org/)
+-   `longhurst_code` - Geographic name/locality (Locality) of biogeographical provinces. From Longhurst (2007) registered at marineregions.org (URI: http://marineregions.org/)
+-   `longhurst_biome` - Geographic name/locality (Locality) of marine biomes. From Longhurst (2007) (URI: http://www.sciencedirect.com/science/book/9780124555211)
+-   `bathy_depth` - Mean value of the bathymetric depth \[m\] at the Tara sample. Extracted from IHO-IOC GEBCO Gazetteer of Undersea Feature Names (URI: http://www.gebco.net)
+-   `dist_to_coastline` - Great circle spherical distances (in kilometers) from Tara sample coordinate to the nearest coastline using the natural earth 110 scale coastline feature. This includes mostly continental coastlines (i.e., no small islands) and 110 resolution was deliberately chosen to exclude coastlines of small features.
+-   `depth` - Sampling depth at Tara station
+-   `depth_min` - Shallowest depth of the depth range from which sample was collected
+-   `depth_max` - Deepest depth of the depth range from which sample was collected
+-   `temperature` - Temperature, water \[°C\] (Temp) calculated from in situ sensor data, calibrated using factory settings
+-   `salinity` - Salinity \[PSU\] (Sal) calculated from in situ sensor data, calibrated using factory settings
+-   `density` - Density, sigma-theta \[kg/m^3^\] (Sigma-theta) calculated from in situ sensor data, calibrated using factory settings.
+-   `chl_a` - Chlorophyll a \[mg/m^3^\] (Chl a) calculated from in situ sensor data, NPQ cor. and calibrated using water samples
+-   `dO2`- Oxygen \[µmol/kg\] (O2) calculated from in situ sensor data, calibrated using WOA09 climatology
+-   `DIN` - Combined Nitrate and Nitrite \[µmol/L\] calculated from bottle measurements on water samples
+-   `NO2` - Nitrite \[µmol/L\] calculated from bottle measurements on water samples
+-   `PO4` - Phosphate \[µmol/L\] calculated from bottle measurements on water samples
+-   `SiO2` - Silica \[µmol/L\] calculated from bottle measurements on water samples
+-   `FeT_dw_pg` - Total iron \[mmol Fe m^-3^\] **at depth of 5 meters** from MIT Darwin model
+-   `DIN_dw_pg` - Dissolved inorganic nitrogen (nitrate + nitrite) \[mmol N m^-3^\] **at depth of 5 meters** from MIT Darwin model
+-   `NO2_dw_pg` - Nitrite \[mmol N m^-3^\] **at depth of 5 meters** from MIT Darwin model
+
+Now do the final joining to the full imputed data set, replace missing values with the imputed values, and select key variables
+
+```{r}
+tara_pangaea_env_master_record <- left_join(tara_biosamples_joined02_replaced, ocean_feats_df, by = join_by(tara_station)) %>% 
+  dplyr::select(tara_barcode_num, sra_acc_num:ena_acc_num, tara_station:date_time, size_low_thresh, size_high_thresh,
+         ocean_id, longhurst_code, longhurst_biome, bathy_depth, dist_to_coastline,
+         depth:depth_max, temperature, salinity, density, chl_a,
+         dO2, DIN, NO2, PO4, SiO2, FeT_dw_pg, DIN_dw_pg, NO2_dw_pg) %>% 
+  readr::write_tsv(here::here("data", "tara", "tara_pangaea_env_master_record.tsv"))
+```
+
+# Darwin BGC output: Collate, filter, and harmonize
+
+Read the Darwin output downloaded in step 3, organize, then save as a separate file. This will include both observations from the 3-day average model and the climatological mean.
+
+## Darwin 3-day average
+
+Darwin Climatology variable descriptions:
+
+-   `lat_dw` - Latitude in the Darwin model grid (0.5 degree resolution) closest to the corresponding Tara sample coordinates
+-   `lon_dw` - Longitude in the Darwin model grid (0.5 degree resolution) closest to the corresponding Tara sample coordinates
+-   `depth_dw` - Depth in the Darwin model closest to the corresponding Tara sample depth
+-   `time_dw` - Time in the Darwin model closest to the corresponding Tara sampling time
+-   `dist_diff_km` - Distance in kilometers between Tara sample coordinates and nearest coordinates in Darwin grid calculated using the Haversine distance.
+-   `depth_diff_m` - Distance in meters between the depth of the Tara sample and the nearest depth level in the Darwin model
+-   `time_diff_hr` - Difference in hours between the Tara sampling day and the sampling day of the Darwin model
+-   `FeT` - Total iron \[mmol Fe m^-3^\]
+-   `PO4` - Phosphate concentration \[mmol P m^-3^\]
+-   `DIN` - Dissolved inorganic nitrogen (NO~3~ + NO~2~) concentration \[mmol N m^-3^\]
+-   `SiO2` - Dissolved Silicate concentration \[mmol Si m^-3^\]
+-   `O2` - Dissolved oxygen concentration \[mmol O m^-3^\]
+-   `phytoplankton_diversity_shannon_index` - Phytoplankton shannon diversity
+-   `phytoplankton` - Total phytoplankton concentration expressed in units of carbon \[mmol C m^-3^\]
+-   `zooplankton` - Total zooplankton concentration expressed in units of carbon \[mmol C m^-3^\]
+-   `CHL` - Total chlorophyll concentration expressed in units of chlorophyll \[mg Chl m^-3^\]
+-   `primary_production` - Primary production rate \[mmol C m^-2^ s^-1^\]
+-   `irradiance_reflectance_waveband_3` - Irradiance Reflectance for Waveband 3
+-   `irradiance_reflectance_waveband_7` - Irradiance Reflectance for Waveband 7
+-   `diatom` - Total diatom concentration \[mmol C m^-3^\]
+-   `coccolithophore` - Total coccolithophore concentration \[mmol C m^-3^\]
+-   `mixotrophic_dinoflagellate` - Total mixotrophic dinoflagellate concentration \[mmol C m^-3^\]
+-   `picoeukaryote` - Total picoeukaryote concentration \[mmol C m^-3^\]
+-   `picoprokaryote` - Total picoprokaryote concentration \[mmol C m^-3^\]
+
+```{r}
+tblDarwin_Ecosystem <- arrow::read_parquet(here::here("data", "tara", "darwin_subsets", "tblDarwin_Ecosystem_subset_filt.parquet"))
+tblDarwin_Nutrient <- arrow::read_parquet(here::here("data", "tara", "darwin_subsets", "tblDarwin_Nutrient_subset_filt.parquet"))
+tblDarwin_Ocean_Color <- arrow::read_parquet(here::here("data", "tara", "darwin_subsets", "tblDarwin_Ocean_Color_subset_filt.parquet"))
+tblDarwin_Phytoplankton <- arrow::read_parquet(here::here("data", "tara", "darwin_subsets", "tblDarwin_Phytoplankton_subset_filt.parquet"))
+```
+
+```{r}
+darwin_3day_combined <- left_join(tblDarwin_Nutrient, 
+                                  tblDarwin_Ecosystem,
+                                  by = join_by(tara_barcode_num, tara_station, latitude, longitude, 
+                                               depth, date_time, lat_dw, lon_dw, depth_dw, time_dw)) %>% 
+  left_join(tblDarwin_Ocean_Color,
+            by = join_by(tara_barcode_num, tara_station, latitude, longitude, 
+                         depth, date_time, lat_dw, lon_dw, depth_dw, time_dw)) %>% 
+  left_join(tblDarwin_Phytoplankton,
+            by = join_by(tara_barcode_num, tara_station, latitude, longitude, 
+                         depth, date_time, lat_dw, lon_dw, depth_dw, time_dw)) %>% 
+  dplyr::left_join(tara_biosamples, by = join_by(tara_barcode_num, tara_station)) %>% 
+  dplyr::relocate(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, sra_run_acc_num, 
+                  sra_exp_acc_num, sra_study_acc_num, tara_station, latitude, longitude, depth, date_time)
+```
+
+Check if some observations are missing. It is only because irradiance_reflectance_wavebands are missing in some samples. Not a big deal...
+
+```{r}
+darwin_3day_combined %>% 
+  dplyr::filter(if_any(everything(), is.na))
+```
+
+Write results
+
+```{r}
+write_tsv(darwin_3day_combined, here::here("data", "tara", "tara_darwin_3day_combined.tsv"))
+```
+
+## Darwin climatology
+
+Darwin Climatology variable descriptions:
+
+-   `lat_dw` - Latitude in the Darwin model grid (0.5 degree resolution) closest to the corresponding Tara sample coordinates
+-   `lon_dw` - Longitude in the Darwin model grid (0.5 degree resolution) closest to the corresponding Tara sample coordinates
+-   `depth_dw` - Depth in the Darwin model closest to the corresponding Tara sample depth
+-   `time_dw` - Time in the Darwin model closest to the corresponding Tara sampling time
+-   `DIC_darwin_clim` - Dissolved Inorganic Carbon concentration \[mmol Cm^-3^\]
+-   `NH4_darwin_clim` - Ammonium concentration \[mmol N m^-3^\]
+-   `NO2_darwin_clim` - Nitrite concentration \[mmol N m^-3^\]
+-   `NO3_darwin_clim` - Nitrate concentration \[mmol N m^-3^\]
+-   `PO4_darwin_clim` - Phosphate concentration \[mmol P m^-3^\]
+-   `SiO2_darwin_clim` - Silicate concentration \[mmol Si m^-3^\]
+-   `FeT_darwin_clim` - Total iron \[mmol Fe m^-3^\]
+-   `DOC_darwin_clim` - Dissolved Organic Carbon \[mmol C m^-3^\]
+-   `DON_darwin_clim` - Dissolved Organic Nitrogen \[mmol N m^-3^\]
+-   `DOP_darwin_clim` - Dissolved Organic Phosphorus \[mmol P m^-3^\]
+-   `DOFe_darwin_clim` - Dissolved Organic iron \[mmol Fe m^-3^\]
+-   `POC_darwin_clim` - Particulate Organic Carbon \[mmol C m^-3^\]
+-   `PON_darwin_clim` - Particulate Organic Nitrogen \[mmol N m^-3^\]
+-   `POP_darwin_clim` - Particulate Organic Phosphorus \[mmol P m^-3^\]
+-   `POSi_darwin_clim` - Particulate Organic silica \[mmol Si m^-3^\]
+-   `POFe_darwin_clim` - Particulate Organic iron \[mmol Fe m^-3^\]
+-   `PIC_darwin_clim` - Particulate inorganic carbon (i.e. CaCO~3~) \[mmol C m^-3^\]
+-   `ALK_darwin_clim` - Total alkalinty \[mmol equivalents m^-3^\]
+-   `O2_darwin_clim` - Dissolved oxygen \[mmol O~2~ m^-3^\]
+-   `CDOM_darwin_clim` - Colored Dissolved Organic Matter \[mmol C m^-3^\]
+-   `prokaryote_c01_darwin_clim`:`zooplankton_c51_darwin_clim` - Different plankton classes resolved in the Darwin model. Expressed in units of carbon \[mmol C m^-3^\]
+-   `chl01_darwin_clim`:`chl35_darwin_clim` - Different chlorophylls resolved in the Darwin model. Expressed in units of chlorophyll \[mg Chl m^-3^\]
+
+```{r}
+tblDarwin_Nutrient_Climatology <- arrow::read_parquet(here::here("data", "tara", "darwin_subsets",
+                                                                 "tblDarwin_Nutrient_Climatology_subset_filt.parquet"))
+tblDarwin_Plankton_Climatology <- arrow::read_parquet(here::here("data", "tara", "darwin_subsets",
+                                                                 "tblDarwin_Plankton_Climatology_subset_filt.parquet"))
+tblDarwin_Chl_Climatology <- arrow::read_parquet(here::here("data", "tara", "darwin_subsets", 
+                                                            "tblDarwin_Chl_Climatology_subset_filt.parquet"))
+```
+
+```{r}
+darwin_clim_combined <- left_join(tblDarwin_Nutrient_Climatology, 
+                                  tblDarwin_Plankton_Climatology,
+                                  by = join_by(tara_barcode_num, tara_station, latitude, longitude, 
+                                               depth, date_time, lat_dw, lon_dw, depth_dw, time_dw, depth_dw.y, month)) %>% 
+  left_join(tblDarwin_Chl_Climatology, by = join_by(tara_barcode_num, tara_station, latitude, longitude, 
+                                               depth, date_time, lat_dw, lon_dw, depth_dw, time_dw, depth_dw.y, month)) %>% 
+  dplyr::left_join(tara_biosamples, by = join_by(tara_barcode_num, tara_station)) %>% 
+  dplyr::relocate(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, sra_run_acc_num, 
+                  sra_exp_acc_num, sra_study_acc_num, tara_station, latitude, longitude, depth, date_time) %>% 
+  dplyr::select(-depth_dw.y, -month)
+```
+
+Check if some observations are missing. They are the same `TARA_206` samples that we noticed were missing before.
+
+```{r}
+# missing observations are only for irradiance_reflectance_wavebands
+darwin_clim_combined %>% 
+  dplyr::filter(if_any(everything(), is.na))
+```
+
+Write results
+
+```{r}
+write_tsv(darwin_clim_combined, here::here("data", "tara", "tara_darwin_clim_combined.tsv"))
+```
+
+# PISCES BGC output: Collate, filter, and harmonize
+
+## Global Ocean Biogeochemistry Hindcast
+
+-   Product: [GLOBAL_MULTIYEAR_BGC_001_029](https://data.marine.copernicus.eu/product/GLOBAL_MULTIYEAR_BGC_001_029/description)\
+-   Dataset: `cmems_mod_glo_bgc_my_0.25deg_P1M-m`
+
+> The biogeochemical hindcast for global ocean is produced at Mercator-Ocean (Toulouse. France). It provides 3D biogeochemical fields since year 1993 at 1/4 degree and on 75 vertical levels. It uses PISCES biogeochemical model (available on the NEMO modelling platform). No data assimilation in this product.
+>
+> Latest NEMO version (v3.6_STABLE)
+>
+> \- **Forcings:** FREEGLORYS2V4 ocean physics produced at Mercator-Ocean and ERA-Interim atmosphere produced at ECMWF at a daily frequency
+>
+> \- **Outputs:** Daily (chlorophyll. nitrate. phosphate. silicate. dissolved oxygen. primary production) and monthly (chlorophyll. nitrate. phosphate. silicate. dissolved oxygen. primary production. iron. phytoplankton in carbon) 3D mean fields interpolated on a standard regular grid in NetCDF format. The simulation is performed once and for all.
+>
+> \- **Initial conditions:** World Ocean Atlas 2013 for nitrate. phosphate. silicate and dissolved oxygen. \> GLODAPv2 for DIC and Alkalinity. and climatological model outputs for Iron and DOC
+>
+> \- **Quality/Accuracy/Calibration information:** See the [related QuID](https://documentation.marine.copernicus.eu/QUID/CMEMS-GLO-QUID-001-029.pdf)
+>
+> \- **DOI (product):** <https://doi.org/10.48670/moi-00019>
+
+PISCES variable descriptions:
+
+-   `lat_ps` - Latitude in the PISCES model grid (0.25 degree resolution) closest to the corresponding Tara sample coordinates
+-   `lon_ps` - Longitude in the PISCES model grid (0.25 degree resolution) closest to the corresponding Tara sample coordinates
+-   `depth_ps` - Depth in the PISCES model closest to the corresponding Tara sample depth
+-   `time_ps` - Time in the PISCES model closest to the corresponding Tara sampling time
+-   `chl` - Chlorophyll concentration \[mg m^-3^\]
+-   `fe` - Dissolved iron concentration \[mmol m^-3^\]
+-   `no3` - Nitrate concentration \[mmol m^-3^\]
+-   `nppv` - Net primary production \[mg m^-3^ day^-1^\]
+-   `o2` - Dissolved oxygen \[mmol m^-3^\]
+-   `ph` - pH
+-   `phyc` - Phytoplankton concentration in carbon \[mmol m^-3^\]
+-   `po4` - Phosphate concentration \[mmol m^-3^\]
+-   `si` - Silicate concentration \[mmol m^-3^\]
+-   `spco2` - surface partial pressure of CO~2~ \[Pa\]
+
+```{r}
+pisces_combined <- readr::read_tsv(here::here("data", "tara", "pisces_subsets", "pisces_tara_subset_filt.tsv")) %>% 
+  dplyr::rename(lat_ps = latitude, lon_ps = longitude, depth_ps = depth, time_ps = time) %>% 
+  tidyr::separate(query_id, c("tara_station", "depth"), sep="_d") %>%
+  dplyr::mutate(depth = as.numeric(depth)) %>%
+  # these are manual changes that need to be made to allow the next join. These samples lacked a 
+  # target depth and only had min and max depths
+  mutate(depth = case_when(tara_station == "TARA_152" & depth == 82 ~ 77.5,
+                           tara_station == "TARA_175" & depth == 55 ~ 45,
+                           tara_station == "TARA_168" & depth == 55 ~ 45,
+                           TRUE ~ depth)) %>% 
+  left_join(dplyr::select(tara_pangaea_env_master_record, 
+                          tara_barcode_num:tara_station, latitude, longitude, date_time, depth)) %>% 
+  dplyr::relocate(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, sra_run_acc_num, 
+                  sra_exp_acc_num, sra_study_acc_num, biosample_acc_num,	ena_acc_num, tara_station, latitude, 
+                  longitude, depth, date_time)
+```
+
+Check if some observations are missing. Nothing missing.
+
+```{r}
+pisces_combined %>% 
+  dplyr::filter(if_any(everything(), is.na))
+```
+
+Write results
+
+```{r}
+write_tsv(pisces_combined, here::here("data", "tara", "tara_pisces_combined.tsv"))
+```

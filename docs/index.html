@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Shane L Hogle">
-<meta name="dcterms.date" content="2024-12-13">
+<meta name="dcterms.date" content="2025-02-10">
 <meta name="keywords" content="Oceanography, Microbiology, Omics">
 
 <title>omicOceansEnvData - Retrieve, format, and impute environmental data associated with marine ’omics data sets</title>
@@ -154,20 +154,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./R/tara/01_download_data_ncbi.html" class="sidebar-item-text sidebar-link">
+  <a href="./R/tara/01_download_ncbi.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">1) BioSamples at NCBI</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./R/tara/02_download_data_pangaea.html" class="sidebar-item-text sidebar-link">
+  <a href="./R/tara/02_download_pangaea.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">2) Env data at Pangaea.de</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./R/tara/03_harmonize_ncbi_pangaea.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">3) Harmonize env and ’omics data</span></a>
+  <a href="./R/tara/03_download_darwin.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3) Darwin model output</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./R/tara/04_download_pisces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4) PISCES model output</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./R/tara/05_harmonize_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5) Harmonize and combine data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">2. BioGEOTRACES workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./R/biogeotraces/01_download_idp2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) IDP 2021 v2 at Simons CMAP</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">3. HOT/BATS workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./R/hot_bats/01_download_hot_bats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) HOT/BATS at Simons CMAP</span></a>
   </div>
 </li>
       </ul>
@@ -184,9 +230,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
   <ul class="collapse">
-  <li><a href="#availability" id="toc-availability" class="nav-link" data-scroll-target="#availability"><span class="header-section-number">1.1</span> Availability</a></li>
-  <li><a href="#reproducibility" id="toc-reproducibility" class="nav-link" data-scroll-target="#reproducibility"><span class="header-section-number">1.2</span> Reproducibility</a></li>
-  <li><a href="#relevant-references" id="toc-relevant-references" class="nav-link" data-scroll-target="#relevant-references"><span class="header-section-number">1.3</span> Relevant references</a></li>
+  <li><a href="#project-organization" id="toc-project-organization" class="nav-link" data-scroll-target="#project-organization"><span class="header-section-number">1.1</span> Project Organization</a></li>
+  <li><a href="#availability" id="toc-availability" class="nav-link" data-scroll-target="#availability"><span class="header-section-number">1.2</span> Availability</a></li>
+  <li><a href="#reproducibility" id="toc-reproducibility" class="nav-link" data-scroll-target="#reproducibility"><span class="header-section-number">1.3</span> Reproducibility</a></li>
+  <li><a href="#relevant-references" id="toc-relevant-references" class="nav-link" data-scroll-target="#relevant-references"><span class="header-section-number">1.4</span> Relevant references</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -222,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 13, 2024</p>
+      <p class="date">February 10, 2025</p>
     </div>
   </div>
   
@@ -247,20 +294,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="https://fondationtaraocean.org/en/expedition/tara-oceans/">Tara Oceans</a> expedition. The code downloads data directly from the <a href="https://www.pangaea.de/">PANGAEA Data Publisher</a> (predominantly from here: <a href="https://doi.pangaea.de/10.1594/PANGAEA.875582" class="uri">https://doi.pangaea.de/10.1594/PANGAEA.875582</a>) and saves slightly formatted versions locally for easy access.</li>
 <li>Other features will likely be incorporated here, stay tuned…</li>
 </ol>
-<section id="availability" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="availability"><span class="header-section-number">1.1</span> Availability</h2>
+<section id="project-organization" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="project-organization"><span class="header-section-number">1.1</span> Project Organization</h2>
+<p>We follow the convention that only raw, unmodified, unfiltered, and non-subsetted datafiles obtained directly from database sources (including journal article metadata) are placed in the <code>_data_raw</code> directory. These should never be modified or changed. All data derived from these <code>_data_raw</code> files (including modification, filtering, and subsetting) are placed in the <code>data</code> directory</p>
+</section>
+<section id="availability" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="availability"><span class="header-section-number">1.2</span> Availability</h2>
 <p>Various external databases are accessed and used here. This includes the <a href="https://darwinproject.mit.edu/">MIT DARWIN model</a> accessed from <a href="https://simonscmap.com/">Simons Collaborative Marine Atlas Project</a>, and environmental measurements (hydrography, biogeochemistry) from <a href="https://doi.pangaea.de/10.1594/PANGAEA.875576">PANGAEA</a>. You will need to <a href="https://simonscmap.com/register">register with Simons CMAP</a>, obtain an API key, then download the <code>cmap4r</code> <a href="https://simonscmap.github.io/cmap4r/index.html">package</a> in order to access data from the MIT DARWIN model. The rest of the databases don’t have API access restrictions and they are accessed programatically in the scripts.</p>
 <p>All data and code in this GitHub repository (<a href="https://github.com/slhogle/omicsOceansEnvData" class="uri">https://github.com/slhogle/omicsOceansEnvData</a>) is provided under <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL3</a>. The rendered project site is available at <a href="https://slhogle.github.io/omicsOceansEnvData/" class="uri">https://slhogle.github.io/omicsOceansEnvData/</a>, which has been produced using <a href="https://quarto.org/">Quarto notebooks</a>. The content on the rendered site is released under the <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0.</a> This repository hosts all code and data for this project including the code necessary to fully recreate the rendered webpage.</p>
 <p>An archived release of the code here is available from Zenodo:</p>
 </section>
-<section id="reproducibility" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="reproducibility"><span class="header-section-number">1.2</span> Reproducibility</h2>
+<section id="reproducibility" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="reproducibility"><span class="header-section-number">1.3</span> Reproducibility</h2>
 <p>The project uses <a href="https://rstudio.github.io/renv/index.html"><code>renv</code></a> to create reproducible environment to execute the code in this project. <a href="https://rstudio.github.io/renv/articles/renv.html#collaboration">See here</a> for a brief overview on collaboration and reproduction of the entire project. To get up and running you can do:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="relevant-references" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="relevant-references"><span class="header-section-number">1.3</span> Relevant references</h2>
+<section id="relevant-references" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="relevant-references"><span class="header-section-number">1.4</span> Relevant references</h2>
 <ol type="1">
 <li>Dutkiewicz, S., A.E. Hickman, O. Jahn, W.W. Gregg, C.B. Mouw, and M.J. Follows. (2015) Capturing optically important constituents and properties in a marine biogeochemical and ecosystem model. Biogeoscience, 12, 4447-4481 <a href="https://doi.org/10.5194/bg-12-4447-2015">doi:10.5194/bg-12-4447-2015</a></li>
 <li>Forget, G., Campin, J.-M., Heimbach, P., Hill, C. N., Ponte, R. M., and Wunsch, C. (2015) ECCO version 4: an integrated framework for non-linear inverse modeling and global ocean state estimation, Geosci. Model Dev., 8, 3071-3104, <a href="https://doi.org/10.5194/gmd-8-3071-2015">doi:10.5194/gmd-8-3071-2015</a></li>
@@ -779,36 +830,40 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb2-36"><a href="#cb2-36"></a><span class="ss">1. </span><span class="co">[</span><span class="ot">Tara Oceans</span><span class="co">](https://fondationtaraocean.org/en/expedition/tara-oceans/)</span> expedition. The code downloads data directly from the <span class="co">[</span><span class="ot">PANGAEA Data Publisher</span><span class="co">](https://www.pangaea.de/)</span> (predominantly from here: <span class="ot">&lt;https://doi.pangaea.de/10.1594/PANGAEA.875582&gt;</span>) and saves slightly formatted versions locally for easy access. </span>
 <span id="cb2-37"><a href="#cb2-37"></a><span class="ss">2. </span>Other features will likely be incorporated here, stay tuned...</span>
 <span id="cb2-38"><a href="#cb2-38"></a></span>
-<span id="cb2-39"><a href="#cb2-39"></a><span class="fu">## Availability</span></span>
+<span id="cb2-39"><a href="#cb2-39"></a><span class="fu">## Project Organization</span></span>
 <span id="cb2-40"><a href="#cb2-40"></a></span>
-<span id="cb2-41"><a href="#cb2-41"></a>Various external databases are accessed and used here. This includes the <span class="co">[</span><span class="ot">MIT DARWIN model</span><span class="co">](https://darwinproject.mit.edu/)</span> accessed from <span class="co">[</span><span class="ot">Simons Collaborative Marine Atlas Project</span><span class="co">](https://simonscmap.com/)</span>, and environmental measurements (hydrography, biogeochemistry) from <span class="co">[</span><span class="ot">PANGAEA</span><span class="co">](https://doi.pangaea.de/10.1594/PANGAEA.875576)</span>. You will need to <span class="co">[</span><span class="ot">register with Simons CMAP</span><span class="co">](https://simonscmap.com/register)</span>, obtain an API key, then download the <span class="in">`cmap4r`</span> <span class="co">[</span><span class="ot">package</span><span class="co">](https://simonscmap.github.io/cmap4r/index.html)</span> in order to access data from the MIT DARWIN model. The rest of the databases don't have API access restrictions and they are accessed programatically in the scripts.</span>
+<span id="cb2-41"><a href="#cb2-41"></a>We follow the convention that only raw, unmodified, unfiltered, and non-subsetted datafiles obtained directly from database sources (including journal article metadata) are placed in the <span class="in">`_data_raw`</span> directory. These should never be modified or changed. All data derived from these <span class="in">`_data_raw`</span> files (including modification, filtering, and subsetting) are placed in the <span class="in">`data`</span> directory</span>
 <span id="cb2-42"><a href="#cb2-42"></a></span>
-<span id="cb2-43"><a href="#cb2-43"></a>All data and code in this GitHub repository (<span class="ot">&lt;https://github.com/slhogle/omicsOceansEnvData&gt;</span>) is provided under <span class="co">[</span><span class="ot">GNU AGPL3</span><span class="co">](https://www.gnu.org/licenses/agpl-3.0.html)</span>. The rendered project site is available at <span class="ot">&lt;https://slhogle.github.io/omicsOceansEnvData/&gt;</span>, which has been produced using <span class="co">[</span><span class="ot">Quarto notebooks</span><span class="co">](https://quarto.org/)</span>. The content on the rendered site is released under the <span class="co">[</span><span class="ot">CC BY 4.0.</span><span class="co">](https://creativecommons.org/licenses/by/4.0/)</span> This repository hosts all code and data for this project including the code necessary to fully recreate the rendered webpage.</span>
+<span id="cb2-43"><a href="#cb2-43"></a><span class="fu">## Availability</span></span>
 <span id="cb2-44"><a href="#cb2-44"></a></span>
-<span id="cb2-45"><a href="#cb2-45"></a>An archived release of the code here is available from Zenodo:</span>
+<span id="cb2-45"><a href="#cb2-45"></a>Various external databases are accessed and used here. This includes the <span class="co">[</span><span class="ot">MIT DARWIN model</span><span class="co">](https://darwinproject.mit.edu/)</span> accessed from <span class="co">[</span><span class="ot">Simons Collaborative Marine Atlas Project</span><span class="co">](https://simonscmap.com/)</span>, and environmental measurements (hydrography, biogeochemistry) from <span class="co">[</span><span class="ot">PANGAEA</span><span class="co">](https://doi.pangaea.de/10.1594/PANGAEA.875576)</span>. You will need to <span class="co">[</span><span class="ot">register with Simons CMAP</span><span class="co">](https://simonscmap.com/register)</span>, obtain an API key, then download the <span class="in">`cmap4r`</span> <span class="co">[</span><span class="ot">package</span><span class="co">](https://simonscmap.github.io/cmap4r/index.html)</span> in order to access data from the MIT DARWIN model. The rest of the databases don't have API access restrictions and they are accessed programatically in the scripts.</span>
 <span id="cb2-46"><a href="#cb2-46"></a></span>
-<span id="cb2-47"><a href="#cb2-47"></a><span class="fu">## Reproducibility</span></span>
+<span id="cb2-47"><a href="#cb2-47"></a>All data and code in this GitHub repository (<span class="ot">&lt;https://github.com/slhogle/omicsOceansEnvData&gt;</span>) is provided under <span class="co">[</span><span class="ot">GNU AGPL3</span><span class="co">](https://www.gnu.org/licenses/agpl-3.0.html)</span>. The rendered project site is available at <span class="ot">&lt;https://slhogle.github.io/omicsOceansEnvData/&gt;</span>, which has been produced using <span class="co">[</span><span class="ot">Quarto notebooks</span><span class="co">](https://quarto.org/)</span>. The content on the rendered site is released under the <span class="co">[</span><span class="ot">CC BY 4.0.</span><span class="co">](https://creativecommons.org/licenses/by/4.0/)</span> This repository hosts all code and data for this project including the code necessary to fully recreate the rendered webpage.</span>
 <span id="cb2-48"><a href="#cb2-48"></a></span>
-<span id="cb2-49"><a href="#cb2-49"></a>The project uses <span class="co">[</span><span class="ot">`renv`</span><span class="co">](https://rstudio.github.io/renv/index.html)</span> to create reproducible environment to execute the code in this project. <span class="co">[</span><span class="ot">See here</span><span class="co">](https://rstudio.github.io/renv/articles/renv.html#collaboration)</span> for a brief overview on collaboration and reproduction of the entire project. To get up and running you can do:</span>
+<span id="cb2-49"><a href="#cb2-49"></a>An archived release of the code here is available from Zenodo:</span>
 <span id="cb2-50"><a href="#cb2-50"></a></span>
-<span id="cb2-51"><a href="#cb2-51"></a><span class="in">``` r</span></span>
-<span id="cb2-52"><a href="#cb2-52"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>)</span>
-<span id="cb2-53"><a href="#cb2-53"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span>
-<span id="cb2-54"><a href="#cb2-54"></a><span class="in">```</span></span>
-<span id="cb2-55"><a href="#cb2-55"></a></span>
-<span id="cb2-56"><a href="#cb2-56"></a><span class="fu">## Relevant references</span></span>
-<span id="cb2-57"><a href="#cb2-57"></a></span>
-<span id="cb2-58"><a href="#cb2-58"></a><span class="ss">1. </span>Dutkiewicz, S., A.E. Hickman, O. Jahn, W.W. Gregg, C.B. Mouw, and M.J. Follows. (2015) Capturing optically important constituents and properties in a marine biogeochemical and ecosystem model. Biogeoscience, 12, 4447-4481 <span class="co">[</span><span class="ot">doi:10.5194/bg-12-4447-2015</span><span class="co">](https://doi.org/10.5194/bg-12-4447-2015)</span></span>
-<span id="cb2-59"><a href="#cb2-59"></a><span class="ss">2. </span>Forget, G., Campin, J.-M., Heimbach, P., Hill, C. N., Ponte, R. M., and Wunsch, C. (2015) ECCO version 4: an integrated framework for non-linear inverse modeling and global ocean state estimation, Geosci. Model Dev., 8, 3071-3104, <span class="co">[</span><span class="ot">doi:10.5194/gmd-8-3071-2015</span><span class="co">](https://doi.org/10.5194/gmd-8-3071-2015)</span></span>
-<span id="cb2-60"><a href="#cb2-60"></a><span class="ss">3. </span>Forget, G., D. Ferreira, and X. Liang. (2015) On the observability of turbulent transport rates by argo: supporting evidence from an inversion experiment. Ocean Science, 11, 839–853, <span class="co">[</span><span class="ot">doi:10.5194/os-11-839-2015</span><span class="co">](https://doi.org/10.5194/os-11-839-2015)</span></span>
-<span id="cb2-61"><a href="#cb2-61"></a><span class="ss">4. </span>Forget, G. and R. Ponte. (2015) The partition of regional sea level variability. Progress in Oceanography, 137, 173–195, <span class="co">[</span><span class="ot">doi:10.1016/j.pocean.2015.06.002</span><span class="co">](https://doi.org/10.1016/j.pocean.2015.06.002)</span> </span>
-<span id="cb2-62"><a href="#cb2-62"></a><span class="ss">5. </span>Forget, G., 2018: Initial, preliminary version of the CBIOMES-global model setup and documentation (Version v0.0.1). Zenodo. <span class="ot">&lt;http://doi.org/10.5281/zenodo.1343303&gt;</span></span>
-<span id="cb2-63"><a href="#cb2-63"></a><span class="ss">6. </span>Forget, G. (2019) Update MITgcm &amp; DarwinProject elements (Version v0.1.0). Zenodo. http://doi.org/10.5281/zenodo.2653669</span>
-<span id="cb2-64"><a href="#cb2-64"></a><span class="ss">7. </span>Ward, B.A., S. Dutkiewicz, O. Jahn, and M.J. Follows. (2012) A size-structured food-web model for the global ocean. Limnol. Oceanogr., 57, 1877-1891. <span class="co">[</span><span class="ot">doi:10.4319/lo.2012.57.6.1877</span><span class="co">](https://doi.org/10.4319/lo.2012.57.6.1877)</span></span>
-<span id="cb2-65"><a href="#cb2-65"></a><span class="ss">8. </span>Pesant, S. et al. (2015) Open science resources for the discovery and analysis of Tara Oceans data. Sci. Data 2:150023 <span class="co">[</span><span class="ot">doi: 10.1038/sdata.2015.23</span><span class="co">](http://doi.org/10.1038/sdata.2015.23)</span></span>
-<span id="cb2-66"><a href="#cb2-66"></a>https://aslopubs.onlinelibrary.wiley.com/doi/10.1002/lom3.10439</span>
-<span id="cb2-67"><a href="#cb2-67"></a><span class="ss">9. </span>Guidi, Lionel; Picheral, Marc; Pesant, Stephane; Tara Oceans Consortium, Coordinators; Tara Oceans Expedition, Participants (2017): Environmental context of all samples from the Tara Oceans Expedition (2009-2013), about sensor data in the targeted environmental feature. PANGAEA, <span class="ot">&lt;https://doi.org/10.1594/PANGAEA.875576&gt;</span></span>
-<span id="cb2-68"><a href="#cb2-68"></a><span class="ss">10. </span>Ashkezari MD, Hagen NR, Denholtz M, Neang A, Burns TC, Morales RL, Lee CP, Hill CN, Armbrust EV. 2021. Simons Collaborative Marine Atlas Project (Simons CMAP): An open‐source portal to share, visualize, and analyze ocean data. Limnol Oceanogr Methods 19:488–496. <span class="co">[</span><span class="ot">doi: 10.1002/lom3.10439</span><span class="co">](https://doi.org/10.1002/lom3.10439)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-51"><a href="#cb2-51"></a><span class="fu">## Reproducibility</span></span>
+<span id="cb2-52"><a href="#cb2-52"></a></span>
+<span id="cb2-53"><a href="#cb2-53"></a>The project uses <span class="co">[</span><span class="ot">`renv`</span><span class="co">](https://rstudio.github.io/renv/index.html)</span> to create reproducible environment to execute the code in this project. <span class="co">[</span><span class="ot">See here</span><span class="co">](https://rstudio.github.io/renv/articles/renv.html#collaboration)</span> for a brief overview on collaboration and reproduction of the entire project. To get up and running you can do:</span>
+<span id="cb2-54"><a href="#cb2-54"></a></span>
+<span id="cb2-55"><a href="#cb2-55"></a><span class="in">``` r</span></span>
+<span id="cb2-56"><a href="#cb2-56"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>)</span>
+<span id="cb2-57"><a href="#cb2-57"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span>
+<span id="cb2-58"><a href="#cb2-58"></a><span class="in">```</span></span>
+<span id="cb2-59"><a href="#cb2-59"></a></span>
+<span id="cb2-60"><a href="#cb2-60"></a><span class="fu">## Relevant references</span></span>
+<span id="cb2-61"><a href="#cb2-61"></a></span>
+<span id="cb2-62"><a href="#cb2-62"></a><span class="ss">1. </span>Dutkiewicz, S., A.E. Hickman, O. Jahn, W.W. Gregg, C.B. Mouw, and M.J. Follows. (2015) Capturing optically important constituents and properties in a marine biogeochemical and ecosystem model. Biogeoscience, 12, 4447-4481 <span class="co">[</span><span class="ot">doi:10.5194/bg-12-4447-2015</span><span class="co">](https://doi.org/10.5194/bg-12-4447-2015)</span></span>
+<span id="cb2-63"><a href="#cb2-63"></a><span class="ss">2. </span>Forget, G., Campin, J.-M., Heimbach, P., Hill, C. N., Ponte, R. M., and Wunsch, C. (2015) ECCO version 4: an integrated framework for non-linear inverse modeling and global ocean state estimation, Geosci. Model Dev., 8, 3071-3104, <span class="co">[</span><span class="ot">doi:10.5194/gmd-8-3071-2015</span><span class="co">](https://doi.org/10.5194/gmd-8-3071-2015)</span></span>
+<span id="cb2-64"><a href="#cb2-64"></a><span class="ss">3. </span>Forget, G., D. Ferreira, and X. Liang. (2015) On the observability of turbulent transport rates by argo: supporting evidence from an inversion experiment. Ocean Science, 11, 839–853, <span class="co">[</span><span class="ot">doi:10.5194/os-11-839-2015</span><span class="co">](https://doi.org/10.5194/os-11-839-2015)</span></span>
+<span id="cb2-65"><a href="#cb2-65"></a><span class="ss">4. </span>Forget, G. and R. Ponte. (2015) The partition of regional sea level variability. Progress in Oceanography, 137, 173–195, <span class="co">[</span><span class="ot">doi:10.1016/j.pocean.2015.06.002</span><span class="co">](https://doi.org/10.1016/j.pocean.2015.06.002)</span> </span>
+<span id="cb2-66"><a href="#cb2-66"></a><span class="ss">5. </span>Forget, G., 2018: Initial, preliminary version of the CBIOMES-global model setup and documentation (Version v0.0.1). Zenodo. <span class="ot">&lt;http://doi.org/10.5281/zenodo.1343303&gt;</span></span>
+<span id="cb2-67"><a href="#cb2-67"></a><span class="ss">6. </span>Forget, G. (2019) Update MITgcm &amp; DarwinProject elements (Version v0.1.0). Zenodo. http://doi.org/10.5281/zenodo.2653669</span>
+<span id="cb2-68"><a href="#cb2-68"></a><span class="ss">7. </span>Ward, B.A., S. Dutkiewicz, O. Jahn, and M.J. Follows. (2012) A size-structured food-web model for the global ocean. Limnol. Oceanogr., 57, 1877-1891. <span class="co">[</span><span class="ot">doi:10.4319/lo.2012.57.6.1877</span><span class="co">](https://doi.org/10.4319/lo.2012.57.6.1877)</span></span>
+<span id="cb2-69"><a href="#cb2-69"></a><span class="ss">8. </span>Pesant, S. et al. (2015) Open science resources for the discovery and analysis of Tara Oceans data. Sci. Data 2:150023 <span class="co">[</span><span class="ot">doi: 10.1038/sdata.2015.23</span><span class="co">](http://doi.org/10.1038/sdata.2015.23)</span></span>
+<span id="cb2-70"><a href="#cb2-70"></a>https://aslopubs.onlinelibrary.wiley.com/doi/10.1002/lom3.10439</span>
+<span id="cb2-71"><a href="#cb2-71"></a><span class="ss">9. </span>Guidi, Lionel; Picheral, Marc; Pesant, Stephane; Tara Oceans Consortium, Coordinators; Tara Oceans Expedition, Participants (2017): Environmental context of all samples from the Tara Oceans Expedition (2009-2013), about sensor data in the targeted environmental feature. PANGAEA, <span class="ot">&lt;https://doi.org/10.1594/PANGAEA.875576&gt;</span></span>
+<span id="cb2-72"><a href="#cb2-72"></a><span class="ss">10. </span>Ashkezari MD, Hagen NR, Denholtz M, Neang A, Burns TC, Morales RL, Lee CP, Hill CN, Armbrust EV. 2021. Simons Collaborative Marine Atlas Project (Simons CMAP): An open‐source portal to share, visualize, and analyze ocean data. Limnol Oceanogr Methods 19:488–496. <span class="co">[</span><span class="ot">doi: 10.1002/lom3.10439</span><span class="co">](https://doi.org/10.1002/lom3.10439)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

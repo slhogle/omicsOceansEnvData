@@ -31,7 +31,7 @@ library(janitor)
 # Read NCBI BioSample data saved from the last step
 
 ```{r}
-tara_biosamples <- readr::read_rds(here::here("_data_raw", "tara", "tara_biosamples_mapped.rds"))
+tara_biosamples <- arrow::read_parquet(here::here("data", "tara", "biosamples", "tara_biosamples_mapped.parquet"))
 ```
 
 # Standard Campaign samples from Pangaea.de
@@ -67,15 +67,14 @@ PANGAEA_842237 <- pangaear::pg_data(doi = '10.1594/PANGAEA.842237')[[1]][['data'
                 time_day = 11)
 
 # save for later
-readr::write_rds(PANGAEA_842237, here::here("_data_raw", "tara", "PANGAEA_842237.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_842237, here::here("_data_raw", "tara", "pangaea", "PANGAEA_842237.parquet"))
 ```
 
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_842237 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_842237.rds"))
+PANGAEA_842237 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_842237.parquet"))
 ```
-
 
 ## Sequencing library information (PANGAEA.875581) {#sec-PANGAEA.875581}
 
@@ -122,7 +121,7 @@ PANGAEA_875581 <- readxl::read_excel(fs::dir_ls(tmpdir), skip = 19) %>%
   dplyr::rename_with(.cols = 15:last_col(), ~ stringr::str_c('PANGAEA.875581_', stringr::str_pad(15:24, side = "left", pad = "0", width = 3)))
 
 # save for later
-readr::write_rds(PANGAEA_875581, here::here("_data_raw", "tara", "PANGAEA_875581.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_875581, here::here("_data_raw", "tara", "pangaea", "PANGAEA_875581.parquet"))
 
 # Remove decompressed coverage directory from temp location
 fs::dir_delete(tmpdir)
@@ -131,7 +130,7 @@ fs::dir_delete(tmpdir)
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_875581 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_875581.rds"))
+PANGAEA_875581 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875581.parquet"))
 ```
 
 ## Carbonate chemistry (PANGAEA.875567) {#sec-PANGAEA.875567}
@@ -183,7 +182,7 @@ PANGAEA_875567 <- readxl::read_excel(fs::dir_ls(tmpdir), skip = 21) %>%
   dplyr::rename_with(.cols = 15:last_col(), ~ stringr::str_c('PANGAEA.875567_', str_pad(15:68, side = "left", pad = "0", width = 3)))
 
 # save for later
-readr::write_rds(PANGAEA_875567, here::here("_data_raw", "tara", "PANGAEA_875567.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_875567, here::here("_data_raw", "tara", "pangaea", "PANGAEA_875567.parquet"))
 
 # Remove decompressed coverage directory from temp location
 fs::dir_delete(tmpdir)
@@ -192,7 +191,7 @@ fs::dir_delete(tmpdir)
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_875567 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_875567.rds"))
+PANGAEA_875567 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875567.parquet"))
 ```
 
 ## Nutrient concentrations (PANGAEA.875575) {#sec-PANGAEA.875575}
@@ -245,7 +244,7 @@ PANGAEA_875575 <- readxl::read_excel(fs::dir_ls(tmpdir), skip = 21)  %>%
   dplyr::rename_with(.cols = 15:last_col(), ~ stringr::str_c('PANGAEA.875575_', str_pad(15:38, side = "left", pad = "0", width = 3)))
 
 # save for later
-readr::write_rds(PANGAEA_875575, here::here("_data_raw", "tara", "PANGAEA_875575.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_875575, here::here("_data_raw", "tara", "pangaea", "PANGAEA_875575.parquet"))
 
 # Remove decompressed coverage directory from temp location
 fs::dir_delete(tmpdir)
@@ -254,7 +253,7 @@ fs::dir_delete(tmpdir)
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_875575 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_875575.rds"))
+PANGAEA_875575 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875575.parquet"))
 ```
 
 ## Pigment concentrations (PANGAEA.875569) {#sec-PANGAEA.875569}
@@ -306,7 +305,7 @@ PANGAEA_875569 <- readxl::read_excel(fs::dir_ls(tmpdir), skip = 21) %>%
   dplyr::rename_with(.cols = 15:last_col(), ~ stringr::str_c('PANGAEA.875569_', str_pad(15:143, side = "left", pad = "0", width = 3)))
 
 # save for later
-readr::write_rds(PANGAEA_875569, here::here("_data_raw", "tara", "PANGAEA_875569.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_875569, here::here("_data_raw", "tara", "pangaea", "PANGAEA_875569.parquet"))
 
 # Remove decompressed coverage directory from temp location
 fs::dir_delete(tmpdir)
@@ -315,7 +314,7 @@ fs::dir_delete(tmpdir)
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_875569 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_875569.rds"))
+PANGAEA_875569 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875569.parquet"))
 ```
 
 ## Sensor data (PANGAEA.875576) {#sec-PANGAEA.875576}
@@ -374,7 +373,7 @@ PANGAEA_875576 <- read_tsv(tmpdir, skip = skipline) %>%
   dplyr::rename_with(.cols = 21:last_col(), ~ stringr::str_c('PANGAEA.875576_', str_pad(21:147, side = "left", pad = "0", width = 3)))
 
 # save the data for reuse
-readr::write_rds(PANGAEA_875576, here::here("_data_raw", "tara", "PANGAEA_875576.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_875576, here::here("_data_raw", "tara", "pangaea", "PANGAEA_875576.parquet"))
 
 # Remove decompressed coverage directory from temp location
 fs::file_delete(tmpdir)
@@ -383,7 +382,7 @@ fs::file_delete(tmpdir)
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_875576 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_875576.rds"))
+PANGAEA_875576 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875576.parquet"))
 ```
 
 ## Derived mesoscale features (PANGAEA.875577) {#sec-PANGAEA.875577}
@@ -444,7 +443,7 @@ PANGAEA_875577 <- read_tsv(tmpdir, skip = skipline) %>%
   dplyr::rename_with(.cols = 21:last_col(), ~ stringr::str_c('PANGAEA.875577_', str_pad(21:71, side = "left", pad = "0", width = 3)))
 
 # save the data for reuse
-readr::write_rds(PANGAEA_875577, here::here("_data_raw", "tara", "PANGAEA_875577.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_875577, here::here("_data_raw", "tara", "pangaea", "PANGAEA_875577.parquet"))
 
 # Remove decompressed coverage directory from temp location
 fs::file_delete(tmpdir)
@@ -453,7 +452,7 @@ fs::file_delete(tmpdir)
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_875577 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_875577.rds"))
+PANGAEA_875577 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875577.parquet"))
 ```
 
 ## Whole water column features (PANGAEA.875579) {#sec-PANGAEA.875579}
@@ -514,7 +513,7 @@ PANGAEA_875579 <- read_tsv(tmpdir, skip = skipline) %>%
   dplyr::rename_with(.cols = 21:last_col(), ~ stringr::str_c('PANGAEA.875579_', str_pad(21:123, side = "left", pad = "0", width = 3)))
 
 # save the data for reuse
-readr::write_rds(PANGAEA_875579, here::here("_data_raw", "tara", "PANGAEA_875579.rds"), compress = "xz", compression = 9L)
+arrow::write_parquet(PANGAEA_875579, here::here("_data_raw", "tara", "pangaea", "PANGAEA_875579.parquet"))
 
 # Remove decompressed coverage directory from temp location
 fs::file_delete(tmpdir)
@@ -523,7 +522,7 @@ fs::file_delete(tmpdir)
 ```{r}
 #| eval: true
 #| echo: false
-PANGAEA_875579 <- readr::read_rds(here::here("_data_raw", "tara", "PANGAEA_875579.rds"))
+PANGAEA_875579 <- arrow::read_parquet(here::here("_data_raw", "tara", "pangaea", "PANGAEA_875579.parquet"))
 ```
 
 # Join NCBI BioSamples data to Tara sequencing table
@@ -636,7 +635,8 @@ Here we attempting to join using less strict matching conditions. Code below doe
 
 ```{r}
 tara_biosamples_fuzy_match <- dplyr::inner_join(tara_biosamples_strict_unmatch, PANGAEA_875575, 
-          by = join_by(tara_station)) %>% 
+          by = join_by(tara_station),
+          relationship = "many-to-many") %>% 
   dplyr::filter(size_low_thresh.x == size_low_thresh.y) %>% 
   dplyr::filter(depth_class == str_extract(env_ontology, "SRF|DCM|MES|MIX")) %>% 
   dplyr::group_by(biosample_acc_num.x, run_accession) %>% 
@@ -664,5 +664,5 @@ Now we will add these two data sets - the one that strictly matched and the one 
 bind_rows(tara_biosamples_fuzy_match, tara_biosamples_strict_match) %>% 
   dplyr::select(sra_acc_num:tara_barcode_num, tara_station) %>% 
   arrange(tara_station) %>% 
-  write_tsv(here::here("data", "tara", "ncbi2tara_barcode.tsv"))
+  write_tsv(here::here("data", "tara", "pangaea", "ncbi_mapped_pangaea_barcode.tsv"))
 ```

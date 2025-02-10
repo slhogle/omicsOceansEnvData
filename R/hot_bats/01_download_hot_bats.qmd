@@ -1,0 +1,555 @@
+---
+title: "Download HOT and BATS data from Simons CMAP"
+subtitle: "HOT/BATS workflow"
+author: "Shane Hogle"
+date: today
+abstract: "Code in this notebook downloads entire datasets from [Simons CMAP](https://simonscmap.com/) and stores them locally in the parquet format which is readable by the [Apache Arrow C++ library](https://arrow.apache.org/) via the R package [`arrow`](https://arrow.apache.org/docs/r/) to allow for fast data access without serialization overhead. This allows us to efficiently work with big data that is too large to fit into working memory - e.g., the entire GEOTRACES IDP2020v1 or the biogeochemical output of PiSCES model."
+---
+
+# Setup
+
+This code loads required libraries and sets global variables
+
+```{r}
+#| output: false
+library(tidyverse)
+library(readxl)
+library(here)
+library(cmap4r)
+library(arrow)
+library(sf)
+library(polars)
+```
+
+# CMAP Database
+
+**Source:**
+
+-   <https://simonscmap.com/>
+
+**Reference:**
+
+-   Ashkezari MD, Hagen NR, Denholtz M, Neang A, Burns TC, Morales RL, Lee CP, Hill CN, Armbrust EV. 2021. Simons Collaborative Marine Atlas Project (Simons CMAP ): An open‐source portal to share, visualize, and analyze ocean data. Limnol Oceanogr Methods 19:488–496. <https://doi.org/10.1002/lom3.10439>
+
+## API authorization to CMAP SQL database
+
+The api key is stored locally (not git tracked) in `_notrack/cmap_api.txt`
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+cmap4r::set_authorization(reset = TRUE)
+cmap4r::set_authorization(cmap_key = "")
+```
+
+## Simons CMAP catalog
+
+Download a local copy of the CMAP catalog. Useful for querying later...
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+local_cat <- cmap4r::get_catalog() %>%
+  select(Variable, Table_Name, Unit, Sensor, Unit)
+
+write_tsv(local_cat, here::here("_data_raw", "cmap", "cmap_catalog.tsv"))
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| output: false
+local_cat <- read_tsv(here::here("_data_raw", "cmap", "cmap_catalog.tsv"))
+```
+
+# HOT (Hawaii Ocean Time Series) station ALOHA
+
+**Source:** <https://hahana.soest.hawaii.edu/hot/intro.html>
+
+> "The primary objective of HOT is to obtain a long time-series of physical and biochemical observations in the North Pacific subtropical gyre that will address the goals of the U.S. Global Change Research Program."
+
+```{r}
+local_cat %>% 
+  filter(stringr::str_detect(Table_Name, "(?i)hot")) %>% 
+  distinct(Table_Name)
+```
+
+## tblHOT_Macrozooplankton_v2022
+
+> "Large zooplankton and micronekton play important roles in the export of organic material from surface waters in the open ocean. Global Ocean Flux planning models suggest that the relationship between primary production and passive particulate export flux is strongly influenced by size structure of the zooplankton community (e.g., Paffenhöffer & Knowles, 1979; Small et al., 1987; Frost, 1984). Active vertical migrations also have important implications for the transport and transformation of surface-derived organic particulates to dissolved inorganic constituents at depth (Longhurst & Harrison, 1988; Longhurst et al., 1990; Al-Mutairi & Landry, 2001; Hannides et al., 2008). The zooplankton component of the time-series sampling effort allows such processes to be considered in the interpretation of seasonal and interannual variations in measured flux and the elemental mass balance (e.g., carbon and nitrogen sources and sinks) of the euphotic zone. At Station ALOHA, 6 net tows are scheduled per cruise. Three midnight (2200 - 0200) and 3 mid-day (1000 - 1400) oblique tows are done using a 1-m2 net (3-m length) with 202-µm mesh Nitex netting. The net is towed obliquely at approximately 1 knot, from the surface to approximately 175 m and then back to the surface. Towing time is approximately 20-30 minutes. The tows are subsequently size-fractioned and analyzed for mesozooplankton wet and dry weight and C and N biomass.” Rows with no depth value have been removed. Time is in local time (HST)."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_Macrozooplankton_v2022>
+
+**Methods:**
+
+-   <https://hahana.soest.hawaii.edu/hot/methods/plankton.html>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_Macrozooplankton_v2022 <- cmap4r::get_spacetime(
+  tableName = "tblHOT_Macrozooplankton_v2022",
+  varName = "*",
+  dt1 = "1994-02-17",
+  dt2 = "2022-09-02",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_Macrozooplankton_v2022, here::here("_data_raw", "cmap", "hot", "tblHOT_Macrozooplankton_v2022.parquet"))
+```
+
+## tblHOT_ParticleFlux_v2022
+
+> "Particle flux was measured at a standard reference depth of 150 m using multiple cylindrical particle interceptor traps deployed on a free-floating array for approximately 60 h during each cruise. Sediment trap design and collection methods are described in Winn et al. (1991). Samples were analyzed for particulate C, N, P & Si. Typically six traps are analyzed for PC and PN, three for PP, and another three traps for PSi.” Time is in a separate column from date. Dates and times are in local time (HST)."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_ParticleFlux_v2022>
+
+**Methods:**
+
+-   <https://hahana.soest.hawaii.edu/hot/methods/pflux.html>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_ParticleFlux_v2022 <- cmap4r::get_spacetime(
+  tableName = "tblHOT_ParticleFlux_v2022",
+  varName = "*",
+  dt1 = "1988-12-01",
+  dt2 = "2022-08-31",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_ParticleFlux_v2022, here::here("_data_raw", "cmap", "hot", "tblHOT_ParticleFlux_v2022.parquet"))
+```
+
+## tblHOT_PP_v2022
+
+> "This dataset consists of measurements of photosynthetic primary production, chlorophyll a and phaeopigment concentrations, and flow cytometry-based determinations of the abundances of heterotrophic bacteria and the picophytoplankton - Prochlorococcus, Synechococcus and small eukaryotic phytoplankton. All samples were collected through the Hawaii Ocean Time-series (HOT) program, which began in 1988 with \~monthly cruises to Station ALOHA (A Long-term Oligotrophic Habitat Assessment; 22° 10 N, 158° 00 W). Photosynthetic production of organic matter was measured by the 14C tracer method. Details on the methods employed over the years are detailed in Karl et al., Progress in Oceanography (<https://doi.org/10.1016/j.pocean.2021.102563>). Flow cytometry-based determinations of microbial abundances were made using an EPICS 753 flow cytometer on HOT 22-173 (December 1980 – September 2005) and a B/D Influx flow cytometer beginning with HOT 174 . Details on the flow cytometry methods are provided at <https://hahana.soest.hawaii.edu/hot/methods/bact.html>. Samples for chlorophyll a and phaeopigments were collected onto Whatman GF/F filters and extracted with 100% acetone and measured on a Turner Designs Model 10-AU fluorometer based on standard techniques described in Strickland and Parsons, 1972. Method details available at <https://hahana.soest.hawaii.edu/hot/methods/chl.html>. Time is in a separate column from date. Dates and times are in local time (HST)."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_PP_v2022>
+
+**Methods:**
+
+-   <https://hahana.soest.hawaii.edu/hot/methods/bact.html>
+
+-   <https://hahana.soest.hawaii.edu/hot/methods/chl.html>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_PP_v2022 <- cmap4r::get_spacetime(
+  tableName = "tblHOT_PP_v2022",
+  varName = "*",
+  dt1 = "1988-10-31",
+  dt2 = "2022-09-01",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_PP_v2022, here::here("_data_raw", "cmap", "hot", "tblHOT_PP_v2022.parquet"))
+```
+
+## tblHOT_CTD_v2022
+
+> "“The majority of our sampling effort, approximately 60-72 h per standard HOT cruise, is spent at Station ALOHA. High vertical resolution environmental data are collected with a Sea-Bird CTD having external temperature (T), conductivity (C), dissolved oxygen (DO) and fluorescence (F) sensors and an internal pressure (P) sensor. A Sea-Bird 24-place carousel and an aluminum rosette that is capable of supporting 24 12-L PVC bottles are used to obtain water samples from desired depths. The CTD and rosette are deployed on a 3-conductor cable allowing for real-time display of data and for tripping the bottles at specific depths of interest. The CTD system takes 24 samples s-1 and the raw data are stored both on the computer and, for redundancy, on VHS-format video tapes. In February 2006, before cruise 178, we replaced our 24 aging 12-L PVC rosette bottles with new 12-L bottles fabricated at the University of Hawaii Engineering Support Facility, using plans and specifications from John Bullister (PMEL).” Time is in GMT."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_CTD_v2022>
+
+**Methods:**
+
+-   <https://www.soest.hawaii.edu/HOT_WOCE/intro.html>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_CTD_v2022 <- cmap4r::get_spacetime(
+  tableName = "tblHOT_CTD_v2022",
+  varName = "*",
+  dt1 = "1988-10-31",
+  dt2 = "2022-09-01",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_CTD_v2022, here::here("_data_raw", "cmap", "hot", "tblHOT_CTD_v2022.parquet"))
+```
+
+## tblHOT_Bottle_ALOHA
+
+> "This dataset contains CTD data and data from water samples collected at discrete depths via Niskin bottles mounted on the CTD rosette at HOT (Hawaii Ocean Time Series) station ALOHA, the primary HOT sampling site. “Sampling at Station ALOHA typically begins with sediment trap deployment followed by a deep (\> 4700 m) CTD cast and a ''burst series'' of at least 13 consecutive 1000 m casts, on 3-h intervals, to span the local inertial period (\~ 31 h) and three semidiurnal tidal cycles. The repeated CTD casts enable us to calculate an average density profile from which variability on tidal and near-inertial time scales has been removed. These average density profiles are useful for the comparison of dynamic height and for the comparison of the depth distribution of chemical parameters from different casts and at monthly intervals. This sampling strategy is designed to assess variability on time scales of a few hours to a few years. Very high frequency variability (\< 6 h) and variability on time scales of between 3-60 d are not adequately sampled with our ship-based operations. Water samples for a variety of chemical and biological measurements are routinely collected from the surface to within 10 m of the seafloor. To the extent possible, we collect samples for complementary biogeochemical measurements from the same or from contiguous casts to minimize aliasing caused by time-dependent changes in the density field. This approach is especially important for samples collected in the upper 350 m of the water column. Furthermore, we attempt to sample from common depths and specific density horizons each month to facilitate comparisons between cruises. Water samples for salinity determinations are collected from every water bottle to identify sampling errors. Approximately 20% of the water samples are collected and analyzed in duplicate or triplicate to assess and track our precision in sample analyses''. Time is in a separate column from date and is in GMT. Data accessed on January 16, 2024 from <https://hahana.soest.hawaii.edu/hot/hot-dogs/>"
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_Bottle_ALOHA>
+
+**Methods:**
+
+-   <https://hahana.soest.hawaii.edu/hot/intro.html>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_Bottle_ALOHA <- cmap4r::get_spacetime(
+  tableName = "tblHOT_Bottle_ALOHA",
+  varName = "*",
+  dt1 = "1988-10-31",
+  dt2 = "2022-09-03",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_Bottle_ALOHA, here::here("_data_raw", "cmap", "hot", "tblHOT_Bottle_ALOHA.parquet"))
+```
+
+## tblHOT_Flow_Cytometry_Time_Series
+
+> "Time-series containing Prochlorococcus, Synechococcus, heterotrophic bacteria, and eukaryote flow cytometry abundance sampled each month at HOT from 2002-2007"
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_Flow_Cytometry>
+
+**Methods:**
+
+-   <https://hahana.soest.hawaii.edu/hot/methods/bact.html>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_Flow_Cytometry_Time_Series <- cmap4r::get_spacetime(
+  tableName = "tblHOT_Flow_Cytometry_Time_Series",
+  varName = "*",
+  dt1 = "2002-11-03",
+  dt2 = "2007-12-21",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_Flow_Cytometry_Time_Series, here::here("_data_raw", "cmap", "hot", "tblHOT_Flow_Cytometry_Time_Series.parquet"))
+```
+
+## tblHOT_BATS_Prochlorococcus_Abundance
+
+> "Five year time-series containing Prochlorococcus ecotype abundance sampled each month at HOT and BATS sites from 2002-2008 The goal of this study was to collect long-term, high-resolution data on the temporal and spatial variability of Prochlorococcus ecotypes in the Pacific and Atlantic Oceans. The abundance of five Prochlorococcus ecotypes was determined by quantitative PCR at 12 depths every month for 5 years at two locations: BATS location (5 nautical mile radius around 31 40'N, 64 10'W) HOT Station ALOHA (5 nautical mile radius around 22 45'N, 158 00' W) Sample processing and analyses are detailed in the publication listed below. Briefly, 100ml of seawater was collected onto 25mm dia polycarbonate filters (0.22um pore size), rinsed with Tris-buffered saline, flash frozen in liquid N2, and stored at -80C until extraction. DNA was extracted using a combination of 5min of bead beating and 15min heat lysis at 95C. Extracted DNA was used as template of quantitative PCR reactions using primers specifically designed to target different Prochlorococcus ecotypes. Standard curves used for quantitation of field data were derived from DNA extracted from cultured representatives belonging to each ecotype. Malmstrom, RR, A Coe, GC Kettler, AC Martiny, J Frias-Lopez, ER Zinser, and SW Chisholm. 2010. Temporal dynamics of Prochlorococcus ecotypes in the Atlantic and Pacific oceans. The ISME Journal. 4(10): 1252-1264"
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_BATS_Prochlorococcus_Abundance>
+
+**Methods:**
+
+-   <https://doi.org/10.1038/ismej.2010.60>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_BATS_Prochlorococcus_Abundance <- cmap4r::get_spacetime(
+  tableName = "tblHOT_BATS_Prochlorococcus_Abundance",
+  varName = "*",
+  dt1 = "2002-11-04",
+  dt2 = "2008-01-31",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_BATS_Prochlorococcus_Abundance, here::here("_data_raw", "cmap", "hot", "tblHOT_BATS_Prochlorococcus_Abundance.parquet"))
+```
+
+## tblHOT_EpiMicroscopy
+
+> "Water samples of 50 ml (nanoplankton) and 300-500 ml (microplankton) are taken at each of 8 depths in the euphotic zone (surface to 175 m) from the same CTD profiles (and bottles) that sample the microbial community by HPLC pigments and flow cytometry. The 50-ml samples are preserved with 2-ml of 10% paraformaldehyde and stained with proflavin (0.33% w/v). The larger samples are preserved with 300 µl of alkaline Lugols solution followed by 10 ml of buffered formalin and 500 µl of sodium thiosulfate (modified protocol from Sherr and Sherr, 1993); and then stained with proflavin (0.33% w/v). Preserved samples are slowly (\~5 psi) filtered onto either black 0.8-µm (50 ml) or 8.0-µm (300-500 ml) Nuclepore filters overlaying 20-µm Millipore backing filters to facilitate even cell distributions. During filtration, the samples are drawn down until approximately 1-2 ml remain in the filtration tower. Concentrated DAPI (50 mg ml-1) is added and allowed to sit briefly before filtering the remainder of the sample until dry. Filters are mounted onto glass slides with immersion oil and cover slips. Prepared slides are placed in a dark box and kept frozen at -80 C until analysis. "
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/HOT_EpiMicroscopy>
+
+**Methods:**
+
+-   <https://hahana.soest.hawaii.edu/hot/methods/epimicros.html>
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblHOT_EpiMicroscopy <- cmap4r::get_spacetime(
+  tableName = "tblHOT_EpiMicroscopy",
+  varName = "*",
+  dt1 = "2004-06-16",
+  dt2 = "2014-12-17",
+  lat1 = 22.75,
+  lat2 = 22.75,
+  lon1 = -158,
+  lon2 = -158
+)
+
+arrow::write_parquet(tblHOT_EpiMicroscopy, here::here("_data_raw", "cmap", "hot", "tblHOT_EpiMicroscopy.parquet"))
+```
+
+# BATS (Bermuda Atlantic Time Series)
+
+**Source:** <https://bios.asu.edu/bats/about>
+
+> "The Bermuda Atlantic Time-series Study (BATS) is a long-term oceanographic study by the Bermuda Institute of Ocean Sciences (BIOS). Based on regular (monthly or better) research cruises, it samples an area of the western Atlantic Ocean nominally at the coordinates 31°40′N 64°10′W. The cruise programme routinely samples physical properties such as ocean temperature and salinity, but focuses on variables of biological or biogeochemical interest including: nutrients (nitrate, nitrite, phosphate and silicic acid), dissolved inorganic carbon, oxygen, HPLC of pigments, primary production and sediment trap flux. The BATS cruises began in 1988 but are supplemented by biweekly Hydrostation "S" cruises to a neighbouring location (32°10′N 64°30′W) that began in 1954. The data collected by these cruises are available online."
+
+```{r}
+local_cat %>% 
+  filter(stringr::str_detect(Table_Name, "(?i)bats")) %>% 
+  distinct(Table_Name)
+```
+
+## tblBATS_CTD
+
+> "The BATS CTD dataset in CMAP is a collection of CTD casts taken from the Bermuda Ocean Time-series Study (BATS). The CTD record begins in late 1988 and continues until the end of 2016. Pressure, temperature, conductivity, salinity, dissolved oxygen, beam attenuation coefficient, fluorescence and PAR measurements were collected with the Sea-Bird CTD instrument package. Sensor details can be found in chapter three of the BATS report methods document: <http://bats.bios.edu/wp-content/uploads/2017/07/report_methods.pdf>."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/BATS_CTD>
+
+**Methods:**
+
+-   <https://bios.asu.edu/bats/bats-data>
+
+-   [CTD Data](https://www.dropbox.com/scl/fi/pujllhchqt14yw3nt4yuv/ACTD_README.txt?rlkey=3evv4t48zctcduw1vfa4p5vsm&e=1&dl=0)
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblBATS_CTD <- cmap4r::get_spacetime(
+  tableName = "tblBATS_CTD",
+  varName = "*",
+  dt1 = "1988-10-20",
+  dt2 = "2016-12-16",
+  lat1 = 19,
+  lat2 = 40,
+  lon1 = -74,
+  lon2 = -59
+)
+
+arrow::write_parquet(tblBATS_CTD, here::here("_data_raw", "cmap", "bats", "tblBATS_CTD.parquet"))
+```
+
+## tblBATS_Bacteria_Production
+
+> "The BATS Bacteria Production dataset is a collection of in-situ shipboard measurements of bacterial production rates from 1988-2012."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/BATS_Bacteria_Production>
+
+**Methods:**
+
+-   <https://bios.asu.edu/bats/bats-data>
+
+-   [Primary Production & Bacterial Production](https://www.dropbox.com/scl/fo/x7xvlmyzqh9t9tfpe8ffg/AEBrkFFxVFvlO31MJmd9pcY?rlkey=7v73mfwhd78fdtxvfhk4v4kca&e=1&dl=0)
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblBATS_Bacteria_Production <- cmap4r::get_spacetime(
+  tableName = "tblBATS_Bacteria_Production",
+  varName = "*",
+  dt1 = "1990-10-15",
+  dt2 = "2012-07-15",
+  lat1 = 19,
+  lat2 = 40,
+  lon1 = -74,
+  lon2 = -59
+)
+
+arrow::write_parquet(tblBATS_Bacteria_Production, here::here("_data_raw", "cmap", "bats", "tblBATS_Bacteria_Production.parquet"))
+```
+
+## tblBATS_Sediment_Trap_Flux
+
+> "The BATS (Bermuda Atlantic Time-series Study) sediment trap - flux dataset is time-series spanning from 1988 to 2022. The dataset contains multiple nutrient flux measurements."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/BATS_Sediment_Trap_Flux>
+
+**Methods:**
+
+-   <https://bios.asu.edu/bats/bats-data>
+
+-   [Sediment Trap Data](https://www.dropbox.com/scl/fo/vpixby2yw9vfi28au3trz/ADYRb1vR_kJ6xgWBBdtnxdU?rlkey=v5sky9mqt60sgghag5hg22daq&e=1&dl=0)
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblBATS_Sediment_Trap_Flux <- cmap4r::get_spacetime(
+  tableName = "tblBATS_Sediment_Trap_Flux",
+  varName = "*",
+  dt1 = "1988-12-16",
+  dt2 = "2022-12-13",
+  lat1 = 19,
+  lat2 = 40,
+  lon1 = -74,
+  lon2 = -59
+)
+
+arrow::write_parquet(tblBATS_Sediment_Trap_Flux, here::here("_data_raw", "cmap", "bats", "tblBATS_Sediment_Trap_Flux.parquet"))
+```
+
+## tblBATS_Bottle
+
+> "The BATS Bottle dataset is a collection of discrete bottle samples from 1988-2022, including in-situ measurements of CO2, nutrients, carbon, oxygen, temperature, and Prochlorococcus and Synechococcus abundance. Note all bottle fires are included that do not have any BATS core parameters so as to be of use for other ancillary measurements."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/BATS_Bottle>
+
+**Methods:**
+
+-   <https://bios.asu.edu/bats/bats-data>
+
+-   [Bottle Data](https://www.dropbox.com/scl/fi/400ap4klwehf0822rmf1u/A_README_BOTTLE.txt?rlkey=56in61ixulo94yvvkfgvos8uz&e=1&dl=0)
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblBATS_Bottle <- cmap4r::get_spacetime(
+  tableName = "tblBATS_Bottle",
+  varName = "*",
+  dt1 = "1988-10-20",
+  dt2 = "2022-12-16",
+  lat1 = 19,
+  lat2 = 40,
+  lon1 = -74,
+  lon2 = -59
+)
+
+arrow::write_parquet(tblBATS_Bottle, here::here("_data_raw", "cmap", "bats", "tblBATS_Bottle.parquet"))
+```
+
+## tblBATS_Primary_Production
+
+> "The BATS (Bermuda Atlantic Time-series Study) primary production rates dataset is time-series spanning from 1988 to 2022. The dataset contains six primary production bottle estimates, along with CTD temperature and salinity measurements."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/BATS_Primary_Production>
+
+**Methods:**
+
+-   <https://bios.asu.edu/bats/bats-data>
+
+-   [Primary Production & Bacterial Production](https://www.dropbox.com/scl/fo/x7xvlmyzqh9t9tfpe8ffg/AEBrkFFxVFvlO31MJmd9pcY?rlkey=7v73mfwhd78fdtxvfhk4v4kca&e=1&dl=0)
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblBATS_Primary_Production <- cmap4r::get_spacetime(
+  tableName = "tblBATS_Primary_Production",
+  varName = "*",
+  dt1 = "1988-12-18",
+  dt2 = "2022-12-16",
+  lat1 = 19,
+  lat2 = 40,
+  lon1 = -74,
+  lon2 = -59
+)
+
+arrow::write_parquet(tblBATS_Primary_Production, here::here("_data_raw", "cmap", "bats", "tblBATS_Primary_Production.parquet"))
+```
+
+## tblBATS_Pigment
+
+> "The BATS (Bermuda Atlantic Time-series Study) Pigment dataset is time-series spanning from 1988 to 2022. The dataset contains the 21 separate in-situ pigment measurements along with sampling depth and the BATS Cruise ID."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/BATS_Pigments>
+
+**Methods:**
+
+-   <https://bios.asu.edu/bats/bats-data>
+
+-   [Bottle Pigments](https://www.dropbox.com/scl/fi/uj3h3vvvk3h81rbfakyrv/bats_pigments.txt?rlkey=hts3w8p4mw7y9ctchdaror1q1&e=1&dl=0)
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblBATS_Pigment <- cmap4r::get_spacetime(
+  tableName = "tblBATS_Pigment",
+  varName = "*",
+  dt1 = "1988-10-21",
+  dt2 = "2022-12-16",
+  lat1 = 19,
+  lat2 = 40,
+  lon1 = -74,
+  lon2 = -59
+)
+
+arrow::write_parquet(tblBATS_Pigment, here::here("_data_raw", "cmap", "bats", "tblBATS_Pigment.parquet"))
+```
+
+## tblBATS_Zooplankton_Biomass
+
+> "The BATS (Bermuda Atlantic Time-series Study) zooplankton biomass dataset is time-series spanning from 1994 to 2022. The dataset contains zooplankton biomass measurements. Due to an ambiguity with depth a subset of the dataset been removed as part of the Simons CMAP curation process. The full dataset is available at: <https://10.5281/zenodo.10182499>. The following dates were impacted by this depth ambiguity: 1994 (4/6 – 12/12); 1995 (1/11 – 4/27, 8/22); 2000 (2/28); 2001 (1/30, 8/7-8/8, 9/12, 10/16); 2004 (2/14, 3/23, 4/7, 7/14-15, 8/16-17); 2005 (1/27); 2006 (5/11, 6/26, 9/4-9/5); 2007 (7/18, 8/9, 10/6); 2008 (6/22); 2009 (2/10, 4/1, 4/15, 5/16, 5/19, 10/10); 2017 (5/9); 2018: (8/13); 2022: (6/29)."
+
+**CMAP Source:**
+
+-   <https://simonscmap.com/catalog/datasets/BATS_Zooplankton_Biomass>
+
+**Methods:**
+
+-   <https://bios.asu.edu/bats/bats-data>
+
+-   [Zooplankton biomass](https://www.dropbox.com/scl/fo/pxsiq6q7jz3k33vcvltyz/ABG5u8983RNYQEgVr6ir1h0?rlkey=75x2rxqpc6dnfos85rdfcmmpa&e=1&dl=0)
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+tblBATS_Zooplankton_Biomass <- cmap4r::get_spacetime(
+  tableName = "tblBATS_Zooplankton_Biomass",
+  varName = "*",
+  dt1 = "1995-05-10",
+  dt2 = "2022-12-13",
+  lat1 = 19,
+  lat2 = 40,
+  lon1 = -74,
+  lon2 = -59
+)
+
+arrow::write_parquet(tblBATS_Zooplankton_Biomass, here::here("_data_raw", "cmap", "bats", "tblBATS_Zooplankton_Biomass.parquet"))
+```

@@ -20,6 +20,7 @@ library(sf)
 library(mapview)
 library(rentrez)
 library(xml2)
+library(arrow)
 ```
 
 # Listing of all sequenced samples
@@ -138,14 +139,14 @@ all_tara_samps <- purrr::map(c(196960, 196958, 213098, 214077, 287904, 288558, 2
                              bioproj_to_biosamp_tibble) %>% 
   purrr::list_rbind()
 
-readr::write_rds(all_tara_samps, here::here("_data_raw", "tara", "all_tara_samps.rds"))
+arrow::write_parquet(all_tara_samps, here::here("data", "tara", "biosamples", "all_tara_samps.parquet"))
 ```
 
 ```{r}
 #| eval: true
 #| echo: false
 #| include: false
-all_tara_samps <- readr::read_rds(here::here("_data_raw", "tara", "all_tara_samps.rds"))
+all_tara_samps <- arrow::read_parquet(here::here("data", "tara", "biosamples", "all_tara_samps.parquet"))
 ```
 
 ## Inspect downloaded data
@@ -171,7 +172,7 @@ all_tara_samps %>%
   dplyr::filter(is.na(tara_station))
 ```
 
-What the hell BioSample `SAMEA6823711` appears to actually be some human ear metagenome!? So that sample should be excluded. The other missing stations only have the `sample_name` populated. Indeed at NCBI and ENA these samples don't have any distinguishing metadata other than this `sample_name` key. After doing some googling I found [this paper](https://doi.org/10.1038/s41586-023-05962-4) and Supplementary Table 1 in the supplementary material contains these sample names that can allow us to hopefully match up these samples to Tara stations.
+What the hell BioSample `SAMEA6823711` appears to be some human ear metagenome? So that sample should be excluded. The other missing stations only have the `sample_name` populated. Indeed at NCBI and ENA these samples don't have any distinguishing metadata other than this `sample_name` key. After doing some googling I found [this paper](https://doi.org/10.1038/s41586-023-05962-4) and Supplementary Table 1 in the supplementary material contains these sample names that can allow us to hopefully match up these samples to Tara stations.
 
 ```{r}
 # create temporary location to decompress
@@ -266,7 +267,7 @@ all_tara_samps_fmt_joined <- readr::read_tsv(here::here("_data_raw", "tara", "bi
   dplyr::arrange(tara_station) %>% 
   dplyr::select(-row, -external_id)
 
-readr::write_rds(all_tara_samps_fmt_joined, here::here("_data_raw", "tara", "tara_biosamples_mapped.rds"))
+arrow::write_parquet(all_tara_samps_fmt_joined, here::here("data", "tara", "biosamples", "tara_biosamples_mapped.parquet"))
 ```
 
 # Plot TARA samples with metagenomes

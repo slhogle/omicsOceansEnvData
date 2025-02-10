@@ -16,11 +16,23 @@ website:
     - section: "1. Tara oceans workflow"
       contents:
       - text: "1) BioSamples at NCBI"
-        file: R/tara/01_download_data_ncbi.qmd
+        file: R/tara/01_download_ncbi.qmd
       - text: "2) Env data at Pangaea.de"
-        file: R/tara/02_download_data_pangaea.qmd
-      - text: "3) Harmonize env and 'omics data"
-        file: R/tara/03_harmonize_ncbi_pangaea.qmd
+        file: R/tara/02_download_pangaea.qmd
+      - text: "3) Darwin model output"
+        file: R/tara/03_download_darwin.qmd
+      - text: "4) PISCES model output"
+        file: R/tara/04_download_pisces.ipynb
+      - text: "5) Harmonize and combine data"
+        file: R/tara/05_harmonize_data.qmd
+    - section: "2. BioGEOTRACES workflow"
+      contents:
+      - text: "1) IDP 2021 v2 at Simons CMAP"
+        file: R/biogeotraces/01_download_idp2021.qmd
+    - section: "3. HOT/BATS workflow"
+      contents:
+      - text: "1) HOT/BATS at Simons CMAP"
+        file: R/hot_bats/01_download_hot_bats.qmd
 
 format:
   html:

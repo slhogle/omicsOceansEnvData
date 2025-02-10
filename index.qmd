@@ -36,6 +36,10 @@ This is a collection of code that should serve to make it easier to programmatic
 1. [Tara Oceans](https://fondationtaraocean.org/en/expedition/tara-oceans/) expedition. The code downloads data directly from the [PANGAEA Data Publisher](https://www.pangaea.de/) (predominantly from here: <https://doi.pangaea.de/10.1594/PANGAEA.875582>) and saves slightly formatted versions locally for easy access. 
 2. Other features will likely be incorporated here, stay tuned...
 
+## Project Organization
+
+We follow the convention that only raw, unmodified, unfiltered, and non-subsetted datafiles obtained directly from database sources (including journal article metadata) are placed in the `_data_raw` directory. These should never be modified or changed. All data derived from these `_data_raw` files (including modification, filtering, and subsetting) are placed in the `data` directory
+
 ## Availability
 
 Various external databases are accessed and used here. This includes the [MIT DARWIN model](https://darwinproject.mit.edu/) accessed from [Simons Collaborative Marine Atlas Project](https://simonscmap.com/), and environmental measurements (hydrography, biogeochemistry) from [PANGAEA](https://doi.pangaea.de/10.1594/PANGAEA.875576). You will need to [register with Simons CMAP](https://simonscmap.com/register), obtain an API key, then download the `cmap4r` [package](https://simonscmap.github.io/cmap4r/index.html) in order to access data from the MIT DARWIN model. The rest of the databases don't have API access restrictions and they are accessed programatically in the scripts.

@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Shane Hogle">
+<meta name="dcterms.date" content="2025-02-10">
+
+<title>omicOceansEnvData - Download HOT and BATS data from Simons CMAP</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      omicOceansEnvData
+      </li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">omicOceansEnvData</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">1. Tara oceans workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/01_download_data_ncbi.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) BioSamples at NCBI</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/02_download_pangaea.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2) Env data at Pangaea.de</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/03_download_darwin.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3) Darwin model output</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/04_download_pisces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4) PISCES model output</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/05_harmonize_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5) Harmonize and combine data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">2. BioGEOTRACES workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/biogeotraces/01_download_idp2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) IDP 2021 v2 at Simons CMAP</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">3. HOT/BATS workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/hot_bats/01_hot_bats.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) HOT/BATS at Simons CMAP</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a></li>
+  <li><a href="#cmap-database" id="toc-cmap-database" class="nav-link" data-scroll-target="#cmap-database"><span class="header-section-number">2</span> CMAP Database</a>
+  <ul class="collapse">
+  <li><a href="#api-authorization-to-cmap-sql-database" id="toc-api-authorization-to-cmap-sql-database" class="nav-link" data-scroll-target="#api-authorization-to-cmap-sql-database"><span class="header-section-number">2.1</span> API authorization to CMAP SQL database</a></li>
+  <li><a href="#simons-cmap-catalog" id="toc-simons-cmap-catalog" class="nav-link" data-scroll-target="#simons-cmap-catalog"><span class="header-section-number">2.2</span> Simons CMAP catalog</a></li>
+  </ul></li>
+  <li><a href="#hot-hawaii-ocean-time-series-station-aloha" id="toc-hot-hawaii-ocean-time-series-station-aloha" class="nav-link" data-scroll-target="#hot-hawaii-ocean-time-series-station-aloha"><span class="header-section-number">3</span> HOT (Hawaii Ocean Time Series) station ALOHA</a>
+  <ul class="collapse">
+  <li><a href="#tblhot_macrozooplankton_v2022" id="toc-tblhot_macrozooplankton_v2022" class="nav-link" data-scroll-target="#tblhot_macrozooplankton_v2022"><span class="header-section-number">3.1</span> tblHOT_Macrozooplankton_v2022</a></li>
+  <li><a href="#tblhot_particleflux_v2022" id="toc-tblhot_particleflux_v2022" class="nav-link" data-scroll-target="#tblhot_particleflux_v2022"><span class="header-section-number">3.2</span> tblHOT_ParticleFlux_v2022</a></li>
+  <li><a href="#tblhot_pp_v2022" id="toc-tblhot_pp_v2022" class="nav-link" data-scroll-target="#tblhot_pp_v2022"><span class="header-section-number">3.3</span> tblHOT_PP_v2022</a></li>
+  <li><a href="#tblhot_ctd_v2022" id="toc-tblhot_ctd_v2022" class="nav-link" data-scroll-target="#tblhot_ctd_v2022"><span class="header-section-number">3.4</span> tblHOT_CTD_v2022</a></li>
+  <li><a href="#tblhot_bottle_aloha" id="toc-tblhot_bottle_aloha" class="nav-link" data-scroll-target="#tblhot_bottle_aloha"><span class="header-section-number">3.5</span> tblHOT_Bottle_ALOHA</a></li>
+  <li><a href="#tblhot_flow_cytometry_time_series" id="toc-tblhot_flow_cytometry_time_series" class="nav-link" data-scroll-target="#tblhot_flow_cytometry_time_series"><span class="header-section-number">3.6</span> tblHOT_Flow_Cytometry_Time_Series</a></li>
+  <li><a href="#tblhot_bats_prochlorococcus_abundance" id="toc-tblhot_bats_prochlorococcus_abundance" class="nav-link" data-scroll-target="#tblhot_bats_prochlorococcus_abundance"><span class="header-section-number">3.7</span> tblHOT_BATS_Prochlorococcus_Abundance</a></li>
+  <li><a href="#tblhot_epimicroscopy" id="toc-tblhot_epimicroscopy" class="nav-link" data-scroll-target="#tblhot_epimicroscopy"><span class="header-section-number">3.8</span> tblHOT_EpiMicroscopy</a></li>
+  </ul></li>
+  <li><a href="#bats-bermuda-atlantic-time-series" id="toc-bats-bermuda-atlantic-time-series" class="nav-link" data-scroll-target="#bats-bermuda-atlantic-time-series"><span class="header-section-number">4</span> BATS (Bermuda Atlantic Time Series)</a>
+  <ul class="collapse">
+  <li><a href="#tblbats_ctd" id="toc-tblbats_ctd" class="nav-link" data-scroll-target="#tblbats_ctd"><span class="header-section-number">4.1</span> tblBATS_CTD</a></li>
+  <li><a href="#tblbats_bacteria_production" id="toc-tblbats_bacteria_production" class="nav-link" data-scroll-target="#tblbats_bacteria_production"><span class="header-section-number">4.2</span> tblBATS_Bacteria_Production</a></li>
+  <li><a href="#tblbats_sediment_trap_flux" id="toc-tblbats_sediment_trap_flux" class="nav-link" data-scroll-target="#tblbats_sediment_trap_flux"><span class="header-section-number">4.3</span> tblBATS_Sediment_Trap_Flux</a></li>
+  <li><a href="#tblbats_bottle" id="toc-tblbats_bottle" class="nav-link" data-scroll-target="#tblbats_bottle"><span class="header-section-number">4.4</span> tblBATS_Bottle</a></li>
+  <li><a href="#tblbats_primary_production" id="toc-tblbats_primary_production" class="nav-link" data-scroll-target="#tblbats_primary_production"><span class="header-section-number">4.5</span> tblBATS_Primary_Production</a></li>
+  <li><a href="#tblbats_pigment" id="toc-tblbats_pigment" class="nav-link" data-scroll-target="#tblbats_pigment"><span class="header-section-number">4.6</span> tblBATS_Pigment</a></li>
+  <li><a href="#tblbats_zooplankton_biomass" id="toc-tblbats_zooplankton_biomass" class="nav-link" data-scroll-target="#tblbats_zooplankton_biomass"><span class="header-section-number">4.7</span> tblBATS_Zooplankton_Biomass</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Download HOT and BATS data from Simons CMAP</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">HOT/BATS workflow</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Shane Hogle </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 10, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    Code in this notebook downloads entire datasets from <a href="https://simonscmap.com/">Simons CMAP</a> and stores them locally in the parquet format which is readable by the <a href="https://arrow.apache.org/">Apache Arrow C++ library</a> via the R package <a href="https://arrow.apache.org/docs/r/"><code>arrow</code></a> to allow for fast data access without serialization overhead. This allows us to efficiently work with big data that is too large to fit into working memory - e.g., the entire GEOTRACES IDP2020v1 or the biogeochemical output of PiSCES model.
+  </div>
+</div>
+
+
+</header>
+
+
+<section id="setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
+<p>This code loads required libraries and sets global variables</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(cmap4r)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">library</span>(polars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="cmap-database" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> CMAP Database</h1>
+<p><strong>Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/" class="uri">https://simonscmap.com/</a></li>
+</ul>
+<p><strong>Reference:</strong></p>
+<ul>
+<li>Ashkezari MD, Hagen NR, Denholtz M, Neang A, Burns TC, Morales RL, Lee CP, Hill CN, Armbrust EV. 2021. Simons Collaborative Marine Atlas Project (Simons CMAP ): An open‐source portal to share, visualize, and analyze ocean data. Limnol Oceanogr Methods 19:488–496. <a href="https://doi.org/10.1002/lom3.10439" class="uri">https://doi.org/10.1002/lom3.10439</a></li>
+</ul>
+<section id="api-authorization-to-cmap-sql-database" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="api-authorization-to-cmap-sql-database"><span class="header-section-number">2.1</span> API authorization to CMAP SQL database</h2>
+<p>The api key is stored locally (not git tracked) in <code>_notrack/cmap_api.txt</code></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>cmap4r<span class="sc">::</span><span class="fu">set_authorization</span>(<span class="at">reset =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>cmap4r<span class="sc">::</span><span class="fu">set_authorization</span>(<span class="at">cmap_key =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="simons-cmap-catalog" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="simons-cmap-catalog"><span class="header-section-number">2.2</span> Simons CMAP catalog</h2>
+<p>Download a local copy of the CMAP catalog. Useful for querying later…</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>local_cat <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_catalog</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">select</span>(Variable, Table_Name, Unit, Sensor, Unit)</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="fu">write_tsv</span>(local_cat, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"cmap_catalog.tsv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="hot-hawaii-ocean-time-series-station-aloha" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> HOT (Hawaii Ocean Time Series) station ALOHA</h1>
+<p><strong>Source:</strong> <a href="https://hahana.soest.hawaii.edu/hot/intro.html" class="uri">https://hahana.soest.hawaii.edu/hot/intro.html</a></p>
+<blockquote class="blockquote">
+<p>“The primary objective of HOT is to obtain a long time-series of physical and biochemical observations in the North Pacific subtropical gyre that will address the goals of the U.S. Global Change Research Program.”</p>
+</blockquote>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>local_cat <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">filter</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(Table_Name, <span class="st">"(?i)hot"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="fu">distinct</span>(Table_Name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["Table_Name"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"tblHOT_ParticleFlux"},{"1":"tblHOT_Macrozooplankton"},{"1":"tblHOT_EpiMicroscopy"},{"1":"tblHOT_CTD"},{"1":"tblHOT_BATS_Prochlorococcus_Abundance"},{"1":"tblHOT296_Wirewalker"},{"1":"tblHOT297_Wirewalker"},{"1":"tblHOT302_Wirewalker"},{"1":"tblHOT298_Wirewalker"},{"1":"tblHOT303_Wirewalker"},{"1":"tblHOT306_Wirewalker"},{"1":"tblHOT307_Wirewalker"},{"1":"tblHOT309_Wirewalker"},{"1":"tblHOT310_Wirewalker"},{"1":"tblHOT311_Wirewalker"},{"1":"tblHOT312_Wirewalker"},{"1":"tblHOT313_Wirewalker"},{"1":"tblHOT314_Wirewalker"},{"1":"tblHOT315_Wirewalker"},{"1":"tblHOT316_Wirewalker"},{"1":"tblHOT319_Wirewalker"},{"1":"tblHOT242_252_14C_PP_3_WSW"},{"1":"tblHOT221_247_14C_PP_02um"},{"1":"tblHOT_Flow_Cytometry_Time_Series"},{"1":"tblHOT_TSG_Time_Series"},{"1":"tblHOT_PP"},{"1":"tblHOT_LAVA"},{"1":"tblHOT_N2_Fixation_2022"},{"1":"tblHOT273_Caron_Omics"},{"1":"tblHOT_nifH_gene_abundances"},{"1":"tblHOT_N2_Fixation"},{"1":"tblHOT242_252_14C_PP_WSW_group_sort"},{"1":"tblHOT229_251_leu_incorp"},{"1":"tblKOK1806_HOT_LAVA_Dyhrman_Omics"},{"1":"tblSCOPE_HOT_metagenomics"},{"1":"tblHOT221_247_14C_PP_EOC"},{"1":"tblHOT242_252_14C_PP_02_3"},{"1":"tblDeLong_HOT_metagenomics"},{"1":"tblHOT_AmoA_gene_abundances"},{"1":"tblHOT_Bottle_WHOTS_50"},{"1":"tblHOT_Bottle_Kahe_Point"},{"1":"tblHOT_Bottle_Kaena"},{"1":"tblHOT_Bottle_HALE_ALOHA"},{"1":"tblHOT_Bottle_ALOHA"},{"1":"tblHOT_Bottle_WHOTS_52"},{"1":"tblHOT_CTD_v2022"},{"1":"tblHOT_PP_v2022"},{"1":"tblHOT_ParticleFlux_v2022"},{"1":"tblHOT_Macrozooplankton_v2022"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<section id="tblhot_macrozooplankton_v2022" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="tblhot_macrozooplankton_v2022"><span class="header-section-number">3.1</span> tblHOT_Macrozooplankton_v2022</h2>
+<blockquote class="blockquote">
+<p>“Large zooplankton and micronekton play important roles in the export of organic material from surface waters in the open ocean. Global Ocean Flux planning models suggest that the relationship between primary production and passive particulate export flux is strongly influenced by size structure of the zooplankton community (e.g., Paffenhöffer &amp; Knowles, 1979; Small et al., 1987; Frost, 1984). Active vertical migrations also have important implications for the transport and transformation of surface-derived organic particulates to dissolved inorganic constituents at depth (Longhurst &amp; Harrison, 1988; Longhurst et al., 1990; Al-Mutairi &amp; Landry, 2001; Hannides et al., 2008). The zooplankton component of the time-series sampling effort allows such processes to be considered in the interpretation of seasonal and interannual variations in measured flux and the elemental mass balance (e.g., carbon and nitrogen sources and sinks) of the euphotic zone. At Station ALOHA, 6 net tows are scheduled per cruise. Three midnight (2200 - 0200) and 3 mid-day (1000 - 1400) oblique tows are done using a 1-m2 net (3-m length) with 202-µm mesh Nitex netting. The net is towed obliquely at approximately 1 knot, from the surface to approximately 175 m and then back to the surface. Towing time is approximately 20-30 minutes. The tows are subsequently size-fractioned and analyzed for mesozooplankton wet and dry weight and C and N biomass.” Rows with no depth value have been removed. Time is in local time (HST).”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_Macrozooplankton_v2022" class="uri">https://simonscmap.com/catalog/datasets/HOT_Macrozooplankton_v2022</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><a href="https://hahana.soest.hawaii.edu/hot/methods/plankton.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/plankton.html</a></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>tblHOT_Macrozooplankton_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_Macrozooplankton_v2022"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  <span class="at">dt1 =</span> <span class="st">"1994-02-17"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-02"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb5-8"><a href="#cb5-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb5-9"><a href="#cb5-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>)</span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_Macrozooplankton_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_Macrozooplankton_v2022.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblhot_particleflux_v2022" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="tblhot_particleflux_v2022"><span class="header-section-number">3.2</span> tblHOT_ParticleFlux_v2022</h2>
+<blockquote class="blockquote">
+<p>“Particle flux was measured at a standard reference depth of 150 m using multiple cylindrical particle interceptor traps deployed on a free-floating array for approximately 60 h during each cruise. Sediment trap design and collection methods are described in Winn et al.&nbsp;(1991). Samples were analyzed for particulate C, N, P &amp; Si. Typically six traps are analyzed for PC and PN, three for PP, and another three traps for PSi.” Time is in a separate column from date. Dates and times are in local time (HST).”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_ParticleFlux_v2022" class="uri">https://simonscmap.com/catalog/datasets/HOT_ParticleFlux_v2022</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><a href="https://hahana.soest.hawaii.edu/hot/methods/pflux.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/pflux.html</a></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>tblHOT_ParticleFlux_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_ParticleFlux_v2022"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-12-01"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-08-31"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb6-7"><a href="#cb6-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb6-8"><a href="#cb6-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb6-9"><a href="#cb6-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11"></a></span>
+<span id="cb6-12"><a href="#cb6-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_ParticleFlux_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_ParticleFlux_v2022.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblhot_pp_v2022" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="tblhot_pp_v2022"><span class="header-section-number">3.3</span> tblHOT_PP_v2022</h2>
+<blockquote class="blockquote">
+<p>“This dataset consists of measurements of photosynthetic primary production, chlorophyll a and phaeopigment concentrations, and flow cytometry-based determinations of the abundances of heterotrophic bacteria and the picophytoplankton - Prochlorococcus, Synechococcus and small eukaryotic phytoplankton. All samples were collected through the Hawaii Ocean Time-series (HOT) program, which began in 1988 with ~monthly cruises to Station ALOHA (A Long-term Oligotrophic Habitat Assessment; 22° 10 N, 158° 00 W). Photosynthetic production of organic matter was measured by the 14C tracer method. Details on the methods employed over the years are detailed in Karl et al., Progress in Oceanography (<a href="https://doi.org/10.1016/j.pocean.2021.102563" class="uri">https://doi.org/10.1016/j.pocean.2021.102563</a>). Flow cytometry-based determinations of microbial abundances were made using an EPICS 753 flow cytometer on HOT 22-173 (December 1980 – September 2005) and a B/D Influx flow cytometer beginning with HOT 174 . Details on the flow cytometry methods are provided at <a href="https://hahana.soest.hawaii.edu/hot/methods/bact.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/bact.html</a>. Samples for chlorophyll a and phaeopigments were collected onto Whatman GF/F filters and extracted with 100% acetone and measured on a Turner Designs Model 10-AU fluorometer based on standard techniques described in Strickland and Parsons, 1972. Method details available at <a href="https://hahana.soest.hawaii.edu/hot/methods/chl.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/chl.html</a>. Time is in a separate column from date. Dates and times are in local time (HST).”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_PP_v2022" class="uri">https://simonscmap.com/catalog/datasets/HOT_PP_v2022</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://hahana.soest.hawaii.edu/hot/methods/bact.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/bact.html</a></p></li>
+<li><p><a href="https://hahana.soest.hawaii.edu/hot/methods/chl.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/chl.html</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>tblHOT_PP_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_PP_v2022"</span>,</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-31"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-01"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb7-8"><a href="#cb7-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb7-9"><a href="#cb7-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>)</span>
+<span id="cb7-11"><a href="#cb7-11"></a></span>
+<span id="cb7-12"><a href="#cb7-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_PP_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_PP_v2022.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblhot_ctd_v2022" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="tblhot_ctd_v2022"><span class="header-section-number">3.4</span> tblHOT_CTD_v2022</h2>
+<blockquote class="blockquote">
+<p>““The majority of our sampling effort, approximately 60-72 h per standard HOT cruise, is spent at Station ALOHA. High vertical resolution environmental data are collected with a Sea-Bird CTD having external temperature (T), conductivity (C), dissolved oxygen (DO) and fluorescence (F) sensors and an internal pressure (P) sensor. A Sea-Bird 24-place carousel and an aluminum rosette that is capable of supporting 24 12-L PVC bottles are used to obtain water samples from desired depths. The CTD and rosette are deployed on a 3-conductor cable allowing for real-time display of data and for tripping the bottles at specific depths of interest. The CTD system takes 24 samples s-1 and the raw data are stored both on the computer and, for redundancy, on VHS-format video tapes. In February 2006, before cruise 178, we replaced our 24 aging 12-L PVC rosette bottles with new 12-L bottles fabricated at the University of Hawaii Engineering Support Facility, using plans and specifications from John Bullister (PMEL).” Time is in GMT.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_CTD_v2022" class="uri">https://simonscmap.com/catalog/datasets/HOT_CTD_v2022</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><a href="https://www.soest.hawaii.edu/HOT_WOCE/intro.html" class="uri">https://www.soest.hawaii.edu/HOT_WOCE/intro.html</a></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>tblHOT_CTD_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_CTD_v2022"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-31"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-01"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>)</span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_CTD_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_CTD_v2022.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblhot_bottle_aloha" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="tblhot_bottle_aloha"><span class="header-section-number">3.5</span> tblHOT_Bottle_ALOHA</h2>
+<blockquote class="blockquote">
+<p>“This dataset contains CTD data and data from water samples collected at discrete depths via Niskin bottles mounted on the CTD rosette at HOT (Hawaii Ocean Time Series) station ALOHA, the primary HOT sampling site. “Sampling at Station ALOHA typically begins with sediment trap deployment followed by a deep (&gt; 4700 m) CTD cast and a ‘’burst series’’ of at least 13 consecutive 1000 m casts, on 3-h intervals, to span the local inertial period (~ 31 h) and three semidiurnal tidal cycles. The repeated CTD casts enable us to calculate an average density profile from which variability on tidal and near-inertial time scales has been removed. These average density profiles are useful for the comparison of dynamic height and for the comparison of the depth distribution of chemical parameters from different casts and at monthly intervals. This sampling strategy is designed to assess variability on time scales of a few hours to a few years. Very high frequency variability (&lt; 6 h) and variability on time scales of between 3-60 d are not adequately sampled with our ship-based operations. Water samples for a variety of chemical and biological measurements are routinely collected from the surface to within 10 m of the seafloor. To the extent possible, we collect samples for complementary biogeochemical measurements from the same or from contiguous casts to minimize aliasing caused by time-dependent changes in the density field. This approach is especially important for samples collected in the upper 350 m of the water column. Furthermore, we attempt to sample from common depths and specific density horizons each month to facilitate comparisons between cruises. Water samples for salinity determinations are collected from every water bottle to identify sampling errors. Approximately 20% of the water samples are collected and analyzed in duplicate or triplicate to assess and track our precision in sample analyses’’. Time is in a separate column from date and is in GMT. Data accessed on January 16, 2024 from <a href="https://hahana.soest.hawaii.edu/hot/hot-dogs/" class="uri">https://hahana.soest.hawaii.edu/hot/hot-dogs/</a>”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_Bottle_ALOHA" class="uri">https://simonscmap.com/catalog/datasets/HOT_Bottle_ALOHA</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><a href="https://hahana.soest.hawaii.edu/hot/intro.html" class="uri">https://hahana.soest.hawaii.edu/hot/intro.html</a></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>tblHOT_Bottle_ALOHA <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_Bottle_ALOHA"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-31"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-03"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb9-7"><a href="#cb9-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb9-8"><a href="#cb9-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb9-9"><a href="#cb9-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11"></a></span>
+<span id="cb9-12"><a href="#cb9-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_Bottle_ALOHA, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_Bottle_ALOHA.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblhot_flow_cytometry_time_series" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="tblhot_flow_cytometry_time_series"><span class="header-section-number">3.6</span> tblHOT_Flow_Cytometry_Time_Series</h2>
+<blockquote class="blockquote">
+<p>“Time-series containing Prochlorococcus, Synechococcus, heterotrophic bacteria, and eukaryote flow cytometry abundance sampled each month at HOT from 2002-2007”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_Flow_Cytometry" class="uri">https://simonscmap.com/catalog/datasets/HOT_Flow_Cytometry</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><a href="https://hahana.soest.hawaii.edu/hot/methods/bact.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/bact.html</a></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>tblHOT_Flow_Cytometry_Time_Series <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_Flow_Cytometry_Time_Series"</span>,</span>
+<span id="cb10-3"><a href="#cb10-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4"></a>  <span class="at">dt1 =</span> <span class="st">"2002-11-03"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5"></a>  <span class="at">dt2 =</span> <span class="st">"2007-12-21"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb10-7"><a href="#cb10-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb10-8"><a href="#cb10-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb10-9"><a href="#cb10-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_Flow_Cytometry_Time_Series, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_Flow_Cytometry_Time_Series.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblhot_bats_prochlorococcus_abundance" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="tblhot_bats_prochlorococcus_abundance"><span class="header-section-number">3.7</span> tblHOT_BATS_Prochlorococcus_Abundance</h2>
+<blockquote class="blockquote">
+<p>“Five year time-series containing Prochlorococcus ecotype abundance sampled each month at HOT and BATS sites from 2002-2008 The goal of this study was to collect long-term, high-resolution data on the temporal and spatial variability of Prochlorococcus ecotypes in the Pacific and Atlantic Oceans. The abundance of five Prochlorococcus ecotypes was determined by quantitative PCR at 12 depths every month for 5 years at two locations: BATS location (5 nautical mile radius around 31 40’N, 64 10’W) HOT Station ALOHA (5 nautical mile radius around 22 45’N, 158 00’ W) Sample processing and analyses are detailed in the publication listed below. Briefly, 100ml of seawater was collected onto 25mm dia polycarbonate filters (0.22um pore size), rinsed with Tris-buffered saline, flash frozen in liquid N2, and stored at -80C until extraction. DNA was extracted using a combination of 5min of bead beating and 15min heat lysis at 95C. Extracted DNA was used as template of quantitative PCR reactions using primers specifically designed to target different Prochlorococcus ecotypes. Standard curves used for quantitation of field data were derived from DNA extracted from cultured representatives belonging to each ecotype. Malmstrom, RR, A Coe, GC Kettler, AC Martiny, J Frias-Lopez, ER Zinser, and SW Chisholm. 2010. Temporal dynamics of Prochlorococcus ecotypes in the Atlantic and Pacific oceans. The ISME Journal. 4(10): 1252-1264”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_BATS_Prochlorococcus_Abundance" class="uri">https://simonscmap.com/catalog/datasets/HOT_BATS_Prochlorococcus_Abundance</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><a href="https://doi.org/10.1038/ismej.2010.60" class="uri">https://doi.org/10.1038/ismej.2010.60</a></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>tblHOT_BATS_Prochlorococcus_Abundance <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_BATS_Prochlorococcus_Abundance"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="at">dt1 =</span> <span class="st">"2002-11-04"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5"></a>  <span class="at">dt2 =</span> <span class="st">"2008-01-31"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb11-7"><a href="#cb11-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb11-8"><a href="#cb11-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb11-9"><a href="#cb11-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11"></a></span>
+<span id="cb11-12"><a href="#cb11-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_BATS_Prochlorococcus_Abundance, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_BATS_Prochlorococcus_Abundance.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblhot_epimicroscopy" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="tblhot_epimicroscopy"><span class="header-section-number">3.8</span> tblHOT_EpiMicroscopy</h2>
+<blockquote class="blockquote">
+<p>“Water samples of 50 ml (nanoplankton) and 300-500 ml (microplankton) are taken at each of 8 depths in the euphotic zone (surface to 175 m) from the same CTD profiles (and bottles) that sample the microbial community by HPLC pigments and flow cytometry. The 50-ml samples are preserved with 2-ml of 10% paraformaldehyde and stained with proflavin (0.33% w/v). The larger samples are preserved with 300 µl of alkaline Lugols solution followed by 10 ml of buffered formalin and 500 µl of sodium thiosulfate (modified protocol from Sherr and Sherr, 1993); and then stained with proflavin (0.33% w/v). Preserved samples are slowly (~5 psi) filtered onto either black 0.8-µm (50 ml) or 8.0-µm (300-500 ml) Nuclepore filters overlaying 20-µm Millipore backing filters to facilitate even cell distributions. During filtration, the samples are drawn down until approximately 1-2 ml remain in the filtration tower. Concentrated DAPI (50 mg ml-1) is added and allowed to sit briefly before filtering the remainder of the sample until dry. Filters are mounted onto glass slides with immersion oil and cover slips. Prepared slides are placed in a dark box and kept frozen at -80 C until analysis.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/HOT_EpiMicroscopy" class="uri">https://simonscmap.com/catalog/datasets/HOT_EpiMicroscopy</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><a href="https://hahana.soest.hawaii.edu/hot/methods/epimicros.html" class="uri">https://hahana.soest.hawaii.edu/hot/methods/epimicros.html</a></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>tblHOT_EpiMicroscopy <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb12-2"><a href="#cb12-2"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_EpiMicroscopy"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4"></a>  <span class="at">dt1 =</span> <span class="st">"2004-06-16"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5"></a>  <span class="at">dt2 =</span> <span class="st">"2014-12-17"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb12-7"><a href="#cb12-7"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb12-8"><a href="#cb12-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb12-9"><a href="#cb12-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11"></a></span>
+<span id="cb12-12"><a href="#cb12-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_EpiMicroscopy, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_EpiMicroscopy.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="bats-bermuda-atlantic-time-series" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> BATS (Bermuda Atlantic Time Series)</h1>
+<p><strong>Source:</strong> <a href="https://bios.asu.edu/bats/about" class="uri">https://bios.asu.edu/bats/about</a></p>
+<blockquote class="blockquote">
+<p>“The Bermuda Atlantic Time-series Study (BATS) is a long-term oceanographic study by the Bermuda Institute of Ocean Sciences (BIOS). Based on regular (monthly or better) research cruises, it samples an area of the western Atlantic Ocean nominally at the coordinates 31°40′N 64°10′W. The cruise programme routinely samples physical properties such as ocean temperature and salinity, but focuses on variables of biological or biogeochemical interest including: nutrients (nitrate, nitrite, phosphate and silicic acid), dissolved inorganic carbon, oxygen, HPLC of pigments, primary production and sediment trap flux. The BATS cruises began in 1988 but are supplemented by biweekly Hydrostation”S” cruises to a neighbouring location (32°10′N 64°30′W) that began in 1954. The data collected by these cruises are available online.”</p>
+</blockquote>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>local_cat <span class="sc">%&gt;%</span> </span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">filter</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(Table_Name, <span class="st">"(?i)bats"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">distinct</span>(Table_Name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["Table_Name"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"tblBATS_CTD"},{"1":"tblBATS_Bacteria_Production"},{"1":"tblHOT_BATS_Prochlorococcus_Abundance"},{"1":"tblBATS_Sediment_Trap_Flux"},{"1":"tblBATS_Bottle_Validation"},{"1":"tblBATS_Pigment_Validation"},{"1":"tblBATS_Bottle"},{"1":"tblBATS_Primary_Production"},{"1":"tblBATS_Pigment"},{"1":"tblBATS_Zooplankton_Biomass"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<section id="tblbats_ctd" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="tblbats_ctd"><span class="header-section-number">4.1</span> tblBATS_CTD</h2>
+<blockquote class="blockquote">
+<p>“The BATS CTD dataset in CMAP is a collection of CTD casts taken from the Bermuda Ocean Time-series Study (BATS). The CTD record begins in late 1988 and continues until the end of 2016. Pressure, temperature, conductivity, salinity, dissolved oxygen, beam attenuation coefficient, fluorescence and PAR measurements were collected with the Sea-Bird CTD instrument package. Sensor details can be found in chapter three of the BATS report methods document: <a href="http://bats.bios.edu/wp-content/uploads/2017/07/report_methods.pdf" class="uri">http://bats.bios.edu/wp-content/uploads/2017/07/report_methods.pdf</a>.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/BATS_CTD" class="uri">https://simonscmap.com/catalog/datasets/BATS_CTD</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://bios.asu.edu/bats/bats-data" class="uri">https://bios.asu.edu/bats/bats-data</a></p></li>
+<li><p><a href="https://www.dropbox.com/scl/fi/pujllhchqt14yw3nt4yuv/ACTD_README.txt?rlkey=3evv4t48zctcduw1vfa4p5vsm&amp;e=1&amp;dl=0">CTD Data</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>tblBATS_CTD <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb14-2"><a href="#cb14-2"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_CTD"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-20"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5"></a>  <span class="at">dt2 =</span> <span class="st">"2016-12-16"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb14-7"><a href="#cb14-7"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb14-8"><a href="#cb14-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb14-9"><a href="#cb14-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a>)</span>
+<span id="cb14-11"><a href="#cb14-11"></a></span>
+<span id="cb14-12"><a href="#cb14-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_CTD, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_CTD.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblbats_bacteria_production" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="tblbats_bacteria_production"><span class="header-section-number">4.2</span> tblBATS_Bacteria_Production</h2>
+<blockquote class="blockquote">
+<p>“The BATS Bacteria Production dataset is a collection of in-situ shipboard measurements of bacterial production rates from 1988-2012.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/BATS_Bacteria_Production" class="uri">https://simonscmap.com/catalog/datasets/BATS_Bacteria_Production</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://bios.asu.edu/bats/bats-data" class="uri">https://bios.asu.edu/bats/bats-data</a></p></li>
+<li><p><a href="https://www.dropbox.com/scl/fo/x7xvlmyzqh9t9tfpe8ffg/AEBrkFFxVFvlO31MJmd9pcY?rlkey=7v73mfwhd78fdtxvfhk4v4kca&amp;e=1&amp;dl=0">Primary Production &amp; Bacterial Production</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>tblBATS_Bacteria_Production <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb15-2"><a href="#cb15-2"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Bacteria_Production"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4"></a>  <span class="at">dt1 =</span> <span class="st">"1990-10-15"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5"></a>  <span class="at">dt2 =</span> <span class="st">"2012-07-15"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb15-7"><a href="#cb15-7"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb15-8"><a href="#cb15-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb15-9"><a href="#cb15-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a>)</span>
+<span id="cb15-11"><a href="#cb15-11"></a></span>
+<span id="cb15-12"><a href="#cb15-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Bacteria_Production, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Bacteria_Production.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblbats_sediment_trap_flux" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="tblbats_sediment_trap_flux"><span class="header-section-number">4.3</span> tblBATS_Sediment_Trap_Flux</h2>
+<blockquote class="blockquote">
+<p>“The BATS (Bermuda Atlantic Time-series Study) sediment trap - flux dataset is time-series spanning from 1988 to 2022. The dataset contains multiple nutrient flux measurements.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/BATS_Sediment_Trap_Flux" class="uri">https://simonscmap.com/catalog/datasets/BATS_Sediment_Trap_Flux</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://bios.asu.edu/bats/bats-data" class="uri">https://bios.asu.edu/bats/bats-data</a></p></li>
+<li><p><a href="https://www.dropbox.com/scl/fo/vpixby2yw9vfi28au3trz/ADYRb1vR_kJ6xgWBBdtnxdU?rlkey=v5sky9mqt60sgghag5hg22daq&amp;e=1&amp;dl=0">Sediment Trap Data</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>tblBATS_Sediment_Trap_Flux <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb16-2"><a href="#cb16-2"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Sediment_Trap_Flux"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-12-16"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-13"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb16-7"><a href="#cb16-7"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb16-8"><a href="#cb16-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb16-9"><a href="#cb16-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>)</span>
+<span id="cb16-11"><a href="#cb16-11"></a></span>
+<span id="cb16-12"><a href="#cb16-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Sediment_Trap_Flux, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Sediment_Trap_Flux.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblbats_bottle" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="tblbats_bottle"><span class="header-section-number">4.4</span> tblBATS_Bottle</h2>
+<blockquote class="blockquote">
+<p>“The BATS Bottle dataset is a collection of discrete bottle samples from 1988-2022, including in-situ measurements of CO2, nutrients, carbon, oxygen, temperature, and Prochlorococcus and Synechococcus abundance. Note all bottle fires are included that do not have any BATS core parameters so as to be of use for other ancillary measurements.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/BATS_Bottle" class="uri">https://simonscmap.com/catalog/datasets/BATS_Bottle</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://bios.asu.edu/bats/bats-data" class="uri">https://bios.asu.edu/bats/bats-data</a></p></li>
+<li><p><a href="https://www.dropbox.com/scl/fi/400ap4klwehf0822rmf1u/A_README_BOTTLE.txt?rlkey=56in61ixulo94yvvkfgvos8uz&amp;e=1&amp;dl=0">Bottle Data</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>tblBATS_Bottle <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb17-2"><a href="#cb17-2"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Bottle"</span>,</span>
+<span id="cb17-3"><a href="#cb17-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb17-4"><a href="#cb17-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-20"</span>,</span>
+<span id="cb17-5"><a href="#cb17-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-16"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb17-7"><a href="#cb17-7"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb17-8"><a href="#cb17-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb17-9"><a href="#cb17-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a>)</span>
+<span id="cb17-11"><a href="#cb17-11"></a></span>
+<span id="cb17-12"><a href="#cb17-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Bottle, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Bottle.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblbats_primary_production" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="tblbats_primary_production"><span class="header-section-number">4.5</span> tblBATS_Primary_Production</h2>
+<blockquote class="blockquote">
+<p>“The BATS (Bermuda Atlantic Time-series Study) primary production rates dataset is time-series spanning from 1988 to 2022. The dataset contains six primary production bottle estimates, along with CTD temperature and salinity measurements.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/BATS_Primary_Production" class="uri">https://simonscmap.com/catalog/datasets/BATS_Primary_Production</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://bios.asu.edu/bats/bats-data" class="uri">https://bios.asu.edu/bats/bats-data</a></p></li>
+<li><p><a href="https://www.dropbox.com/scl/fo/x7xvlmyzqh9t9tfpe8ffg/AEBrkFFxVFvlO31MJmd9pcY?rlkey=7v73mfwhd78fdtxvfhk4v4kca&amp;e=1&amp;dl=0">Primary Production &amp; Bacterial Production</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>tblBATS_Primary_Production <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Primary_Production"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-12-18"</span>,</span>
+<span id="cb18-5"><a href="#cb18-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-16"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb18-7"><a href="#cb18-7"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb18-8"><a href="#cb18-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb18-9"><a href="#cb18-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>)</span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Primary_Production, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Primary_Production.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblbats_pigment" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="tblbats_pigment"><span class="header-section-number">4.6</span> tblBATS_Pigment</h2>
+<blockquote class="blockquote">
+<p>“The BATS (Bermuda Atlantic Time-series Study) Pigment dataset is time-series spanning from 1988 to 2022. The dataset contains the 21 separate in-situ pigment measurements along with sampling depth and the BATS Cruise ID.”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/BATS_Pigments" class="uri">https://simonscmap.com/catalog/datasets/BATS_Pigments</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://bios.asu.edu/bats/bats-data" class="uri">https://bios.asu.edu/bats/bats-data</a></p></li>
+<li><p><a href="https://www.dropbox.com/scl/fi/uj3h3vvvk3h81rbfakyrv/bats_pigments.txt?rlkey=hts3w8p4mw7y9ctchdaror1q1&amp;e=1&amp;dl=0">Bottle Pigments</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>tblBATS_Pigment <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb19-2"><a href="#cb19-2"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Pigment"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb19-4"><a href="#cb19-4"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-21"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-16"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb19-7"><a href="#cb19-7"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb19-8"><a href="#cb19-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb19-9"><a href="#cb19-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a>)</span>
+<span id="cb19-11"><a href="#cb19-11"></a></span>
+<span id="cb19-12"><a href="#cb19-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Pigment, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Pigment.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tblbats_zooplankton_biomass" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="tblbats_zooplankton_biomass"><span class="header-section-number">4.7</span> tblBATS_Zooplankton_Biomass</h2>
+<blockquote class="blockquote">
+<p>“The BATS (Bermuda Atlantic Time-series Study) zooplankton biomass dataset is time-series spanning from 1994 to 2022. The dataset contains zooplankton biomass measurements. Due to an ambiguity with depth a subset of the dataset been removed as part of the Simons CMAP curation process. The full dataset is available at: <a href="https://10.5281/zenodo.10182499" class="uri">https://10.5281/zenodo.10182499</a>. The following dates were impacted by this depth ambiguity: 1994 (4/6 – 12/12); 1995 (1/11 – 4/27, 8/22); 2000 (2/28); 2001 (1/30, 8/7-8/8, 9/12, 10/16); 2004 (2/14, 3/23, 4/7, 7/14-15, 8/16-17); 2005 (1/27); 2006 (5/11, 6/26, 9/4-9/5); 2007 (7/18, 8/9, 10/6); 2008 (6/22); 2009 (2/10, 4/1, 4/15, 5/16, 5/19, 10/10); 2017 (5/9); 2018: (8/13); 2022: (6/29).”</p>
+</blockquote>
+<p><strong>CMAP Source:</strong></p>
+<ul>
+<li><a href="https://simonscmap.com/catalog/datasets/BATS_Zooplankton_Biomass" class="uri">https://simonscmap.com/catalog/datasets/BATS_Zooplankton_Biomass</a></li>
+</ul>
+<p><strong>Methods:</strong></p>
+<ul>
+<li><p><a href="https://bios.asu.edu/bats/bats-data" class="uri">https://bios.asu.edu/bats/bats-data</a></p></li>
+<li><p><a href="https://www.dropbox.com/scl/fo/pxsiq6q7jz3k33vcvltyz/ABG5u8983RNYQEgVr6ir1h0?rlkey=75x2rxqpc6dnfos85rdfcmmpa&amp;e=1&amp;dl=0">Zooplankton biomass</a></p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>tblBATS_Zooplankton_Biomass <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb20-2"><a href="#cb20-2"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Zooplankton_Biomass"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4"></a>  <span class="at">dt1 =</span> <span class="st">"1995-05-10"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-13"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb20-7"><a href="#cb20-7"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb20-8"><a href="#cb20-8"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb20-9"><a href="#cb20-9"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a>)</span>
+<span id="cb20-11"><a href="#cb20-11"></a></span>
+<span id="cb20-12"><a href="#cb20-12"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Zooplankton_Biomass, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Zooplankton_Biomass.parquet"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb21" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1"></a><span class="co">---</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="an">title:</span><span class="co"> "Download HOT and BATS data from Simons CMAP"</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="an">subtitle:</span><span class="co"> "HOT/BATS workflow"</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="an">author:</span><span class="co"> "Shane Hogle"</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="an">date:</span><span class="co"> today</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="an">abstract:</span><span class="co"> "Code in this notebook downloads entire datasets from [Simons CMAP](https://simonscmap.com/) and stores them locally in the parquet format which is readable by the [Apache Arrow C++ library](https://arrow.apache.org/) via the R package [`arrow`](https://arrow.apache.org/docs/r/) to allow for fast data access without serialization overhead. This allows us to efficiently work with big data that is too large to fit into working memory - e.g., the entire GEOTRACES IDP2020v1 or the biogeochemical output of PiSCES model."</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="co">---</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="fu"># Setup</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a></span>
+<span id="cb21-11"><a href="#cb21-11"></a>This code loads required libraries and sets global variables</span>
+<span id="cb21-12"><a href="#cb21-12"></a></span>
+<span id="cb21-15"><a href="#cb21-15"></a><span class="in">```{r}</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a><span class="co">#| output: false</span></span>
+<span id="cb21-17"><a href="#cb21-17"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="fu">library</span>(here)</span>
+<span id="cb21-20"><a href="#cb21-20"></a><span class="fu">library</span>(cmap4r)</span>
+<span id="cb21-21"><a href="#cb21-21"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb21-22"><a href="#cb21-22"></a><span class="fu">library</span>(sf)</span>
+<span id="cb21-23"><a href="#cb21-23"></a><span class="fu">library</span>(polars)</span>
+<span id="cb21-24"><a href="#cb21-24"></a><span class="in">```</span></span>
+<span id="cb21-25"><a href="#cb21-25"></a></span>
+<span id="cb21-26"><a href="#cb21-26"></a><span class="fu"># CMAP Database</span></span>
+<span id="cb21-27"><a href="#cb21-27"></a></span>
+<span id="cb21-28"><a href="#cb21-28"></a>**Source:**</span>
+<span id="cb21-29"><a href="#cb21-29"></a></span>
+<span id="cb21-30"><a href="#cb21-30"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/&gt;</span></span>
+<span id="cb21-31"><a href="#cb21-31"></a></span>
+<span id="cb21-32"><a href="#cb21-32"></a>**Reference:**</span>
+<span id="cb21-33"><a href="#cb21-33"></a></span>
+<span id="cb21-34"><a href="#cb21-34"></a><span class="ss">-   </span>Ashkezari MD, Hagen NR, Denholtz M, Neang A, Burns TC, Morales RL, Lee CP, Hill CN, Armbrust EV. 2021. Simons Collaborative Marine Atlas Project (Simons CMAP ): An open‐source portal to share, visualize, and analyze ocean data. Limnol Oceanogr Methods 19:488–496. <span class="ot">&lt;https://doi.org/10.1002/lom3.10439&gt;</span></span>
+<span id="cb21-35"><a href="#cb21-35"></a></span>
+<span id="cb21-36"><a href="#cb21-36"></a><span class="fu">## API authorization to CMAP SQL database</span></span>
+<span id="cb21-37"><a href="#cb21-37"></a></span>
+<span id="cb21-38"><a href="#cb21-38"></a>The api key is stored locally (not git tracked) in <span class="in">`_notrack/cmap_api.txt`</span></span>
+<span id="cb21-39"><a href="#cb21-39"></a></span>
+<span id="cb21-42"><a href="#cb21-42"></a><span class="in">```{r}</span></span>
+<span id="cb21-43"><a href="#cb21-43"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-44"><a href="#cb21-44"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-45"><a href="#cb21-45"></a><span class="co">#| output: false</span></span>
+<span id="cb21-46"><a href="#cb21-46"></a>cmap4r<span class="sc">::</span><span class="fu">set_authorization</span>(<span class="at">reset =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-47"><a href="#cb21-47"></a>cmap4r<span class="sc">::</span><span class="fu">set_authorization</span>(<span class="at">cmap_key =</span> <span class="st">""</span>)</span>
+<span id="cb21-48"><a href="#cb21-48"></a><span class="in">```</span></span>
+<span id="cb21-49"><a href="#cb21-49"></a></span>
+<span id="cb21-50"><a href="#cb21-50"></a><span class="fu">## Simons CMAP catalog</span></span>
+<span id="cb21-51"><a href="#cb21-51"></a></span>
+<span id="cb21-52"><a href="#cb21-52"></a>Download a local copy of the CMAP catalog. Useful for querying later...</span>
+<span id="cb21-53"><a href="#cb21-53"></a></span>
+<span id="cb21-56"><a href="#cb21-56"></a><span class="in">```{r}</span></span>
+<span id="cb21-57"><a href="#cb21-57"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-58"><a href="#cb21-58"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-59"><a href="#cb21-59"></a><span class="co">#| output: false</span></span>
+<span id="cb21-60"><a href="#cb21-60"></a>local_cat <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_catalog</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-61"><a href="#cb21-61"></a>  <span class="fu">select</span>(Variable, Table_Name, Unit, Sensor, Unit)</span>
+<span id="cb21-62"><a href="#cb21-62"></a></span>
+<span id="cb21-63"><a href="#cb21-63"></a><span class="fu">write_tsv</span>(local_cat, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"cmap_catalog.tsv"</span>))</span>
+<span id="cb21-64"><a href="#cb21-64"></a><span class="in">```</span></span>
+<span id="cb21-65"><a href="#cb21-65"></a></span>
+<span id="cb21-68"><a href="#cb21-68"></a><span class="in">```{r}</span></span>
+<span id="cb21-69"><a href="#cb21-69"></a><span class="co">#| echo: false</span></span>
+<span id="cb21-70"><a href="#cb21-70"></a><span class="co">#| eval: true</span></span>
+<span id="cb21-71"><a href="#cb21-71"></a><span class="co">#| output: false</span></span>
+<span id="cb21-72"><a href="#cb21-72"></a>local_cat <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"cmap_catalog.tsv"</span>))</span>
+<span id="cb21-73"><a href="#cb21-73"></a><span class="in">```</span></span>
+<span id="cb21-74"><a href="#cb21-74"></a></span>
+<span id="cb21-75"><a href="#cb21-75"></a><span class="fu"># HOT (Hawaii Ocean Time Series) station ALOHA</span></span>
+<span id="cb21-76"><a href="#cb21-76"></a></span>
+<span id="cb21-77"><a href="#cb21-77"></a>**Source:** <span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/intro.html&gt;</span></span>
+<span id="cb21-78"><a href="#cb21-78"></a></span>
+<span id="cb21-79"><a href="#cb21-79"></a><span class="at">&gt; "The primary objective of HOT is to obtain a long time-series of physical and biochemical observations in the North Pacific subtropical gyre that will address the goals of the U.S. Global Change Research Program."</span></span>
+<span id="cb21-80"><a href="#cb21-80"></a></span>
+<span id="cb21-83"><a href="#cb21-83"></a><span class="in">```{r}</span></span>
+<span id="cb21-84"><a href="#cb21-84"></a>local_cat <span class="sc">%&gt;%</span> </span>
+<span id="cb21-85"><a href="#cb21-85"></a>  <span class="fu">filter</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(Table_Name, <span class="st">"(?i)hot"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-86"><a href="#cb21-86"></a>  <span class="fu">distinct</span>(Table_Name)</span>
+<span id="cb21-87"><a href="#cb21-87"></a><span class="in">```</span></span>
+<span id="cb21-88"><a href="#cb21-88"></a></span>
+<span id="cb21-89"><a href="#cb21-89"></a><span class="fu">## tblHOT_Macrozooplankton_v2022</span></span>
+<span id="cb21-90"><a href="#cb21-90"></a></span>
+<span id="cb21-91"><a href="#cb21-91"></a><span class="at">&gt; "Large zooplankton and micronekton play important roles in the export of organic material from surface waters in the open ocean. Global Ocean Flux planning models suggest that the relationship between primary production and passive particulate export flux is strongly influenced by size structure of the zooplankton community (e.g., Paffenhöffer &amp; Knowles, 1979; Small et al., 1987; Frost, 1984). Active vertical migrations also have important implications for the transport and transformation of surface-derived organic particulates to dissolved inorganic constituents at depth (Longhurst &amp; Harrison, 1988; Longhurst et al., 1990; Al-Mutairi &amp; Landry, 2001; Hannides et al., 2008). The zooplankton component of the time-series sampling effort allows such processes to be considered in the interpretation of seasonal and interannual variations in measured flux and the elemental mass balance (e.g., carbon and nitrogen sources and sinks) of the euphotic zone. At Station ALOHA, 6 net tows are scheduled per cruise. Three midnight (2200 - 0200) and 3 mid-day (1000 - 1400) oblique tows are done using a 1-m2 net (3-m length) with 202-µm mesh Nitex netting. The net is towed obliquely at approximately 1 knot, from the surface to approximately 175 m and then back to the surface. Towing time is approximately 20-30 minutes. The tows are subsequently size-fractioned and analyzed for mesozooplankton wet and dry weight and C and N biomass.” Rows with no depth value have been removed. Time is in local time (HST)."</span></span>
+<span id="cb21-92"><a href="#cb21-92"></a></span>
+<span id="cb21-93"><a href="#cb21-93"></a>**CMAP Source:**</span>
+<span id="cb21-94"><a href="#cb21-94"></a></span>
+<span id="cb21-95"><a href="#cb21-95"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_Macrozooplankton_v2022&gt;</span></span>
+<span id="cb21-96"><a href="#cb21-96"></a></span>
+<span id="cb21-97"><a href="#cb21-97"></a>**Methods:**</span>
+<span id="cb21-98"><a href="#cb21-98"></a></span>
+<span id="cb21-99"><a href="#cb21-99"></a><span class="ss">-   </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/plankton.html&gt;</span></span>
+<span id="cb21-100"><a href="#cb21-100"></a></span>
+<span id="cb21-103"><a href="#cb21-103"></a><span class="in">```{r}</span></span>
+<span id="cb21-104"><a href="#cb21-104"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-105"><a href="#cb21-105"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-106"><a href="#cb21-106"></a><span class="co">#| output: false</span></span>
+<span id="cb21-107"><a href="#cb21-107"></a>tblHOT_Macrozooplankton_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-108"><a href="#cb21-108"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_Macrozooplankton_v2022"</span>,</span>
+<span id="cb21-109"><a href="#cb21-109"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-110"><a href="#cb21-110"></a>  <span class="at">dt1 =</span> <span class="st">"1994-02-17"</span>,</span>
+<span id="cb21-111"><a href="#cb21-111"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-02"</span>,</span>
+<span id="cb21-112"><a href="#cb21-112"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-113"><a href="#cb21-113"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-114"><a href="#cb21-114"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-115"><a href="#cb21-115"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-116"><a href="#cb21-116"></a>)</span>
+<span id="cb21-117"><a href="#cb21-117"></a></span>
+<span id="cb21-118"><a href="#cb21-118"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_Macrozooplankton_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_Macrozooplankton_v2022.parquet"</span>))</span>
+<span id="cb21-119"><a href="#cb21-119"></a><span class="in">```</span></span>
+<span id="cb21-120"><a href="#cb21-120"></a></span>
+<span id="cb21-121"><a href="#cb21-121"></a><span class="fu">## tblHOT_ParticleFlux_v2022</span></span>
+<span id="cb21-122"><a href="#cb21-122"></a></span>
+<span id="cb21-123"><a href="#cb21-123"></a><span class="at">&gt; "Particle flux was measured at a standard reference depth of 150 m using multiple cylindrical particle interceptor traps deployed on a free-floating array for approximately 60 h during each cruise. Sediment trap design and collection methods are described in Winn et al. (1991). Samples were analyzed for particulate C, N, P &amp; Si. Typically six traps are analyzed for PC and PN, three for PP, and another three traps for PSi.” Time is in a separate column from date. Dates and times are in local time (HST)."</span></span>
+<span id="cb21-124"><a href="#cb21-124"></a></span>
+<span id="cb21-125"><a href="#cb21-125"></a>**CMAP Source:**</span>
+<span id="cb21-126"><a href="#cb21-126"></a></span>
+<span id="cb21-127"><a href="#cb21-127"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_ParticleFlux_v2022&gt;</span></span>
+<span id="cb21-128"><a href="#cb21-128"></a></span>
+<span id="cb21-129"><a href="#cb21-129"></a>**Methods:**</span>
+<span id="cb21-130"><a href="#cb21-130"></a></span>
+<span id="cb21-131"><a href="#cb21-131"></a><span class="ss">-   </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/pflux.html&gt;</span></span>
+<span id="cb21-132"><a href="#cb21-132"></a></span>
+<span id="cb21-135"><a href="#cb21-135"></a><span class="in">```{r}</span></span>
+<span id="cb21-136"><a href="#cb21-136"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-137"><a href="#cb21-137"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-138"><a href="#cb21-138"></a><span class="co">#| output: false</span></span>
+<span id="cb21-139"><a href="#cb21-139"></a>tblHOT_ParticleFlux_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-140"><a href="#cb21-140"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_ParticleFlux_v2022"</span>,</span>
+<span id="cb21-141"><a href="#cb21-141"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-142"><a href="#cb21-142"></a>  <span class="at">dt1 =</span> <span class="st">"1988-12-01"</span>,</span>
+<span id="cb21-143"><a href="#cb21-143"></a>  <span class="at">dt2 =</span> <span class="st">"2022-08-31"</span>,</span>
+<span id="cb21-144"><a href="#cb21-144"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-145"><a href="#cb21-145"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-146"><a href="#cb21-146"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-147"><a href="#cb21-147"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-148"><a href="#cb21-148"></a>)</span>
+<span id="cb21-149"><a href="#cb21-149"></a></span>
+<span id="cb21-150"><a href="#cb21-150"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_ParticleFlux_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_ParticleFlux_v2022.parquet"</span>))</span>
+<span id="cb21-151"><a href="#cb21-151"></a><span class="in">```</span></span>
+<span id="cb21-152"><a href="#cb21-152"></a></span>
+<span id="cb21-153"><a href="#cb21-153"></a><span class="fu">## tblHOT_PP_v2022</span></span>
+<span id="cb21-154"><a href="#cb21-154"></a></span>
+<span id="cb21-155"><a href="#cb21-155"></a><span class="at">&gt; "This dataset consists of measurements of photosynthetic primary production, chlorophyll a and phaeopigment concentrations, and flow cytometry-based determinations of the abundances of heterotrophic bacteria and the picophytoplankton - Prochlorococcus, Synechococcus and small eukaryotic phytoplankton. All samples were collected through the Hawaii Ocean Time-series (HOT) program, which began in 1988 with \~monthly cruises to Station ALOHA (A Long-term Oligotrophic Habitat Assessment; 22° 10 N, 158° 00 W). Photosynthetic production of organic matter was measured by the 14C tracer method. Details on the methods employed over the years are detailed in Karl et al., Progress in Oceanography (</span><span class="ot">&lt;https://doi.org/10.1016/j.pocean.2021.102563&gt;</span><span class="at">). Flow cytometry-based determinations of microbial abundances were made using an EPICS 753 flow cytometer on HOT 22-173 (December 1980 – September 2005) and a B/D Influx flow cytometer beginning with HOT 174 . Details on the flow cytometry methods are provided at </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/bact.html&gt;</span><span class="at">. Samples for chlorophyll a and phaeopigments were collected onto Whatman GF/F filters and extracted with 100% acetone and measured on a Turner Designs Model 10-AU fluorometer based on standard techniques described in Strickland and Parsons, 1972. Method details available at </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/chl.html&gt;</span><span class="at">. Time is in a separate column from date. Dates and times are in local time (HST)."</span></span>
+<span id="cb21-156"><a href="#cb21-156"></a></span>
+<span id="cb21-157"><a href="#cb21-157"></a>**CMAP Source:**</span>
+<span id="cb21-158"><a href="#cb21-158"></a></span>
+<span id="cb21-159"><a href="#cb21-159"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_PP_v2022&gt;</span></span>
+<span id="cb21-160"><a href="#cb21-160"></a></span>
+<span id="cb21-161"><a href="#cb21-161"></a>**Methods:**</span>
+<span id="cb21-162"><a href="#cb21-162"></a></span>
+<span id="cb21-163"><a href="#cb21-163"></a><span class="ss">-   </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/bact.html&gt;</span></span>
+<span id="cb21-164"><a href="#cb21-164"></a></span>
+<span id="cb21-165"><a href="#cb21-165"></a><span class="ss">-   </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/chl.html&gt;</span></span>
+<span id="cb21-166"><a href="#cb21-166"></a></span>
+<span id="cb21-169"><a href="#cb21-169"></a><span class="in">```{r}</span></span>
+<span id="cb21-170"><a href="#cb21-170"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-171"><a href="#cb21-171"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-172"><a href="#cb21-172"></a><span class="co">#| output: false</span></span>
+<span id="cb21-173"><a href="#cb21-173"></a>tblHOT_PP_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-174"><a href="#cb21-174"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_PP_v2022"</span>,</span>
+<span id="cb21-175"><a href="#cb21-175"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-176"><a href="#cb21-176"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-31"</span>,</span>
+<span id="cb21-177"><a href="#cb21-177"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-01"</span>,</span>
+<span id="cb21-178"><a href="#cb21-178"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-179"><a href="#cb21-179"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-180"><a href="#cb21-180"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-181"><a href="#cb21-181"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-182"><a href="#cb21-182"></a>)</span>
+<span id="cb21-183"><a href="#cb21-183"></a></span>
+<span id="cb21-184"><a href="#cb21-184"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_PP_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_PP_v2022.parquet"</span>))</span>
+<span id="cb21-185"><a href="#cb21-185"></a><span class="in">```</span></span>
+<span id="cb21-186"><a href="#cb21-186"></a></span>
+<span id="cb21-187"><a href="#cb21-187"></a><span class="fu">## tblHOT_CTD_v2022</span></span>
+<span id="cb21-188"><a href="#cb21-188"></a></span>
+<span id="cb21-189"><a href="#cb21-189"></a><span class="at">&gt; "“The majority of our sampling effort, approximately 60-72 h per standard HOT cruise, is spent at Station ALOHA. High vertical resolution environmental data are collected with a Sea-Bird CTD having external temperature (T), conductivity (C), dissolved oxygen (DO) and fluorescence (F) sensors and an internal pressure (P) sensor. A Sea-Bird 24-place carousel and an aluminum rosette that is capable of supporting 24 12-L PVC bottles are used to obtain water samples from desired depths. The CTD and rosette are deployed on a 3-conductor cable allowing for real-time display of data and for tripping the bottles at specific depths of interest. The CTD system takes 24 samples s-1 and the raw data are stored both on the computer and, for redundancy, on VHS-format video tapes. In February 2006, before cruise 178, we replaced our 24 aging 12-L PVC rosette bottles with new 12-L bottles fabricated at the University of Hawaii Engineering Support Facility, using plans and specifications from John Bullister (PMEL).” Time is in GMT."</span></span>
+<span id="cb21-190"><a href="#cb21-190"></a></span>
+<span id="cb21-191"><a href="#cb21-191"></a>**CMAP Source:**</span>
+<span id="cb21-192"><a href="#cb21-192"></a></span>
+<span id="cb21-193"><a href="#cb21-193"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_CTD_v2022&gt;</span></span>
+<span id="cb21-194"><a href="#cb21-194"></a></span>
+<span id="cb21-195"><a href="#cb21-195"></a>**Methods:**</span>
+<span id="cb21-196"><a href="#cb21-196"></a></span>
+<span id="cb21-197"><a href="#cb21-197"></a><span class="ss">-   </span><span class="ot">&lt;https://www.soest.hawaii.edu/HOT_WOCE/intro.html&gt;</span></span>
+<span id="cb21-198"><a href="#cb21-198"></a></span>
+<span id="cb21-201"><a href="#cb21-201"></a><span class="in">```{r}</span></span>
+<span id="cb21-202"><a href="#cb21-202"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-203"><a href="#cb21-203"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-204"><a href="#cb21-204"></a><span class="co">#| output: false</span></span>
+<span id="cb21-205"><a href="#cb21-205"></a>tblHOT_CTD_v2022 <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-206"><a href="#cb21-206"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_CTD_v2022"</span>,</span>
+<span id="cb21-207"><a href="#cb21-207"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-208"><a href="#cb21-208"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-31"</span>,</span>
+<span id="cb21-209"><a href="#cb21-209"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-01"</span>,</span>
+<span id="cb21-210"><a href="#cb21-210"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-211"><a href="#cb21-211"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-212"><a href="#cb21-212"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-213"><a href="#cb21-213"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-214"><a href="#cb21-214"></a>)</span>
+<span id="cb21-215"><a href="#cb21-215"></a></span>
+<span id="cb21-216"><a href="#cb21-216"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_CTD_v2022, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_CTD_v2022.parquet"</span>))</span>
+<span id="cb21-217"><a href="#cb21-217"></a><span class="in">```</span></span>
+<span id="cb21-218"><a href="#cb21-218"></a></span>
+<span id="cb21-219"><a href="#cb21-219"></a><span class="fu">## tblHOT_Bottle_ALOHA</span></span>
+<span id="cb21-220"><a href="#cb21-220"></a></span>
+<span id="cb21-221"><a href="#cb21-221"></a><span class="at">&gt; "This dataset contains CTD data and data from water samples collected at discrete depths via Niskin bottles mounted on the CTD rosette at HOT (Hawaii Ocean Time Series) station ALOHA, the primary HOT sampling site. “Sampling at Station ALOHA typically begins with sediment trap deployment followed by a deep (</span><span class="sc">\&gt;</span><span class="at"> 4700 m) CTD cast and a ''burst series'' of at least 13 consecutive 1000 m casts, on 3-h intervals, to span the local inertial period (\~ 31 h) and three semidiurnal tidal cycles. The repeated CTD casts enable us to calculate an average density profile from which variability on tidal and near-inertial time scales has been removed. These average density profiles are useful for the comparison of dynamic height and for the comparison of the depth distribution of chemical parameters from different casts and at monthly intervals. This sampling strategy is designed to assess variability on time scales of a few hours to a few years. Very high frequency variability (</span><span class="sc">\&lt;</span><span class="at"> 6 h) and variability on time scales of between 3-60 d are not adequately sampled with our ship-based operations. Water samples for a variety of chemical and biological measurements are routinely collected from the surface to within 10 m of the seafloor. To the extent possible, we collect samples for complementary biogeochemical measurements from the same or from contiguous casts to minimize aliasing caused by time-dependent changes in the density field. This approach is especially important for samples collected in the upper 350 m of the water column. Furthermore, we attempt to sample from common depths and specific density horizons each month to facilitate comparisons between cruises. Water samples for salinity determinations are collected from every water bottle to identify sampling errors. Approximately 20% of the water samples are collected and analyzed in duplicate or triplicate to assess and track our precision in sample analyses''. Time is in a separate column from date and is in GMT. Data accessed on January 16, 2024 from </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/hot-dogs/&gt;</span><span class="at">"</span></span>
+<span id="cb21-222"><a href="#cb21-222"></a></span>
+<span id="cb21-223"><a href="#cb21-223"></a>**CMAP Source:**</span>
+<span id="cb21-224"><a href="#cb21-224"></a></span>
+<span id="cb21-225"><a href="#cb21-225"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_Bottle_ALOHA&gt;</span></span>
+<span id="cb21-226"><a href="#cb21-226"></a></span>
+<span id="cb21-227"><a href="#cb21-227"></a>**Methods:**</span>
+<span id="cb21-228"><a href="#cb21-228"></a></span>
+<span id="cb21-229"><a href="#cb21-229"></a><span class="ss">-   </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/intro.html&gt;</span></span>
+<span id="cb21-230"><a href="#cb21-230"></a></span>
+<span id="cb21-233"><a href="#cb21-233"></a><span class="in">```{r}</span></span>
+<span id="cb21-234"><a href="#cb21-234"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-235"><a href="#cb21-235"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-236"><a href="#cb21-236"></a><span class="co">#| output: false</span></span>
+<span id="cb21-237"><a href="#cb21-237"></a>tblHOT_Bottle_ALOHA <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-238"><a href="#cb21-238"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_Bottle_ALOHA"</span>,</span>
+<span id="cb21-239"><a href="#cb21-239"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-240"><a href="#cb21-240"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-31"</span>,</span>
+<span id="cb21-241"><a href="#cb21-241"></a>  <span class="at">dt2 =</span> <span class="st">"2022-09-03"</span>,</span>
+<span id="cb21-242"><a href="#cb21-242"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-243"><a href="#cb21-243"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-244"><a href="#cb21-244"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-245"><a href="#cb21-245"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-246"><a href="#cb21-246"></a>)</span>
+<span id="cb21-247"><a href="#cb21-247"></a></span>
+<span id="cb21-248"><a href="#cb21-248"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_Bottle_ALOHA, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_Bottle_ALOHA.parquet"</span>))</span>
+<span id="cb21-249"><a href="#cb21-249"></a><span class="in">```</span></span>
+<span id="cb21-250"><a href="#cb21-250"></a></span>
+<span id="cb21-251"><a href="#cb21-251"></a><span class="fu">## tblHOT_Flow_Cytometry_Time_Series</span></span>
+<span id="cb21-252"><a href="#cb21-252"></a></span>
+<span id="cb21-253"><a href="#cb21-253"></a><span class="at">&gt; "Time-series containing Prochlorococcus, Synechococcus, heterotrophic bacteria, and eukaryote flow cytometry abundance sampled each month at HOT from 2002-2007"</span></span>
+<span id="cb21-254"><a href="#cb21-254"></a></span>
+<span id="cb21-255"><a href="#cb21-255"></a>**CMAP Source:**</span>
+<span id="cb21-256"><a href="#cb21-256"></a></span>
+<span id="cb21-257"><a href="#cb21-257"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_Flow_Cytometry&gt;</span></span>
+<span id="cb21-258"><a href="#cb21-258"></a></span>
+<span id="cb21-259"><a href="#cb21-259"></a>**Methods:**</span>
+<span id="cb21-260"><a href="#cb21-260"></a></span>
+<span id="cb21-261"><a href="#cb21-261"></a><span class="ss">-   </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/bact.html&gt;</span></span>
+<span id="cb21-262"><a href="#cb21-262"></a></span>
+<span id="cb21-265"><a href="#cb21-265"></a><span class="in">```{r}</span></span>
+<span id="cb21-266"><a href="#cb21-266"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-267"><a href="#cb21-267"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-268"><a href="#cb21-268"></a><span class="co">#| output: false</span></span>
+<span id="cb21-269"><a href="#cb21-269"></a>tblHOT_Flow_Cytometry_Time_Series <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-270"><a href="#cb21-270"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_Flow_Cytometry_Time_Series"</span>,</span>
+<span id="cb21-271"><a href="#cb21-271"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-272"><a href="#cb21-272"></a>  <span class="at">dt1 =</span> <span class="st">"2002-11-03"</span>,</span>
+<span id="cb21-273"><a href="#cb21-273"></a>  <span class="at">dt2 =</span> <span class="st">"2007-12-21"</span>,</span>
+<span id="cb21-274"><a href="#cb21-274"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-275"><a href="#cb21-275"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-276"><a href="#cb21-276"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-277"><a href="#cb21-277"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-278"><a href="#cb21-278"></a>)</span>
+<span id="cb21-279"><a href="#cb21-279"></a></span>
+<span id="cb21-280"><a href="#cb21-280"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_Flow_Cytometry_Time_Series, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_Flow_Cytometry_Time_Series.parquet"</span>))</span>
+<span id="cb21-281"><a href="#cb21-281"></a><span class="in">```</span></span>
+<span id="cb21-282"><a href="#cb21-282"></a></span>
+<span id="cb21-283"><a href="#cb21-283"></a><span class="fu">## tblHOT_BATS_Prochlorococcus_Abundance</span></span>
+<span id="cb21-284"><a href="#cb21-284"></a></span>
+<span id="cb21-285"><a href="#cb21-285"></a><span class="at">&gt; "Five year time-series containing Prochlorococcus ecotype abundance sampled each month at HOT and BATS sites from 2002-2008 The goal of this study was to collect long-term, high-resolution data on the temporal and spatial variability of Prochlorococcus ecotypes in the Pacific and Atlantic Oceans. The abundance of five Prochlorococcus ecotypes was determined by quantitative PCR at 12 depths every month for 5 years at two locations: BATS location (5 nautical mile radius around 31 40'N, 64 10'W) HOT Station ALOHA (5 nautical mile radius around 22 45'N, 158 00' W) Sample processing and analyses are detailed in the publication listed below. Briefly, 100ml of seawater was collected onto 25mm dia polycarbonate filters (0.22um pore size), rinsed with Tris-buffered saline, flash frozen in liquid N2, and stored at -80C until extraction. DNA was extracted using a combination of 5min of bead beating and 15min heat lysis at 95C. Extracted DNA was used as template of quantitative PCR reactions using primers specifically designed to target different Prochlorococcus ecotypes. Standard curves used for quantitation of field data were derived from DNA extracted from cultured representatives belonging to each ecotype. Malmstrom, RR, A Coe, GC Kettler, AC Martiny, J Frias-Lopez, ER Zinser, and SW Chisholm. 2010. Temporal dynamics of Prochlorococcus ecotypes in the Atlantic and Pacific oceans. The ISME Journal. 4(10): 1252-1264"</span></span>
+<span id="cb21-286"><a href="#cb21-286"></a></span>
+<span id="cb21-287"><a href="#cb21-287"></a>**CMAP Source:**</span>
+<span id="cb21-288"><a href="#cb21-288"></a></span>
+<span id="cb21-289"><a href="#cb21-289"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_BATS_Prochlorococcus_Abundance&gt;</span></span>
+<span id="cb21-290"><a href="#cb21-290"></a></span>
+<span id="cb21-291"><a href="#cb21-291"></a>**Methods:**</span>
+<span id="cb21-292"><a href="#cb21-292"></a></span>
+<span id="cb21-293"><a href="#cb21-293"></a><span class="ss">-   </span><span class="ot">&lt;https://doi.org/10.1038/ismej.2010.60&gt;</span></span>
+<span id="cb21-294"><a href="#cb21-294"></a></span>
+<span id="cb21-297"><a href="#cb21-297"></a><span class="in">```{r}</span></span>
+<span id="cb21-298"><a href="#cb21-298"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-299"><a href="#cb21-299"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-300"><a href="#cb21-300"></a><span class="co">#| output: false</span></span>
+<span id="cb21-301"><a href="#cb21-301"></a>tblHOT_BATS_Prochlorococcus_Abundance <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-302"><a href="#cb21-302"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_BATS_Prochlorococcus_Abundance"</span>,</span>
+<span id="cb21-303"><a href="#cb21-303"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-304"><a href="#cb21-304"></a>  <span class="at">dt1 =</span> <span class="st">"2002-11-04"</span>,</span>
+<span id="cb21-305"><a href="#cb21-305"></a>  <span class="at">dt2 =</span> <span class="st">"2008-01-31"</span>,</span>
+<span id="cb21-306"><a href="#cb21-306"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-307"><a href="#cb21-307"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-308"><a href="#cb21-308"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-309"><a href="#cb21-309"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-310"><a href="#cb21-310"></a>)</span>
+<span id="cb21-311"><a href="#cb21-311"></a></span>
+<span id="cb21-312"><a href="#cb21-312"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_BATS_Prochlorococcus_Abundance, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_BATS_Prochlorococcus_Abundance.parquet"</span>))</span>
+<span id="cb21-313"><a href="#cb21-313"></a><span class="in">```</span></span>
+<span id="cb21-314"><a href="#cb21-314"></a></span>
+<span id="cb21-315"><a href="#cb21-315"></a><span class="fu">## tblHOT_EpiMicroscopy</span></span>
+<span id="cb21-316"><a href="#cb21-316"></a></span>
+<span id="cb21-317"><a href="#cb21-317"></a><span class="at">&gt; "Water samples of 50 ml (nanoplankton) and 300-500 ml (microplankton) are taken at each of 8 depths in the euphotic zone (surface to 175 m) from the same CTD profiles (and bottles) that sample the microbial community by HPLC pigments and flow cytometry. The 50-ml samples are preserved with 2-ml of 10% paraformaldehyde and stained with proflavin (0.33% w/v). The larger samples are preserved with 300 µl of alkaline Lugols solution followed by 10 ml of buffered formalin and 500 µl of sodium thiosulfate (modified protocol from Sherr and Sherr, 1993); and then stained with proflavin (0.33% w/v). Preserved samples are slowly (\~5 psi) filtered onto either black 0.8-µm (50 ml) or 8.0-µm (300-500 ml) Nuclepore filters overlaying 20-µm Millipore backing filters to facilitate even cell distributions. During filtration, the samples are drawn down until approximately 1-2 ml remain in the filtration tower. Concentrated DAPI (50 mg ml-1) is added and allowed to sit briefly before filtering the remainder of the sample until dry. Filters are mounted onto glass slides with immersion oil and cover slips. Prepared slides are placed in a dark box and kept frozen at -80 C until analysis. "</span></span>
+<span id="cb21-318"><a href="#cb21-318"></a></span>
+<span id="cb21-319"><a href="#cb21-319"></a>**CMAP Source:**</span>
+<span id="cb21-320"><a href="#cb21-320"></a></span>
+<span id="cb21-321"><a href="#cb21-321"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/HOT_EpiMicroscopy&gt;</span></span>
+<span id="cb21-322"><a href="#cb21-322"></a></span>
+<span id="cb21-323"><a href="#cb21-323"></a>**Methods:**</span>
+<span id="cb21-324"><a href="#cb21-324"></a></span>
+<span id="cb21-325"><a href="#cb21-325"></a><span class="ss">-   </span><span class="ot">&lt;https://hahana.soest.hawaii.edu/hot/methods/epimicros.html&gt;</span></span>
+<span id="cb21-326"><a href="#cb21-326"></a></span>
+<span id="cb21-329"><a href="#cb21-329"></a><span class="in">```{r}</span></span>
+<span id="cb21-330"><a href="#cb21-330"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-331"><a href="#cb21-331"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-332"><a href="#cb21-332"></a><span class="co">#| output: false</span></span>
+<span id="cb21-333"><a href="#cb21-333"></a>tblHOT_EpiMicroscopy <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-334"><a href="#cb21-334"></a>  <span class="at">tableName =</span> <span class="st">"tblHOT_EpiMicroscopy"</span>,</span>
+<span id="cb21-335"><a href="#cb21-335"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-336"><a href="#cb21-336"></a>  <span class="at">dt1 =</span> <span class="st">"2004-06-16"</span>,</span>
+<span id="cb21-337"><a href="#cb21-337"></a>  <span class="at">dt2 =</span> <span class="st">"2014-12-17"</span>,</span>
+<span id="cb21-338"><a href="#cb21-338"></a>  <span class="at">lat1 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-339"><a href="#cb21-339"></a>  <span class="at">lat2 =</span> <span class="fl">22.75</span>,</span>
+<span id="cb21-340"><a href="#cb21-340"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">158</span>,</span>
+<span id="cb21-341"><a href="#cb21-341"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">158</span></span>
+<span id="cb21-342"><a href="#cb21-342"></a>)</span>
+<span id="cb21-343"><a href="#cb21-343"></a></span>
+<span id="cb21-344"><a href="#cb21-344"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblHOT_EpiMicroscopy, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"hot"</span>, <span class="st">"tblHOT_EpiMicroscopy.parquet"</span>))</span>
+<span id="cb21-345"><a href="#cb21-345"></a><span class="in">```</span></span>
+<span id="cb21-346"><a href="#cb21-346"></a></span>
+<span id="cb21-347"><a href="#cb21-347"></a><span class="fu"># BATS (Bermuda Atlantic Time Series)</span></span>
+<span id="cb21-348"><a href="#cb21-348"></a></span>
+<span id="cb21-349"><a href="#cb21-349"></a>**Source:** <span class="ot">&lt;https://bios.asu.edu/bats/about&gt;</span></span>
+<span id="cb21-350"><a href="#cb21-350"></a></span>
+<span id="cb21-351"><a href="#cb21-351"></a><span class="at">&gt; "The Bermuda Atlantic Time-series Study (BATS) is a long-term oceanographic study by the Bermuda Institute of Ocean Sciences (BIOS). Based on regular (monthly or better) research cruises, it samples an area of the western Atlantic Ocean nominally at the coordinates 31°40′N 64°10′W. The cruise programme routinely samples physical properties such as ocean temperature and salinity, but focuses on variables of biological or biogeochemical interest including: nutrients (nitrate, nitrite, phosphate and silicic acid), dissolved inorganic carbon, oxygen, HPLC of pigments, primary production and sediment trap flux. The BATS cruises began in 1988 but are supplemented by biweekly Hydrostation "S" cruises to a neighbouring location (32°10′N 64°30′W) that began in 1954. The data collected by these cruises are available online."</span></span>
+<span id="cb21-352"><a href="#cb21-352"></a></span>
+<span id="cb21-355"><a href="#cb21-355"></a><span class="in">```{r}</span></span>
+<span id="cb21-356"><a href="#cb21-356"></a>local_cat <span class="sc">%&gt;%</span> </span>
+<span id="cb21-357"><a href="#cb21-357"></a>  <span class="fu">filter</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(Table_Name, <span class="st">"(?i)bats"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-358"><a href="#cb21-358"></a>  <span class="fu">distinct</span>(Table_Name)</span>
+<span id="cb21-359"><a href="#cb21-359"></a><span class="in">```</span></span>
+<span id="cb21-360"><a href="#cb21-360"></a></span>
+<span id="cb21-361"><a href="#cb21-361"></a><span class="fu">## tblBATS_CTD</span></span>
+<span id="cb21-362"><a href="#cb21-362"></a></span>
+<span id="cb21-363"><a href="#cb21-363"></a><span class="at">&gt; "The BATS CTD dataset in CMAP is a collection of CTD casts taken from the Bermuda Ocean Time-series Study (BATS). The CTD record begins in late 1988 and continues until the end of 2016. Pressure, temperature, conductivity, salinity, dissolved oxygen, beam attenuation coefficient, fluorescence and PAR measurements were collected with the Sea-Bird CTD instrument package. Sensor details can be found in chapter three of the BATS report methods document: </span><span class="ot">&lt;http://bats.bios.edu/wp-content/uploads/2017/07/report_methods.pdf&gt;</span><span class="at">."</span></span>
+<span id="cb21-364"><a href="#cb21-364"></a></span>
+<span id="cb21-365"><a href="#cb21-365"></a>**CMAP Source:**</span>
+<span id="cb21-366"><a href="#cb21-366"></a></span>
+<span id="cb21-367"><a href="#cb21-367"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/BATS_CTD&gt;</span></span>
+<span id="cb21-368"><a href="#cb21-368"></a></span>
+<span id="cb21-369"><a href="#cb21-369"></a>**Methods:**</span>
+<span id="cb21-370"><a href="#cb21-370"></a></span>
+<span id="cb21-371"><a href="#cb21-371"></a><span class="ss">-   </span><span class="ot">&lt;https://bios.asu.edu/bats/bats-data&gt;</span></span>
+<span id="cb21-372"><a href="#cb21-372"></a></span>
+<span id="cb21-373"><a href="#cb21-373"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">CTD Data</span><span class="co">](https://www.dropbox.com/scl/fi/pujllhchqt14yw3nt4yuv/ACTD_README.txt?rlkey=3evv4t48zctcduw1vfa4p5vsm&amp;e=1&amp;dl=0)</span></span>
+<span id="cb21-374"><a href="#cb21-374"></a></span>
+<span id="cb21-377"><a href="#cb21-377"></a><span class="in">```{r}</span></span>
+<span id="cb21-378"><a href="#cb21-378"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-379"><a href="#cb21-379"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-380"><a href="#cb21-380"></a><span class="co">#| output: false</span></span>
+<span id="cb21-381"><a href="#cb21-381"></a>tblBATS_CTD <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-382"><a href="#cb21-382"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_CTD"</span>,</span>
+<span id="cb21-383"><a href="#cb21-383"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-384"><a href="#cb21-384"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-20"</span>,</span>
+<span id="cb21-385"><a href="#cb21-385"></a>  <span class="at">dt2 =</span> <span class="st">"2016-12-16"</span>,</span>
+<span id="cb21-386"><a href="#cb21-386"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb21-387"><a href="#cb21-387"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb21-388"><a href="#cb21-388"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb21-389"><a href="#cb21-389"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb21-390"><a href="#cb21-390"></a>)</span>
+<span id="cb21-391"><a href="#cb21-391"></a></span>
+<span id="cb21-392"><a href="#cb21-392"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_CTD, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_CTD.parquet"</span>))</span>
+<span id="cb21-393"><a href="#cb21-393"></a><span class="in">```</span></span>
+<span id="cb21-394"><a href="#cb21-394"></a></span>
+<span id="cb21-395"><a href="#cb21-395"></a><span class="fu">## tblBATS_Bacteria_Production</span></span>
+<span id="cb21-396"><a href="#cb21-396"></a></span>
+<span id="cb21-397"><a href="#cb21-397"></a><span class="at">&gt; "The BATS Bacteria Production dataset is a collection of in-situ shipboard measurements of bacterial production rates from 1988-2012."</span></span>
+<span id="cb21-398"><a href="#cb21-398"></a></span>
+<span id="cb21-399"><a href="#cb21-399"></a>**CMAP Source:**</span>
+<span id="cb21-400"><a href="#cb21-400"></a></span>
+<span id="cb21-401"><a href="#cb21-401"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/BATS_Bacteria_Production&gt;</span></span>
+<span id="cb21-402"><a href="#cb21-402"></a></span>
+<span id="cb21-403"><a href="#cb21-403"></a>**Methods:**</span>
+<span id="cb21-404"><a href="#cb21-404"></a></span>
+<span id="cb21-405"><a href="#cb21-405"></a><span class="ss">-   </span><span class="ot">&lt;https://bios.asu.edu/bats/bats-data&gt;</span></span>
+<span id="cb21-406"><a href="#cb21-406"></a></span>
+<span id="cb21-407"><a href="#cb21-407"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Primary Production &amp; Bacterial Production</span><span class="co">](https://www.dropbox.com/scl/fo/x7xvlmyzqh9t9tfpe8ffg/AEBrkFFxVFvlO31MJmd9pcY?rlkey=7v73mfwhd78fdtxvfhk4v4kca&amp;e=1&amp;dl=0)</span></span>
+<span id="cb21-408"><a href="#cb21-408"></a></span>
+<span id="cb21-411"><a href="#cb21-411"></a><span class="in">```{r}</span></span>
+<span id="cb21-412"><a href="#cb21-412"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-413"><a href="#cb21-413"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-414"><a href="#cb21-414"></a><span class="co">#| output: false</span></span>
+<span id="cb21-415"><a href="#cb21-415"></a>tblBATS_Bacteria_Production <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-416"><a href="#cb21-416"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Bacteria_Production"</span>,</span>
+<span id="cb21-417"><a href="#cb21-417"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-418"><a href="#cb21-418"></a>  <span class="at">dt1 =</span> <span class="st">"1990-10-15"</span>,</span>
+<span id="cb21-419"><a href="#cb21-419"></a>  <span class="at">dt2 =</span> <span class="st">"2012-07-15"</span>,</span>
+<span id="cb21-420"><a href="#cb21-420"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb21-421"><a href="#cb21-421"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb21-422"><a href="#cb21-422"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb21-423"><a href="#cb21-423"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb21-424"><a href="#cb21-424"></a>)</span>
+<span id="cb21-425"><a href="#cb21-425"></a></span>
+<span id="cb21-426"><a href="#cb21-426"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Bacteria_Production, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Bacteria_Production.parquet"</span>))</span>
+<span id="cb21-427"><a href="#cb21-427"></a><span class="in">```</span></span>
+<span id="cb21-428"><a href="#cb21-428"></a></span>
+<span id="cb21-429"><a href="#cb21-429"></a><span class="fu">## tblBATS_Sediment_Trap_Flux</span></span>
+<span id="cb21-430"><a href="#cb21-430"></a></span>
+<span id="cb21-431"><a href="#cb21-431"></a><span class="at">&gt; "The BATS (Bermuda Atlantic Time-series Study) sediment trap - flux dataset is time-series spanning from 1988 to 2022. The dataset contains multiple nutrient flux measurements."</span></span>
+<span id="cb21-432"><a href="#cb21-432"></a></span>
+<span id="cb21-433"><a href="#cb21-433"></a>**CMAP Source:**</span>
+<span id="cb21-434"><a href="#cb21-434"></a></span>
+<span id="cb21-435"><a href="#cb21-435"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/BATS_Sediment_Trap_Flux&gt;</span></span>
+<span id="cb21-436"><a href="#cb21-436"></a></span>
+<span id="cb21-437"><a href="#cb21-437"></a>**Methods:**</span>
+<span id="cb21-438"><a href="#cb21-438"></a></span>
+<span id="cb21-439"><a href="#cb21-439"></a><span class="ss">-   </span><span class="ot">&lt;https://bios.asu.edu/bats/bats-data&gt;</span></span>
+<span id="cb21-440"><a href="#cb21-440"></a></span>
+<span id="cb21-441"><a href="#cb21-441"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Sediment Trap Data</span><span class="co">](https://www.dropbox.com/scl/fo/vpixby2yw9vfi28au3trz/ADYRb1vR_kJ6xgWBBdtnxdU?rlkey=v5sky9mqt60sgghag5hg22daq&amp;e=1&amp;dl=0)</span></span>
+<span id="cb21-442"><a href="#cb21-442"></a></span>
+<span id="cb21-445"><a href="#cb21-445"></a><span class="in">```{r}</span></span>
+<span id="cb21-446"><a href="#cb21-446"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-447"><a href="#cb21-447"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-448"><a href="#cb21-448"></a><span class="co">#| output: false</span></span>
+<span id="cb21-449"><a href="#cb21-449"></a>tblBATS_Sediment_Trap_Flux <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-450"><a href="#cb21-450"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Sediment_Trap_Flux"</span>,</span>
+<span id="cb21-451"><a href="#cb21-451"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-452"><a href="#cb21-452"></a>  <span class="at">dt1 =</span> <span class="st">"1988-12-16"</span>,</span>
+<span id="cb21-453"><a href="#cb21-453"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-13"</span>,</span>
+<span id="cb21-454"><a href="#cb21-454"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb21-455"><a href="#cb21-455"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb21-456"><a href="#cb21-456"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb21-457"><a href="#cb21-457"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb21-458"><a href="#cb21-458"></a>)</span>
+<span id="cb21-459"><a href="#cb21-459"></a></span>
+<span id="cb21-460"><a href="#cb21-460"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Sediment_Trap_Flux, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Sediment_Trap_Flux.parquet"</span>))</span>
+<span id="cb21-461"><a href="#cb21-461"></a><span class="in">```</span></span>
+<span id="cb21-462"><a href="#cb21-462"></a></span>
+<span id="cb21-463"><a href="#cb21-463"></a><span class="fu">## tblBATS_Bottle</span></span>
+<span id="cb21-464"><a href="#cb21-464"></a></span>
+<span id="cb21-465"><a href="#cb21-465"></a><span class="at">&gt; "The BATS Bottle dataset is a collection of discrete bottle samples from 1988-2022, including in-situ measurements of CO2, nutrients, carbon, oxygen, temperature, and Prochlorococcus and Synechococcus abundance. Note all bottle fires are included that do not have any BATS core parameters so as to be of use for other ancillary measurements."</span></span>
+<span id="cb21-466"><a href="#cb21-466"></a></span>
+<span id="cb21-467"><a href="#cb21-467"></a>**CMAP Source:**</span>
+<span id="cb21-468"><a href="#cb21-468"></a></span>
+<span id="cb21-469"><a href="#cb21-469"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/BATS_Bottle&gt;</span></span>
+<span id="cb21-470"><a href="#cb21-470"></a></span>
+<span id="cb21-471"><a href="#cb21-471"></a>**Methods:**</span>
+<span id="cb21-472"><a href="#cb21-472"></a></span>
+<span id="cb21-473"><a href="#cb21-473"></a><span class="ss">-   </span><span class="ot">&lt;https://bios.asu.edu/bats/bats-data&gt;</span></span>
+<span id="cb21-474"><a href="#cb21-474"></a></span>
+<span id="cb21-475"><a href="#cb21-475"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Bottle Data</span><span class="co">](https://www.dropbox.com/scl/fi/400ap4klwehf0822rmf1u/A_README_BOTTLE.txt?rlkey=56in61ixulo94yvvkfgvos8uz&amp;e=1&amp;dl=0)</span></span>
+<span id="cb21-476"><a href="#cb21-476"></a></span>
+<span id="cb21-479"><a href="#cb21-479"></a><span class="in">```{r}</span></span>
+<span id="cb21-480"><a href="#cb21-480"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-481"><a href="#cb21-481"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-482"><a href="#cb21-482"></a><span class="co">#| output: false</span></span>
+<span id="cb21-483"><a href="#cb21-483"></a>tblBATS_Bottle <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-484"><a href="#cb21-484"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Bottle"</span>,</span>
+<span id="cb21-485"><a href="#cb21-485"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-486"><a href="#cb21-486"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-20"</span>,</span>
+<span id="cb21-487"><a href="#cb21-487"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-16"</span>,</span>
+<span id="cb21-488"><a href="#cb21-488"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb21-489"><a href="#cb21-489"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb21-490"><a href="#cb21-490"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb21-491"><a href="#cb21-491"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb21-492"><a href="#cb21-492"></a>)</span>
+<span id="cb21-493"><a href="#cb21-493"></a></span>
+<span id="cb21-494"><a href="#cb21-494"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Bottle, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Bottle.parquet"</span>))</span>
+<span id="cb21-495"><a href="#cb21-495"></a><span class="in">```</span></span>
+<span id="cb21-496"><a href="#cb21-496"></a></span>
+<span id="cb21-497"><a href="#cb21-497"></a><span class="fu">## tblBATS_Primary_Production</span></span>
+<span id="cb21-498"><a href="#cb21-498"></a></span>
+<span id="cb21-499"><a href="#cb21-499"></a><span class="at">&gt; "The BATS (Bermuda Atlantic Time-series Study) primary production rates dataset is time-series spanning from 1988 to 2022. The dataset contains six primary production bottle estimates, along with CTD temperature and salinity measurements."</span></span>
+<span id="cb21-500"><a href="#cb21-500"></a></span>
+<span id="cb21-501"><a href="#cb21-501"></a>**CMAP Source:**</span>
+<span id="cb21-502"><a href="#cb21-502"></a></span>
+<span id="cb21-503"><a href="#cb21-503"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/BATS_Primary_Production&gt;</span></span>
+<span id="cb21-504"><a href="#cb21-504"></a></span>
+<span id="cb21-505"><a href="#cb21-505"></a>**Methods:**</span>
+<span id="cb21-506"><a href="#cb21-506"></a></span>
+<span id="cb21-507"><a href="#cb21-507"></a><span class="ss">-   </span><span class="ot">&lt;https://bios.asu.edu/bats/bats-data&gt;</span></span>
+<span id="cb21-508"><a href="#cb21-508"></a></span>
+<span id="cb21-509"><a href="#cb21-509"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Primary Production &amp; Bacterial Production</span><span class="co">](https://www.dropbox.com/scl/fo/x7xvlmyzqh9t9tfpe8ffg/AEBrkFFxVFvlO31MJmd9pcY?rlkey=7v73mfwhd78fdtxvfhk4v4kca&amp;e=1&amp;dl=0)</span></span>
+<span id="cb21-510"><a href="#cb21-510"></a></span>
+<span id="cb21-513"><a href="#cb21-513"></a><span class="in">```{r}</span></span>
+<span id="cb21-514"><a href="#cb21-514"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-515"><a href="#cb21-515"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-516"><a href="#cb21-516"></a><span class="co">#| output: false</span></span>
+<span id="cb21-517"><a href="#cb21-517"></a>tblBATS_Primary_Production <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-518"><a href="#cb21-518"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Primary_Production"</span>,</span>
+<span id="cb21-519"><a href="#cb21-519"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-520"><a href="#cb21-520"></a>  <span class="at">dt1 =</span> <span class="st">"1988-12-18"</span>,</span>
+<span id="cb21-521"><a href="#cb21-521"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-16"</span>,</span>
+<span id="cb21-522"><a href="#cb21-522"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb21-523"><a href="#cb21-523"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb21-524"><a href="#cb21-524"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb21-525"><a href="#cb21-525"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb21-526"><a href="#cb21-526"></a>)</span>
+<span id="cb21-527"><a href="#cb21-527"></a></span>
+<span id="cb21-528"><a href="#cb21-528"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Primary_Production, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Primary_Production.parquet"</span>))</span>
+<span id="cb21-529"><a href="#cb21-529"></a><span class="in">```</span></span>
+<span id="cb21-530"><a href="#cb21-530"></a></span>
+<span id="cb21-531"><a href="#cb21-531"></a><span class="fu">## tblBATS_Pigment</span></span>
+<span id="cb21-532"><a href="#cb21-532"></a></span>
+<span id="cb21-533"><a href="#cb21-533"></a><span class="at">&gt; "The BATS (Bermuda Atlantic Time-series Study) Pigment dataset is time-series spanning from 1988 to 2022. The dataset contains the 21 separate in-situ pigment measurements along with sampling depth and the BATS Cruise ID."</span></span>
+<span id="cb21-534"><a href="#cb21-534"></a></span>
+<span id="cb21-535"><a href="#cb21-535"></a>**CMAP Source:**</span>
+<span id="cb21-536"><a href="#cb21-536"></a></span>
+<span id="cb21-537"><a href="#cb21-537"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/BATS_Pigments&gt;</span></span>
+<span id="cb21-538"><a href="#cb21-538"></a></span>
+<span id="cb21-539"><a href="#cb21-539"></a>**Methods:**</span>
+<span id="cb21-540"><a href="#cb21-540"></a></span>
+<span id="cb21-541"><a href="#cb21-541"></a><span class="ss">-   </span><span class="ot">&lt;https://bios.asu.edu/bats/bats-data&gt;</span></span>
+<span id="cb21-542"><a href="#cb21-542"></a></span>
+<span id="cb21-543"><a href="#cb21-543"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Bottle Pigments</span><span class="co">](https://www.dropbox.com/scl/fi/uj3h3vvvk3h81rbfakyrv/bats_pigments.txt?rlkey=hts3w8p4mw7y9ctchdaror1q1&amp;e=1&amp;dl=0)</span></span>
+<span id="cb21-544"><a href="#cb21-544"></a></span>
+<span id="cb21-547"><a href="#cb21-547"></a><span class="in">```{r}</span></span>
+<span id="cb21-548"><a href="#cb21-548"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-549"><a href="#cb21-549"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-550"><a href="#cb21-550"></a><span class="co">#| output: false</span></span>
+<span id="cb21-551"><a href="#cb21-551"></a>tblBATS_Pigment <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-552"><a href="#cb21-552"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Pigment"</span>,</span>
+<span id="cb21-553"><a href="#cb21-553"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-554"><a href="#cb21-554"></a>  <span class="at">dt1 =</span> <span class="st">"1988-10-21"</span>,</span>
+<span id="cb21-555"><a href="#cb21-555"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-16"</span>,</span>
+<span id="cb21-556"><a href="#cb21-556"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb21-557"><a href="#cb21-557"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb21-558"><a href="#cb21-558"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb21-559"><a href="#cb21-559"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb21-560"><a href="#cb21-560"></a>)</span>
+<span id="cb21-561"><a href="#cb21-561"></a></span>
+<span id="cb21-562"><a href="#cb21-562"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Pigment, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Pigment.parquet"</span>))</span>
+<span id="cb21-563"><a href="#cb21-563"></a><span class="in">```</span></span>
+<span id="cb21-564"><a href="#cb21-564"></a></span>
+<span id="cb21-565"><a href="#cb21-565"></a><span class="fu">## tblBATS_Zooplankton_Biomass</span></span>
+<span id="cb21-566"><a href="#cb21-566"></a></span>
+<span id="cb21-567"><a href="#cb21-567"></a><span class="at">&gt; "The BATS (Bermuda Atlantic Time-series Study) zooplankton biomass dataset is time-series spanning from 1994 to 2022. The dataset contains zooplankton biomass measurements. Due to an ambiguity with depth a subset of the dataset been removed as part of the Simons CMAP curation process. The full dataset is available at: </span><span class="ot">&lt;https://10.5281/zenodo.10182499&gt;</span><span class="at">. The following dates were impacted by this depth ambiguity: 1994 (4/6 – 12/12); 1995 (1/11 – 4/27, 8/22); 2000 (2/28); 2001 (1/30, 8/7-8/8, 9/12, 10/16); 2004 (2/14, 3/23, 4/7, 7/14-15, 8/16-17); 2005 (1/27); 2006 (5/11, 6/26, 9/4-9/5); 2007 (7/18, 8/9, 10/6); 2008 (6/22); 2009 (2/10, 4/1, 4/15, 5/16, 5/19, 10/10); 2017 (5/9); 2018: (8/13); 2022: (6/29)."</span></span>
+<span id="cb21-568"><a href="#cb21-568"></a></span>
+<span id="cb21-569"><a href="#cb21-569"></a>**CMAP Source:**</span>
+<span id="cb21-570"><a href="#cb21-570"></a></span>
+<span id="cb21-571"><a href="#cb21-571"></a><span class="ss">-   </span><span class="ot">&lt;https://simonscmap.com/catalog/datasets/BATS_Zooplankton_Biomass&gt;</span></span>
+<span id="cb21-572"><a href="#cb21-572"></a></span>
+<span id="cb21-573"><a href="#cb21-573"></a>**Methods:**</span>
+<span id="cb21-574"><a href="#cb21-574"></a></span>
+<span id="cb21-575"><a href="#cb21-575"></a><span class="ss">-   </span><span class="ot">&lt;https://bios.asu.edu/bats/bats-data&gt;</span></span>
+<span id="cb21-576"><a href="#cb21-576"></a></span>
+<span id="cb21-577"><a href="#cb21-577"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Zooplankton biomass</span><span class="co">](https://www.dropbox.com/scl/fo/pxsiq6q7jz3k33vcvltyz/ABG5u8983RNYQEgVr6ir1h0?rlkey=75x2rxqpc6dnfos85rdfcmmpa&amp;e=1&amp;dl=0)</span></span>
+<span id="cb21-578"><a href="#cb21-578"></a></span>
+<span id="cb21-581"><a href="#cb21-581"></a><span class="in">```{r}</span></span>
+<span id="cb21-582"><a href="#cb21-582"></a><span class="co">#| echo: true</span></span>
+<span id="cb21-583"><a href="#cb21-583"></a><span class="co">#| eval: false</span></span>
+<span id="cb21-584"><a href="#cb21-584"></a><span class="co">#| output: false</span></span>
+<span id="cb21-585"><a href="#cb21-585"></a>tblBATS_Zooplankton_Biomass <span class="ot">&lt;-</span> cmap4r<span class="sc">::</span><span class="fu">get_spacetime</span>(</span>
+<span id="cb21-586"><a href="#cb21-586"></a>  <span class="at">tableName =</span> <span class="st">"tblBATS_Zooplankton_Biomass"</span>,</span>
+<span id="cb21-587"><a href="#cb21-587"></a>  <span class="at">varName =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-588"><a href="#cb21-588"></a>  <span class="at">dt1 =</span> <span class="st">"1995-05-10"</span>,</span>
+<span id="cb21-589"><a href="#cb21-589"></a>  <span class="at">dt2 =</span> <span class="st">"2022-12-13"</span>,</span>
+<span id="cb21-590"><a href="#cb21-590"></a>  <span class="at">lat1 =</span> <span class="dv">19</span>,</span>
+<span id="cb21-591"><a href="#cb21-591"></a>  <span class="at">lat2 =</span> <span class="dv">40</span>,</span>
+<span id="cb21-592"><a href="#cb21-592"></a>  <span class="at">lon1 =</span> <span class="sc">-</span><span class="dv">74</span>,</span>
+<span id="cb21-593"><a href="#cb21-593"></a>  <span class="at">lon2 =</span> <span class="sc">-</span><span class="dv">59</span></span>
+<span id="cb21-594"><a href="#cb21-594"></a>)</span>
+<span id="cb21-595"><a href="#cb21-595"></a></span>
+<span id="cb21-596"><a href="#cb21-596"></a>arrow<span class="sc">::</span><span class="fu">write_parquet</span>(tblBATS_Zooplankton_Biomass, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_data_raw"</span>, <span class="st">"cmap"</span>, <span class="st">"bats"</span>, <span class="st">"tblBATS_Zooplankton_Biomass.parquet"</span>))</span>
+<span id="cb21-597"><a href="#cb21-597"></a><span class="in">```</span></span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

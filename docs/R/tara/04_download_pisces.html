@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Shane Hogle">
+<meta name="dcterms.date" content="2025-02-10">
+
+<title>omicOceansEnvData - Download PISCES Biogeochemical model hindcast</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../R/tara/01_download_ncbi.html">1. Tara oceans workflow</a></li><li class="breadcrumb-item"><a href="../../R/tara/04_download_pisces.html">4) PISCES model output</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">omicOceansEnvData</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">1. Tara oceans workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/01_download_ncbi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) BioSamples at NCBI</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/02_download_pangaea.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2) Env data at Pangaea.de</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/03_download_darwin.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3) Darwin model output</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/04_download_pisces.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">4) PISCES model output</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/tara/05_harmonize_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5) Harmonize and combine data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">2. BioGEOTRACES workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/biogeotraces/01_download_idp2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) IDP 2021 v2 at Simons CMAP</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">3. HOT/BATS workflow</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../R/hot_bats/01_download_hot_bats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1) HOT/BATS at Simons CMAP</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#download-pisces-model-output" id="toc-download-pisces-model-output" class="nav-link active" data-scroll-target="#download-pisces-model-output"><span class="header-section-number">1</span> Download PISCES model output</a>
+  <ul class="collapse">
+  <li><a href="#global-ocean-biogeochemistry-hindcast" id="toc-global-ocean-biogeochemistry-hindcast" class="nav-link" data-scroll-target="#global-ocean-biogeochemistry-hindcast"><span class="header-section-number">1.1</span> Global Ocean Biogeochemistry Hindcast</a></li>
+  </ul></li>
+  <li><a href="#import-libraries-functions" id="toc-import-libraries-functions" class="nav-link" data-scroll-target="#import-libraries-functions"><span class="header-section-number">2</span> Import libraries &amp; functions</a>
+  <ul class="collapse">
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions"><span class="header-section-number">2.1</span> Functions</a></li>
+  </ul></li>
+  <li><a href="#read-input-csv-file-of-tara-coordinates" id="toc-read-input-csv-file-of-tara-coordinates" class="nav-link" data-scroll-target="#read-input-csv-file-of-tara-coordinates"><span class="header-section-number">3</span> Read input csv file of Tara coordinates</a></li>
+  <li><a href="#download-from-copernicus-marine" id="toc-download-from-copernicus-marine" class="nav-link" data-scroll-target="#download-from-copernicus-marine"><span class="header-section-number">4</span> Download from Copernicus marine</a></li>
+  <li><a href="#read-and-format-netcdf-output" id="toc-read-and-format-netcdf-output" class="nav-link" data-scroll-target="#read-and-format-netcdf-output"><span class="header-section-number">5</span> Read and format netcdf output</a>
+  <ul class="collapse">
+  <li><a href="#work-environment" id="toc-work-environment" class="nav-link" data-scroll-target="#work-environment"><span class="header-section-number">5.1</span> Work environment</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../R/tara/01_download_ncbi.html">1. Tara oceans workflow</a></li><li class="breadcrumb-item"><a href="../../R/tara/04_download_pisces.html">4) PISCES model output</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Download PISCES Biogeochemical model hindcast</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+<p class="subtitle lead">Tara Oceans workflow</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Shane Hogle </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 10, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    Code in this notebook downloads PISCES model subsets corresponding to Tara stations from <a href="https://marine.copernicus.eu/">Copernicus Marine Service</a>. Files are then written locally in netcdf format, read and concatenated (using <a href="https://docs.xarray.dev/en/stable/"><code>xarray</code></a>), then output in tabular format for later use.
+  </div>
+</div>
+
+
+</header>
+
+
+<section id="download-pisces-model-output" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Download PISCES model output</h1>
+<p>Here we download the hindcast ouput from the PISCES biogeochemical model corresponding to Tara Ocean samples. We use the <a href="https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox">Copernicus Marine Toolbox</a> python API with a tsv file containing the query coordinates as input (generated in a prior step) to download individual netcdf files for each coordinate query set.</p>
+<p>An alternative approach is to follow <a href="https://help.marine.copernicus.eu/en/articles/7970637-how-to-download-data-for-multiple-points-from-a-csv">this strategy</a> where a Copernicus Marine data source is loaded as an xarray dataset using ‘lazy-loading’ mode. However, I found that opening the dataset remotely with lazy-loading was very slow. Subsetting the datset remotely, then downloading the subsetted product was much faster, albeit more clunky.</p>
+<p><strong>Note:</strong> <a href="https://data.marine.copernicus.eu/register">you need to register with Copernicus Marine Data</a> to use this resource.</p>
+<section id="global-ocean-biogeochemistry-hindcast" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="global-ocean-biogeochemistry-hindcast"><span class="header-section-number">1.1</span> Global Ocean Biogeochemistry Hindcast</h2>
+<p>We will download all variables from the Global Ocean Biogeochemistry Hindcast for the grid point and time nearest to each Tara Oceans sample. After download these will be saved as a csv for later use.</p>
+<ul>
+<li>Product: <a href="https://data.marine.copernicus.eu/product/GLOBAL_MULTIYEAR_BGC_001_029/description">GLOBAL_MULTIYEAR_BGC_001_029</a><br>
+</li>
+<li>Dataset: <code>cmems_mod_glo_bgc_my_0.25deg_P1M-m</code></li>
+</ul>
+<blockquote class="blockquote">
+<p>The biogeochemical hindcast for global ocean is produced at Mercator-Ocean (Toulouse. France). It provides 3D biogeochemical fields since year 1993 at 1/4 degree and on 75 vertical levels. It uses PISCES biogeochemical model (available on the NEMO modelling platform). No data assimilation in this product.</p>
+<p>Latest NEMO version (v3.6_STABLE) - <strong>Forcings:</strong> FREEGLORYS2V4 ocean physics produced at Mercator-Ocean and ERA-Interim atmosphere produced at ECMWF at a daily frequency - <strong>Outputs:</strong> Daily (chlorophyll. nitrate. phosphate. silicate. dissolved oxygen. primary production) and monthly (chlorophyll. nitrate. phosphate. silicate. dissolved oxygen. primary production. iron. phytoplankton in carbon) 3D mean fields interpolated on a standard regular grid in NetCDF format. The simulation is performed once and for all. - <strong>Initial conditions:</strong> World Ocean Atlas 2013 for nitrate. phosphate. silicate and dissolved oxygen. &gt; GLODAPv2 for DIC and Alkalinity. and climatological model outputs for Iron and DOC - <strong>Quality/Accuracy/Calibration information:</strong> See the <a href="https://documentation.marine.copernicus.eu/QUID/CMEMS-GLO-QUID-001-029.pdf">related QuID</a> - <strong>DOI (product):</strong> https://doi.org/10.48670/moi-00019</p>
+</blockquote>
+</section>
+</section>
+<section id="import-libraries-functions" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Import libraries &amp; functions</h1>
+<p>We first import these libraries and define the <code>sort_dimension()</code> function to sort potential inverted axes. Here we are using Python <code>3.10.12</code></p>
+<div id="07336109" class="cell" data-execution_count="1">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> copernicusmarine <span class="im">as</span> cm</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="im">import</span> pathlib</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="im">import</span> os</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/shane/Documents/projects/method_dev/hogle_lab/omicsOceansEnvData/.venv/lib/python3.10/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm</code></pre>
+</div>
+</div>
+<section id="functions" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="functions"><span class="header-section-number">2.1</span> Functions</h2>
+<div id="5391ef73" class="cell" data-execution_count="2">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">def</span> get_project_root():</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="co">"""</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">    Determines the root directory of the project by searching for specific markers.</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">    The function searches for the presence of a `.venv`, `renv`, or `.git` directory</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">    in the current working directory and its parent directories. The first directory</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">    containing any of these markers is considered the project root.</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">    Returns:</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co">      pathlib.Path: The path to the project root directory if found, otherwise None.</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co">    """</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>    current_path <span class="op">=</span> pathlib.Path(os.getcwd())</span>
+<span id="cb3-13"><a href="#cb3-13"></a>    <span class="cf">for</span> path <span class="kw">in</span> [current_path, <span class="op">*</span>current_path.parents]:</span>
+<span id="cb3-14"><a href="#cb3-14"></a>        <span class="cf">if</span> (path <span class="op">/</span> <span class="st">".venv"</span>).exists() <span class="kw">or</span> (path <span class="op">/</span> <span class="st">"renv"</span>).exists() <span class="kw">or</span> (path <span class="op">/</span> <span class="st">".git"</span>).exists():</span>
+<span id="cb3-15"><a href="#cb3-15"></a>            <span class="cf">return</span> path</span>
+<span id="cb3-16"><a href="#cb3-16"></a>    <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="kw">def</span> get_filename_without_extension(file_path):</span>
+<span id="cb3-20"><a href="#cb3-20"></a>  <span class="co">"""</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="co">  Extracts the filename without the extension from a given file path.</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a></span>
+<span id="cb3-23"><a href="#cb3-23"></a><span class="co">  Args:</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a><span class="co">    file_path: The path to the file.</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="co">  Returns:</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a><span class="co">    The filename without the extension.</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="co">  """</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>  filename <span class="op">=</span> os.path.basename(file_path)</span>
+<span id="cb3-30"><a href="#cb3-30"></a>  name_without_extension, _ <span class="op">=</span> os.path.splitext(filename)</span>
+<span id="cb3-31"><a href="#cb3-31"></a>  <span class="cf">return</span> name_without_extension</span>
+<span id="cb3-32"><a href="#cb3-32"></a></span>
+<span id="cb3-33"><a href="#cb3-33"></a></span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="kw">def</span> read_netcdfs(files, dim):</span>
+<span id="cb3-35"><a href="#cb3-35"></a>    <span class="kw">def</span> process_one_path(path):</span>
+<span id="cb3-36"><a href="#cb3-36"></a>        <span class="co">"""</span></span>
+<span id="cb3-37"><a href="#cb3-37"></a><span class="co">        Processes a single file path to an xarray dataset.</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a></span>
+<span id="cb3-39"><a href="#cb3-39"></a><span class="co">        This function reads an xarray dataset from the given file path, assigns a new </span></span>
+<span id="cb3-40"><a href="#cb3-40"></a><span class="co">        value to the dataset which is the basename of the file (without extension), </span></span>
+<span id="cb3-41"><a href="#cb3-41"></a><span class="co">        and loads all data from the transformed dataset to ensure it can be used </span></span>
+<span id="cb3-42"><a href="#cb3-42"></a><span class="co">        after closing the original file.</span></span>
+<span id="cb3-43"><a href="#cb3-43"></a></span>
+<span id="cb3-44"><a href="#cb3-44"></a><span class="co">        Parameters:</span></span>
+<span id="cb3-45"><a href="#cb3-45"></a><span class="co">        path (str): The file path to the xarray dataset.</span></span>
+<span id="cb3-46"><a href="#cb3-46"></a></span>
+<span id="cb3-47"><a href="#cb3-47"></a><span class="co">        Returns:</span></span>
+<span id="cb3-48"><a href="#cb3-48"></a><span class="co">        xarray.Dataset: The processed xarray dataset with the new 'query_id' attribute.</span></span>
+<span id="cb3-49"><a href="#cb3-49"></a><span class="co">        """</span></span>
+<span id="cb3-50"><a href="#cb3-50"></a>        <span class="co"># use a context manager, to ensure the file gets closed after use</span></span>
+<span id="cb3-51"><a href="#cb3-51"></a>        <span class="cf">with</span> xr.open_dataset(path) <span class="im">as</span> ds:</span>
+<span id="cb3-52"><a href="#cb3-52"></a>            <span class="co"># assign new value which is basename of the file that was read</span></span>
+<span id="cb3-53"><a href="#cb3-53"></a>            ds <span class="op">=</span> ds.assign(query_id<span class="op">=</span>get_filename_without_extension(path))</span>
+<span id="cb3-54"><a href="#cb3-54"></a>            <span class="co"># load all data from the transformed dataset, to ensure we can</span></span>
+<span id="cb3-55"><a href="#cb3-55"></a>            <span class="co"># use it after closing each original file</span></span>
+<span id="cb3-56"><a href="#cb3-56"></a>            ds.load()</span>
+<span id="cb3-57"><a href="#cb3-57"></a>            <span class="cf">return</span> ds</span>
+<span id="cb3-58"><a href="#cb3-58"></a></span>
+<span id="cb3-59"><a href="#cb3-59"></a>    paths <span class="op">=</span> <span class="bu">sorted</span>(files)</span>
+<span id="cb3-60"><a href="#cb3-60"></a>    datasets <span class="op">=</span> [process_one_path(p) <span class="cf">for</span> p <span class="kw">in</span> paths]</span>
+<span id="cb3-61"><a href="#cb3-61"></a>    combined <span class="op">=</span> xr.concat(datasets, dim, coords<span class="op">=</span><span class="st">'minimal'</span>)</span>
+<span id="cb3-62"><a href="#cb3-62"></a>    <span class="cf">return</span> combined</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="read-input-csv-file-of-tara-coordinates" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Read input csv file of Tara coordinates</h1>
+<p>Also perform some small formatting to generate unique identifiers for each <code>tara_station</code> + <code>depth</code> combination</p>
+<div id="9e65802a" class="cell" data-execution_count="3">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># get the project root</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>proj_root<span class="op">=</span>get_project_root()</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co"># Read the CSV in a pandas dataframe</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>query_coords <span class="op">=</span> pd.read_csv(</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="bu">str</span>(proj_root)<span class="op">+</span><span class="st">"/data/tara/pisces_subsets/pisces_tara_grid_map.csv"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co"># subset to columns of interest</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>query_coords <span class="op">=</span> query_coords.loc[:, [<span class="st">'tara_station'</span>,</span>
+<span id="cb4-10"><a href="#cb4-10"></a>                                    <span class="st">'latitude'</span>, <span class="st">'longitude'</span>, <span class="st">'date_time'</span>, <span class="st">'depth'</span>]] </span>
+<span id="cb4-11"><a href="#cb4-11"></a></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="co"># make a new unique identifer</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>query_coords[<span class="st">"query_id"</span>] <span class="op">=</span> query_coords[<span class="st">"tara_station"</span>] <span class="op">+</span> <span class="st">"_d"</span> <span class="op">+</span> query_coords[<span class="st">"depth"</span>].astype(<span class="st">'int'</span>).astype(<span class="st">'str'</span>)</span>
+<span id="cb4-14"><a href="#cb4-14"></a></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="co"># Convert columns into right format</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>query_coords[<span class="st">"date_time"</span>] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb4-17"><a href="#cb4-17"></a>    query_coords[<span class="st">"date_time"</span>])</span>
+<span id="cb4-18"><a href="#cb4-18"></a></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="co"># drop rows with duplicate information</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>query_coords <span class="op">=</span> query_coords.drop_duplicates()</span>
+<span id="cb4-21"><a href="#cb4-21"></a></span>
+<span id="cb4-22"><a href="#cb4-22"></a>query_coords</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">tara_station</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">date_time</th>
+<th data-quarto-table-cell-role="th">depth</th>
+<th data-quarto-table-cell-role="th">query_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>TARA_003</td>
+<td>36.672</td>
+<td>-10.421</td>
+<td>2009-09-13</td>
+<td>9.0</td>
+<td>TARA_003_d9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>TARA_004</td>
+<td>36.563</td>
+<td>-6.553</td>
+<td>2009-09-15</td>
+<td>9.0</td>
+<td>TARA_004_d9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>TARA_004</td>
+<td>36.563</td>
+<td>-6.553</td>
+<td>2009-09-15</td>
+<td>40.0</td>
+<td>TARA_004_d40</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>TARA_005</td>
+<td>36.030</td>
+<td>-4.405</td>
+<td>2009-09-20</td>
+<td>9.0</td>
+<td>TARA_005_d9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>TARA_005</td>
+<td>36.030</td>
+<td>-4.405</td>
+<td>2009-09-20</td>
+<td>68.0</td>
+<td>TARA_005_d68</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">301</td>
+<td>TARA_208</td>
+<td>69.107</td>
+<td>-51.578</td>
+<td>2013-10-20</td>
+<td>5.0</td>
+<td>TARA_208_d5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">302</td>
+<td>TARA_209</td>
+<td>64.728</td>
+<td>-53.467</td>
+<td>2013-10-23</td>
+<td>5.0</td>
+<td>TARA_209_d5</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">303</td>
+<td>TARA_209</td>
+<td>64.728</td>
+<td>-53.467</td>
+<td>2013-10-23</td>
+<td>200.0</td>
+<td>TARA_209_d200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">304</td>
+<td>TARA_210</td>
+<td>61.544</td>
+<td>-55.985</td>
+<td>2013-10-27</td>
+<td>5.0</td>
+<td>TARA_210_d5</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">305</td>
+<td>TARA_210</td>
+<td>61.544</td>
+<td>-55.985</td>
+<td>2013-10-27</td>
+<td>391.0</td>
+<td>TARA_210_d391</td>
+</tr>
+</tbody>
+</table>
+
+<p>306 rows × 6 columns</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="download-from-copernicus-marine" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Download from Copernicus marine</h1>
+<div id="24b4b2d9" class="cell" data-execution_count="18">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">%%</span>time</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="cf">for</span> rec <span class="kw">in</span> query_coords.to_dict(<span class="st">'records'</span>):</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  nc_path <span class="op">=</span> pathlib.Path(<span class="bu">str</span>(proj_root)<span class="op">+</span> <span class="bu">str</span>(<span class="st">'/data/tara/pisces_subsets/'</span>) <span class="op">+</span> rec[<span class="st">'query_id'</span>] <span class="op">+</span> <span class="st">'.nc'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  <span class="cf">if</span> <span class="kw">not</span> nc_path.exists():</span>
+<span id="cb5-5"><a href="#cb5-5"></a>    cm.subset(</span>
+<span id="cb5-6"><a href="#cb5-6"></a>      dataset_id<span class="op">=</span><span class="st">"cmems_mod_glo_bgc_my_0.25deg_P1M-m"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>      start_datetime<span class="op">=</span><span class="bu">str</span>(rec[<span class="st">'date_time'</span>]),</span>
+<span id="cb5-8"><a href="#cb5-8"></a>      end_datetime<span class="op">=</span><span class="bu">str</span>(rec[<span class="st">'date_time'</span>]),</span>
+<span id="cb5-9"><a href="#cb5-9"></a>      minimum_longitude<span class="op">=</span>rec[<span class="st">'longitude'</span>],</span>
+<span id="cb5-10"><a href="#cb5-10"></a>      maximum_longitude<span class="op">=</span>rec[<span class="st">'longitude'</span>],</span>
+<span id="cb5-11"><a href="#cb5-11"></a>      minimum_latitude<span class="op">=</span>rec[<span class="st">'latitude'</span>],</span>
+<span id="cb5-12"><a href="#cb5-12"></a>      maximum_latitude<span class="op">=</span>rec[<span class="st">'latitude'</span>],</span>
+<span id="cb5-13"><a href="#cb5-13"></a>      minimum_depth<span class="op">=</span>rec[<span class="st">'depth'</span>],</span>
+<span id="cb5-14"><a href="#cb5-14"></a>      maximum_depth<span class="op">=</span>rec[<span class="st">'depth'</span>],</span>
+<span id="cb5-15"><a href="#cb5-15"></a>      coordinates_selection_method<span class="op">=</span><span class="st">"nearest"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16"></a>      output_filename<span class="op">=</span>rec[<span class="st">'query_id'</span>],</span>
+<span id="cb5-17"><a href="#cb5-17"></a>      output_directory<span class="op">=</span><span class="bu">str</span>(proj_root) <span class="op">+</span> <span class="bu">str</span>(<span class="st">'/data/tara/pisces_subsets'</span>),</span>
+<span id="cb5-18"><a href="#cb5-18"></a>      disable_progress_bar<span class="op">=</span><span class="va">False</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 36min 50s, sys: 1min 49s, total: 38min 40s
+Wall time: 1h 42min 57s</code></pre>
+</div>
+</div>
+</section>
+<section id="read-and-format-netcdf-output" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Read and format netcdf output</h1>
+<p>You would think that <a href="https://docs.xarray.dev/en/stable/generated/xarray.open_mfdataset.html#xarray.open_mfdataset"><code>xarray.open_mfdataset</code></a> is the best way to read all the netcdf files from the last step. However, this is very slow for opening lots of small netcdf files.</p>
+<p>The more efficient approach is to just use a custom function <code>read_netcdfs</code> defined above.</p>
+<div id="07173189" class="cell" data-execution_count="10">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># get listing of all files in the pisces_subsets</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>flist<span class="op">=</span>[x <span class="cf">for</span> x <span class="kw">in</span> pathlib.Path(</span>
+<span id="cb7-3"><a href="#cb7-3"></a>    <span class="bu">str</span>(proj_root) <span class="op">+</span> <span class="bu">str</span>(<span class="st">'/data/tara/pisces_subsets/'</span>)).glob(<span class="st">'*.nc'</span>) <span class="cf">if</span> x.is_file()]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="3947577a" class="cell" data-execution_count="11">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># read and concatenate nc files </span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>datasets <span class="op">=</span> read_netcdfs(flist, <span class="st">"latitude"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Convert the xarray concatenated datasets to a dataframe (<a href="https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_dataframe.html#xarray.Dataset.to_dataframe"><code>to_dataframe</code></a>)</p>
+<div id="42d681be" class="cell" data-execution_count="12">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># convert concatenated xarrays to pandas dataframe</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>dataframes <span class="op">=</span> datasets.to_dataframe(</span>
+<span id="cb9-3"><a href="#cb9-3"></a>    dim_order<span class="op">=</span>[<span class="st">'latitude'</span>, <span class="st">'longitude'</span>, <span class="st">'depth'</span>, <span class="st">'time'</span>]).dropna()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Save as tsv for later use</p>
+<div id="1a6f72c6" class="cell" data-execution_count="14">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># write the output </span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>dataframes.to_csv(</span>
+<span id="cb10-3"><a href="#cb10-3"></a>    <span class="bu">str</span>(proj_root) <span class="op">+</span> <span class="bu">str</span>(<span class="st">'/data/tara/pisces_subsets/pisces_tara_subset_filt.tsv'</span>), sep<span class="op">=</span><span class="st">'</span><span class="ch">\t</span><span class="st">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="work-environment" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="work-environment"><span class="header-section-number">5.1</span> Work environment</h2>
+<div id="ffe0b571-d910-43fc-a9ec-49200bf409e8" class="cell">
+<details open="" class="code-fold">
+<summary>Show/hide code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="im">import</span> session_info</span>
+<span id="cb11-2"><a href="#cb11-2"></a>session_info.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="46">
+<details>
+<summary>Click to view session information</summary>
+<pre>-----
+copernicusmarine    2.0.0
+pandas              2.2.3
+session_info        1.0.0
+xarray              2025.1.2
+-----
+</pre>
+<details>
+<summary>Click to view modules imported as dependencies</summary>
+<pre>annotated_types     0.7.0
+asciitree           NA
+asttokens           NA
+backports           NA
+boto3               1.36.16
+botocore            1.36.16
+certifi             2025.01.31
+charset_normalizer  3.4.1
+click               8.1.8
+cloudpickle         3.1.1
+comm                0.2.2
+cython_runtime      NA
+dask                2025.1.0
+dateutil            2.9.0.post0
+debugpy             1.8.12
+decorator           5.1.1
+exceptiongroup      1.2.2
+executing           2.2.0
+fsspec              2025.2.0
+h5netcdf            1.5.0
+h5py                3.12.1
+idna                3.10
+importlib_metadata  NA
+ipykernel           6.29.5
+jaraco              NA
+jedi                0.19.2
+jmespath            1.0.1
+lxml                5.3.0
+more_itertools      10.3.0
+numcodecs           0.13.1
+numpy               2.2.2
+packaging           24.2
+parso               0.8.4
+pkg_resources       NA
+platformdirs        4.3.6
+prompt_toolkit      3.0.50
+psutil              6.1.1
+pure_eval           0.2.3
+pydantic            2.10.6
+pydantic_core       2.27.2
+pydev_ipython       NA
+pydevconsole        NA
+pydevd              3.2.3
+pydevd_file_utils   NA
+pydevd_plugins      NA
+pydevd_tracing      NA
+pygments            2.19.1
+pystac              1.12.1
+pytz                2025.1
+requests            2.32.3
+s3transfer          0.11.2
+semver              3.0.4
+sitecustomize       NA
+six                 1.17.0
+stack_data          0.6.3
+tlz                 1.0.0
+toolz               1.0.0
+tornado             6.4.2
+tqdm                4.67.1
+traitlets           5.14.3
+typing_extensions   NA
+urllib3             2.3.0
+vscode              NA
+wcwidth             0.2.13
+yaml                6.0.2
+zarr                2.18.3
+zipp                NA
+zmq                 26.2.1
+zoneinfo            NA
+</pre>
+</details> <!-- seems like this ends pre, so might as well be explicit -->
+<pre>-----
+IPython             8.32.0
+jupyter_client      8.6.3
+jupyter_core        5.7.2
+-----
+Python 3.10.12 (main, Sep 11 2024, 15:47:36) [GCC 11.4.0]
+Linux-6.9.3-76060903-generic-x86_64-with-glibc2.35
+-----
+Session information updated at 2025-02-08 23:52
+</pre>
+</details>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
