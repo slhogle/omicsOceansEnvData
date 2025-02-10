@@ -1,9 +1,18 @@
 # repo specific files
+# -------------------
 wip/
 _notrack/
+# Adobe illustrator files
 *.ai
+# R data files
 *.rds
+# Apache arrow parquet files
 *.parquet
+# Netcdf files
+*.nc
+
+# R and Rstudio
+# -------------------
 
 # quarto freeze
 #_freeze/
@@ -59,9 +68,9 @@ po/*~
 rsconnect/
 /.quarto/
 
-# VSCode
-# ---------------
-.vscode/*
+# Python and VSCode
+# ------------------
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -75,5 +84,4 @@ rsconnect/
 *.vsix
 
 # Python
-# ---------------
 .venv/
