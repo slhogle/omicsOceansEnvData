@@ -17,6 +17,8 @@ library(here)
 library(arrow)
 library(lubridate)
 library(fuzzyjoin)
+library(patchwork)
+library(emmeans)
 ```
 
 # Read data
@@ -62,53 +64,279 @@ In the final metagenomic tables we are interested in the following environmental
 9.  Phosphate (PO4)
 10. Total dissolved iron (FeT)
 
-Thus we need to access the following environmental variables from various Pangaea dataframes for the final product
+The most relevant Pangaea datasets are those of the bottle nutrient data and the CTD sensor data. Thus we need to access the following environmental variables from various Pangaea dataframes for the final product
 
-| Variable | Dataset | Variable |
-|------------------------------|------------------------|------------------|
-| Density | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_047 |
-| Salinity | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_037 |
-| Temperature | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_027 |
-| Dissolved Oxygen | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_057 |
-| Chlorophyll a | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_077 |
-| Dissolved inorganic nitrogen (DIN = NO3 + NO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_031 |
-| Nitrite (NO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_021 |
-| Phosphate (PO4) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_026 |
-| Silica (SiO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_036 |
-| Darwin Model Total dissolved Iron (FeT) | Modeled variables (PANGAEA.875577) | PANGAEA.875577_039 |
-| Darwin Model NO2 | Modeled variables (PANGAEA.875577) | PANGAEA.875577_043 |
-| Darwin Model DIN | Modeled variables (PANGAEA.875577) | PANGAEA.875577_045 |
-| Temp \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_054 |
-| Temp \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_057 |
-| Temp \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_059 |
-| Salinity \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_064 |
-| Salinity \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_067 |
-| Salinity \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_069 |
-| Density \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_074 |
-| Density \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_077 |
-| Density \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_079 |
-| Chlorophyll a \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_094 |
-| Chlorophyll a \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_097 |
-| Chlorophyll a \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_099 |
-| Dissolved Oxygen \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_104 |
-| Dissolved Oxygen \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_107 |
-| Dissolved Oxygen \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_109 |
-| DIN \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_114 |
-| DIN \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_117 |
-| DIN \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_119 |
+| Variable | Dataset | Variable | Note |
+|------------------------------|------------------------|------------------|-----|
+| Density | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_047 ||
+| Salinity | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_037 ||
+| Temperature | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_027 ||
+| Dissolved Oxygen | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_057 ||
+| Chlorophyll a | Sensors, in situ (PANGAEA.875576) | PANGAEA.875576_077 ||
+| Dissolved inorganic nitrogen (DIN = NO3 + NO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_031 ||
+| Nitrite (NO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_021 ||
+| Phosphate (PO4) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_026 ||
+| Silica (SiO2) | Nutrients, bottles (PANGAEA.875575) | PANGAEA.875575_036 ||
+| Darwin Model Total dissolved Iron (FeT) | Modeled variables (PANGAEA.875577) | PANGAEA.875577_039 | **from 5 meters**, not the depth of the sample  |
+| Darwin Model NO2 | Modeled variables (PANGAEA.875577) | PANGAEA.875577_043 | **from 5 meters**, not the depth of the sample |
+| Darwin Model DIN | Modeled variables (PANGAEA.875577) | PANGAEA.875577_045 | **from 5 meters**, not the depth of the sample |
+
+## Inspect PANGAEA.875579
+ 
+At one point we were interested in the variables below and whether they could supplement any of the missing data from the bottles. It was initially not clear to me what [PANGAEA.875579](https://doi.pangaea.de/10.1594/PANGAEA.875579) contains, but after closer inspection and discussion with Federico Ibarbalz it appears that nutrient data in this data set are summarized from the CTD senor (see analysis below). They seem to be almost identical but there are some samples where the two disagree substantially. However, the actual number of samples where a CTD measurement is missing and the measurement is present in PANGAEA.875579 is actually very small - only two or three for most variables.
+
+| Variable | Dataset | Variable | Note |
+|------------------------------|------------------------|------------------|-----|
+| Temp \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_054 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Temp \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_057 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Temp \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_059 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Salinity \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_064 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Salinity \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_067 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Salinity \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_069 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Density \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_074 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Density \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_077 |taken from CTD sensor, same as in PANGAEA.875576 |
+| Density \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_079 | taken from CTD sensor, same as in PANGAEA.875576 |
+| Chlorophyll a \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_094 |taken from CTD sensor, same as in PANGAEA.875576 |
+| Chlorophyll a \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_097 | taken from CTD sensor, same as in PANGAEA.875576|
+| Chlorophyll a \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_099 | taken from CTD sensor, same as in PANGAEA.875576|
+| Dissolved Oxygen \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_104 | taken from CTD sensor, same as in PANGAEA.875576|
+| Dissolved Oxygen \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_107 | taken from CTD sensor, same as in PANGAEA.875576|
+| Dissolved Oxygen \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_109 | taken from CTD sensor, same as in PANGAEA.875576|
+| DIN \@ 10 meters | Water column (PANGAEA.875579) | PANGAEA.875579_114 | taken from CTD sensor, same as in PANGAEA.875576|
+| DIN \@ mixed layer | Water column (PANGAEA.875579) | PANGAEA.875579_117 | taken from CTD sensor, same as in PANGAEA.875576 |
+| DIN \@ DCM | Water column (PANGAEA.875579) | PANGAEA.875579_119 | taken from CTD sensor, same as in PANGAEA.875576 |
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: false
+pick_from_875579 <- function(.data, varname, srf, mix, dcm){
+  .data %>% 
+    mutate("{varname}" := if_else(str_detect(env_ontology, "SRF"), {{ srf }},
+                  if_else(str_detect(env_ontology, "MIX"), {{ mix }}, 
+                          if_else(str_detect(env_ontology, "DCM"), {{ dcm }}, NA_real_))))
+}
+
+PANGAEA_875579_inspect <- left_join(tara_biosamples, PANGAEA_875575, by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_875576, tara_barcode_num, tara_station, date_time, 21:last_col()), 
+            by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_875577, tara_barcode_num, tara_station, 21:last_col()), by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_875579, tara_barcode_num, tara_station, 21:last_col()), by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_842237, tara_station, latitude, longitude), by = join_by(tara_station)) %>% 
+  dplyr::select(tara_station, tara_event:dplyr::last_col()) %>% 
+  pick_from_875579("PANGAEA_875579_NO3", PANGAEA.875579_114, PANGAEA.875579_117, PANGAEA.875579_119) %>% 
+  pick_from_875579("PANGAEA_875579_density", PANGAEA.875579_074, PANGAEA.875579_077, PANGAEA.875579_079) %>% 
+  pick_from_875579("PANGAEA_875579_salinity", PANGAEA.875579_064, PANGAEA.875579_067, PANGAEA.875579_069) %>% 
+  pick_from_875579("PANGAEA_875579_temperature", PANGAEA.875579_054, PANGAEA.875579_057, PANGAEA.875579_059) %>% 
+  pick_from_875579("PANGAEA_875579_chl_a", PANGAEA.875579_094, PANGAEA.875579_097, PANGAEA.875579_099) %>% 
+  pick_from_875579("PANGAEA_875579_dO2", PANGAEA.875579_104, PANGAEA.875579_107, PANGAEA.875579_109) %>% 
+  dplyr::select(tara_station, depth,
+                PANGAEA_875575_NO3 = PANGAEA.875575_031, PANGAEA_875579_NO3, PANGAEA_875576_NO3 = PANGAEA.875576_062, 
+                PANGAEA_875579_density, PANGAEA_875576_density = PANGAEA.875576_047, 
+                PANGAEA_875579_temperature, PANGAEA_875576_temperature = PANGAEA.875576_027, 
+                PANGAEA_875579_salinity, PANGAEA_875576_salinity = PANGAEA.875576_037,
+                PANGAEA_875579_chl_a, PANGAEA_875576_chl_a = PANGAEA.875576_077, 
+                PANGAEA_875579_dO2, PANGAEA_875576_dO2 = PANGAEA.875576_057) %>% 
+  distinct()
+```
+
+### 1:1 Plots
+
+::: {#fig-01}
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+a <- ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_NO3, y = PANGAEA_875579_NO3)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "NO3 from PANGAEA_875576 (CTD sensor)", y = "NO3 from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  scale_y_log10() + scale_x_log10() + annotation_logticks() +
+  coord_fixed()
+b <- ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_NO3, y = PANGAEA_875579_NO3)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "NO3 from PANGAEA_875576 (CTD sensor)", y = "NO3 from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  coord_fixed()
+a + b +
+  plot_annotation(tag_levels = "A")
+```
+Comparison of nitrate (NO3) from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) which is from the CTD sensor and nitrate from Pangaea [PANGAEA.875579](https://doi.pangaea.de/10.1594/PANGAEA.875579) which is just labeled as "whole water column." Subplot A is shown with a log scale to aid comparison of the lower concentrations.
+:::
+
+::: {#fig-02}
+```{r}
+#| fig-width: 5
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_density, y = PANGAEA_875579_density)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "Density from PANGAEA_875576 (CTD sensor)", y = "Density from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  coord_fixed(xlim = c(0, 30), ylim = c(0,30))
+```
+Comparison of density from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) which is from the CTD sensor and density from Pangaea [PANGAEA.875579](https://doi.pangaea.de/10.1594/PANGAEA.875579) which was just labeled as "whole water column." 
+:::
+
+::: {#fig-03}
+```{r}
+#| fig-width: 5
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_salinity, y = PANGAEA_875579_salinity)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "Salinity from PANGAEA_875576 (CTD sensor)", y = "Salinity from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  coord_fixed(xlim = c(20, 40), ylim = c(20, 40))
+```
+Comparison of salinity from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) which is from the CTD sensor and salinity from Pangaea [PANGAEA.875579](https://doi.pangaea.de/10.1594/PANGAEA.875579) which was just labeled as "whole water column." 
+:::
+
+::: {#fig-04}
+```{r}
+#| fig-width: 5
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_temperature, y = PANGAEA_875579_temperature)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "Temp from PANGAEA_875576 (CTD sensor)", y = "Temp from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  coord_fixed(xlim = c(-5, 40), ylim = c(-5, 40))
+```
+Comparison of temperature from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) which is from the CTD sensor and temperature from Pangaea [PANGAEA.875579](https://doi.pangaea.de/10.1594/PANGAEA.875579) which was just labeled as "whole water column."
+:::
+
+::: {#fig-05}
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+a <- ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_chl_a, y = PANGAEA_875579_chl_a)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "Chl a from PANGAEA_875576 (CTD sensor)", y = "Chl a from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  scale_y_log10() + scale_x_log10() + annotation_logticks() +
+  coord_fixed()
+b <- ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_chl_a, y = PANGAEA_875579_chl_a)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "Chl a from PANGAEA_875576 (CTD sensor)", y = "Chl a from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  coord_fixed(xlim = c(0, 8), ylim = c(0, 8))
+a + b +
+  plot_layout(widths = c(1,1)) +
+  plot_annotation(tag_levels = "A")
+
+```
+Comparison of Chlorophyll a concentration (Chl a, fluorescence-derived) from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) which is from the CTD sensor and Chl a from Pangaea [PANGAEA.875579](https://doi.pangaea.de/10.1594/PANGAEA.875579) which was just labeled as "whole water column." Subplot A is shown with a log scale to aid comparison of the lower concentrations.
+:::
+
+::: {#fig-06}
+```{r}
+#| fig-width: 5
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+ggplot(PANGAEA_875579_inspect, aes(x = PANGAEA_875576_dO2, y = PANGAEA_875579_dO2)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(x = "dO2 from PANGAEA_875576 (CTD sensor)", y = "dO2 from PANGAEA_875579") +
+  geom_point(alpha = 0.4) +
+  coord_fixed(xlim = c(0, 400), ylim = c(0, 400))
+```
+Comparison of dissolved Oxygen (dO2) from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) which is from the CTD sensor and dO2 from Pangaea [PANGAEA.875579](https://doi.pangaea.de/10.1594/PANGAEA.875579) which was just labeled as "whole water column."
+:::
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: false
+PANGAEA_875579_missing <- PANGAEA_875579_inspect %>% 
+  filter(if_any(PANGAEA_875575_NO3:last_col(), is.na)) %>%
+  summarise(across(PANGAEA_875575_NO3:last_col(), ~any(is.na(.))),
+            .by = c(tara_station, depth))
+
+find_missing_CTD_and_present_watercolumn <- function(var) {
+  PANGAEA_875579_missing %>% 
+    filter(!!sym(paste0("PANGAEA_875579_", var)) == FALSE & !!sym(paste0("PANGAEA_875576_", var)) == TRUE) %>% 
+    dplyr::select(tara_station, depth, !!sym(paste0("PANGAEA_875579_", var)), !!sym(paste0("PANGAEA_875576_", var)) )
+}
+```
+
+### Samples missing 
+
+There are basically no samples that have data in the "watercolumn" data set but lack data for the corresponding sample in the CTD data set. These tables just show the samples that are `missing == TRUE` from PANGAEA.875576 (the CTD dataset) but availabe in PANGAEA.875579 `missing == FALSE`
+
+**Nitrate**
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: false
+find_missing_CTD_and_present_watercolumn("NO3")
+```
+
+**Density**
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: false
+find_missing_CTD_and_present_watercolumn("density")
+```
+
+**Salinity**
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: false
+find_missing_CTD_and_present_watercolumn("salinity")
+```
+
+**Chlorophyll a**
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: false
+find_missing_CTD_and_present_watercolumn("chl_a")
+```
+
+**Dissolved Oxygen**
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: false
+find_missing_CTD_and_present_watercolumn("dO2")
+```
 
 ## Combine all Pangaea datasets with BioSamples
+
+Now we'll put the Pangaea data together (excluding the weird PANGAEA_875579 dataset)
 
 ```{r}
 tara_biosamples_joined01 <- left_join(tara_biosamples, PANGAEA_875575, by = join_by(tara_barcode_num, tara_station)) %>% 
   left_join(dplyr::select(PANGAEA_875576, tara_barcode_num, tara_station, date_time, 21:last_col()), 
+            by = join_by(tara_barcode_num, tara_station)) %>% 
+  left_join(dplyr::select(PANGAEA_875569, tara_barcode_num, tara_station, 21:last_col()), 
             by = join_by(tara_barcode_num, tara_station)) %>% 
   left_join(dplyr::select(PANGAEA_875577, tara_barcode_num, tara_station, 21:last_col()), by = join_by(tara_barcode_num, tara_station)) %>% 
   left_join(dplyr::select(PANGAEA_875579, tara_barcode_num, tara_station, 21:last_col()), by = join_by(tara_barcode_num, tara_station)) %>% 
   left_join(dplyr::select(PANGAEA_842237, tara_station, latitude, longitude), by = join_by(tara_station))
 ```
 
-## Fill missing observations with adjacent data
+## Fill missing depth observations with adjacent data
 
 There are 7 cases where there is not single recorded depth for an observation, but rather a depth range (`depth_min` to `depth_max`).
 
@@ -131,55 +359,191 @@ tara_biosamples_joined02 <- tara_biosamples_joined01 %>%
   ungroup()
 ```
 
-## Fill missing observations with "whole water column" data (PANGAEA.875579)
+## Relationship between CTD and bottle variables
 
-Now we will fill missing observations with direct observations taken from the "whole water column."
+There are only two variables that were measured both via the CTD and in bottle samples. These are NO3 and Chlorophyll A, both of which are measured using an optical sensor on the CTD. NO3 in bottles is measured follow standard colormetric nutrient analysis and Chl A is measured using HPLC.
 
-1.  We will take bottle samples as the starting point (PANGAEA_875575)
-
-2.  If a bottle observation is missing fill with the closes CTD sensor observation (PANGAEA_875576)
-
-3.  If CTD sensor observation is missing fill with "whole water column" data (PANGAEA.875579). TBH I actually don't understand where this data comes from. The PI listed is Sabrina Speich who is different than the most common PIs (Pesant and Guidi). But from what I can tell this is not the output of a model but somehow a direct observation corresponding to a Tara station. Perhaps these are CTD sensor observations from a different Tara-esque cruise in the same location. It only includes variables for Temp, Salinity, Density, ChlA, dO2, and Nitrate.
-
-4.  ~~Finally, if none of the three above exist we will fill the data with the output from the MIT Darwin model available in Pangaea.~~ Due to some questionable Darwin outputs we will instead create a new variable for Darwin biogeochemical variables that were available in Pangaea. Later we will add Darwin output that is taken from Simons CMAP.
-
-This function creates a new variable replacing a variable from either PANGAEA_875575 or PANGAEA_875576 with the corresponding SRF/MIX/DCM/MES measurement from PANGAEA.875579
+ `tara_barcode_num` - Unique TARA barcode number registered at PANGAEA, Data Publisher for Earth and Environmental Science (www.pangaea.de)
+-   `sra_acc_num` - NCBI Sequence Read Archive BioSample accession number
+-   `sra_biosample_acc_num` - NCBI BioSample accession number
+-   `sra_run_acc_num` - NCBI Sequence Read Archive sequencing run accession number
+-   `sra_exp_acc_num` - NCBI Sequence Read Archive sequencing experiment accession number
+-   `sra_study_acc_num` - NCBI BioProject accession number
+-   `biosample_acc_num` - Biosample accession number registered at the EBI BioSamples database (http://www.ebi.ac.uk/biosamples/). From Pangaea
+-   `ena_acc_num` - ENA sample accession number (ERS_num) registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)
+-   `tara_station` - Tara station identifier
+-   `env_ontology` - \[abbreviation\], full name (ENVO:ID) from which this sample was collected terms registered at EnvO, the Environmental Ontology (http://environmentontology.org/)
+-   `latitude` - Latitude of Tara station
+-   `longitude` - Longitude of Tara station
+-   `date_time` - Sampling date at Tara station
+-   `size_low_thresh` - Lower threshold of the size fraction (µm) used on board to prepare sample
+-   `size_high_thresh` - Upper threshold of the size fraction (µm) used on board to prepare sample
 
 ```{r}
-replace_w_875579 <- function(.data, varname, target, srf, mix, dcm){
-  .data %>% 
-    mutate("{varname}" := if_else(!is.na({{ target }}), {{ target }},
-          if_else(str_detect(env_ontology, "SRF"), {{ srf }},
-                  if_else(str_detect(env_ontology, "MIX"), {{ mix }}, 
-                          if_else(str_detect(env_ontology, "DCM"), {{ dcm }}, NA_real_)))))
+set.seed(3549687)
+jitterfun <- function(amount = NULL){
+  a <- jitter(rep(0, 100), amount = amount)
+  sample(a[a>0], 1)
 }
 
-simple_replace <- function(.data, varname, target, replace){
-  .data %>% 
-    mutate("{varname}" := if_else(is.na({{ target }}), {{ replace }}, {{ target }}))
-}
+tara_biosamples_joined02_subset <- tara_biosamples_joined02 %>% 
+  dplyr::select(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, sra_run_acc_num, sra_exp_acc_num, sra_study_acc_num,
+                tara_station, env_ontology, latitude, longitude, date_time, depth, size_low_thresh, size_high_thresh, depth_min, depth_max, 
+                density_ctd=PANGAEA.875576_047, temperature_ctd=PANGAEA.875576_027, salinity_ctd=PANGAEA.875576_037, do2_ctd=PANGAEA.875576_057,
+                chla_bot=PANGAEA.875569_131, chla_ctd=PANGAEA.875576_067, 
+                no3_bot=PANGAEA.875575_031, no3_ctd=PANGAEA.875576_062,
+                no2_bot = PANGAEA.875575_021,
+                po4_bot = PANGAEA.875575_026,
+                sio2_bot = PANGAEA.875575_036,
+                fet_dw_pg = PANGAEA.875577_039,
+                din_dw_pg = PANGAEA.875577_045,
+                no2_dw_pg = PANGAEA.875577_043) %>% 
+  # offset negative values for the chl a sensor. This will allow us to correct for it later
+  mutate(chla_ctd = chla_ctd + abs(min(chla_ctd, na.rm=TRUE))) %>% 
+  # add small amount of noise to zero values
+  mutate(chla_ctd = if_else(chla_ctd == 0, jitterfun(amount = 0.1), chla_ctd),
+         no3_ctd = if_else(no3_ctd == 0, jitterfun(amount = 1), no3_ctd))
 ```
 
-Call the above function for each of the 10 variables of interest
+### Chlorophyll A
+
+::: {#fig-07}
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+a <- ggplot(tara_biosamples_joined02_subset, aes(x = chla_ctd, y = chla_bot)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  geom_point(alpha=0.5) +
+  labs(x = "ChlA from CTD sensor (PANGAEA_875576)", y = "Chl A from HPLC pigments (PANGAEA_875569)") +
+  scale_x_sqrt() + scale_y_sqrt() +
+  coord_fixed(xlim = c(0,8), ylim = c(0,8)) 
+
+b <- ggplot(tara_biosamples_joined02_subset, aes(x = chla_ctd, y = chla_bot)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  geom_point(alpha=0.5) +
+  labs(x = "ChlA from CTD sensor (PANGAEA_875576)", y = "Chl A from HPLC pigments (PANGAEA_875569)") +
+  coord_fixed(xlim = c(0,8), ylim = c(0,8))
+
+a + b +
+  plot_layout(widths = c(1,1), guides = "collect") +
+  plot_annotation(tag_levels = "A")
+```
+Comparison of chlorophyll a (Chl a) from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) which is from the CTD sensor and Chl a from Pangaea [PANGAEA.875569](https://doi.pangaea.de/10.1594/PANGAEA.875569) which HPLC pigment concentrations.  Subplot A is shown with a square root transformed scale to aid comparison of the lower concentrations. The red line is 1:1 relationship.
+:::
+
+There seems to be a systematic offset for the Sensor Chl A versus that from the HPLC. Let's examine more closely
 
 ```{r}
-tara_biosamples_joined02_replaced <- tara_biosamples_joined02 %>%
-  replace_w_875579("density",     PANGAEA.875576_047, PANGAEA.875579_074, PANGAEA.875579_077, PANGAEA.875579_079) %>% 
-  replace_w_875579("temperature", PANGAEA.875576_027, PANGAEA.875579_064, PANGAEA.875579_067, PANGAEA.875579_069) %>% 
-  replace_w_875579("salinity",    PANGAEA.875576_037, PANGAEA.875579_054, PANGAEA.875579_057, PANGAEA.875579_059) %>% 
-  replace_w_875579("chl_a",       PANGAEA.875576_077, PANGAEA.875579_094, PANGAEA.875579_097, PANGAEA.875579_099) %>% 
-  replace_w_875579("dO2",         PANGAEA.875576_057, PANGAEA.875579_104, PANGAEA.875579_107, PANGAEA.875579_109) %>% 
-  replace_w_875579("DIN",         PANGAEA.875575_031, PANGAEA.875579_114, PANGAEA.875579_117, PANGAEA.875579_119) %>% 
-    #simple_replace("DIN",         DIN, PANGAEA.875577_045) %>% 
-    #simple_replace("NO2",         PANGAEA.875575_021, PANGAEA.875577_043) %>% 
-  mutate(FeT_dw_pg = PANGAEA.875577_039,
-         DIN_dw_pg = PANGAEA.875577_045,
-         NO2_dw_pg = PANGAEA.875577_043,
-         PO4 = PANGAEA.875575_026,
-         SiO2 = PANGAEA.875575_036,
-         NO2 = PANGAEA.875575_021) %>% 
-  relocate(tara_barcode_num, tara_station, env_ontology, latitude, longitude, date_time, depth, depth_min, depth_max, 
-           density, temperature, salinity, chl_a, dO2, DIN, NO2, PO4, SiO2, FeT_dw_pg, DIN_dw_pg, NO2_dw_pg)
+set.seed(125234)
+chl_lm <- lm(chla_bot ~ chla_ctd, data = tara_biosamples_joined02_subset)
+summary(chl_lm)
+```
+
+```{r}
+set.seed(125234)
+chl_sqrt_lm <- lm(sqrt(chla_bot) ~ sqrt(chla_ctd), data = tara_biosamples_joined02_subset)
+summary(chl_sqrt_lm)
+```
+
+```{r}
+chl_sqrt_lm_emt <- emtrends(chl_sqrt_lm, ~1, var="sqrt(chla_ctd)")
+test(chl_sqrt_lm_emt, null=1)
+```
+
+In both cases the intercept is significantly different from 0 and the slope is significantly different from 1. The R2 of the model using square-root transformed data is higher, so we will use that model to correct CTD chlorophyll to the bottle values.
+
+```{r}
+tara_biosamples_joined02_subset <- tara_biosamples_joined02_subset %>% 
+  mutate(chla_ctd_cal = (sqrt(chla_ctd)*coef(chl_sqrt_lm)[2] + coef(chl_sqrt_lm)[1])^2)
+```
+
+::: {#fig-08}
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+#| warning: false
+#| eval: true
+#| echo: false
+a <- ggplot(tara_biosamples_joined02_subset, aes(x = chla_ctd_cal, y = chla_bot)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  geom_point(alpha=0.5) +
+  labs(x = "Corrected ChlA from CTD sensor (PANGAEA_875576)", y = "Chl A from HPLC pigments (PANGAEA_875569)") +
+  scale_x_sqrt() + scale_y_sqrt() +
+  coord_fixed(xlim = c(0,8), ylim = c(0,8)) 
+
+b <- ggplot(tara_biosamples_joined02_subset, aes(x = chla_ctd_cal, y = chla_bot)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  geom_point(alpha=0.5) +
+  labs(x = " Corrected ChlA from CTD sensor (PANGAEA_875576)", y = "Chl A from HPLC pigments (PANGAEA_875569)") +
+  coord_fixed(xlim = c(0,8), ylim = c(0,8))
+
+a + b +
+  plot_layout(widths = c(1,1), guides = "collect") +
+  plot_annotation(tag_levels = "A")
+```
+Comparison of CTD chlorophyll a (Chl a) from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) after it has been corrected and Chl a from Pangaea [PANGAEA.875569](https://doi.pangaea.de/10.1594/PANGAEA.875569) which is HPLC pigment concentrations.  Subplot A is shown with a square root transformed scale to aid comparison of the lower concentrations. The red line is 1:1 relationship.
+:::
+
+```{r}
+set.seed(125234)
+chl_sqrt_lm_mod <- lm(sqrt(chla_bot) ~ sqrt(chla_ctd_cal), data = tara_biosamples_joined02_subset)
+summary(chl_sqrt_lm_mod)
+```
+
+The correction seems to made the relationship between the HPLC and the sensor more like 1:1.
+
+### Nitrate
+
+::: {#fig-09}
+```{r}
+ggplot(tara_biosamples_joined02_subset, aes(x = no3_ctd, y = no3_bot)) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  geom_point(alpha=0.5) +
+  labs(x = " NO3 from CTD sensor (PANGAEA_875576)", y = "NO3 from rosette (PANGAEA_875575)") +
+  scale_x_sqrt() + scale_y_sqrt() +
+  coord_fixed(xlim = c(0,40), ylim = c(0,40)) 
+```
+Comparison of CTD nitrate (NO3) from Pangaea [PANGAEA.875576](https://doi.pangaea.de/10.1594/PANGAEA.875576) and no3 from Pangaea [PANGAEA.875575](https://doi.pangaea.de/10.1594/PANGAEA.875575) which is concentration from rosette bottle samples. Red line is 1:1 relationship
+:::
+
+In contrast to the Chl A there doesn't appear to be any systematic difference here (i.e., the slope appears about 1 and the intercept about 0). Let's examine more closely
+
+```{r}
+set.seed(324502987)
+no3_lm <- lm(no3_bot ~ no3_ctd, data = tara_biosamples_joined02_subset)
+summary(no3_lm)
+```
+
+```{r}
+no3_lm_emt <- emtrends(no3_lm, ~1, var="no3_ctd")
+test(no3_lm_emt, null=1)
+```
+
+The intercept is not statistically different from 0. The slope is approximately 0.97 which according to `emmeans::emtrands` is statistically different from 1, but I think the effect size here is not appreciable and doesn't warrant any kind of correction factor like we used for Chl A in the section above.
+
+## Fill missing bottle observations
+
+Now we will fill missing bottle nutrient observations for NO3 and Chlorophyll A with (corrected) observations taken from the CTD sensor (PANGAEA.875576)
+
+1.  We will take bottle samples as the starting point (nutrients = PANGAEA_875575, pigments = PANGAEA.875569).
+
+2.  If a bottle observation is missing for NO3 (PANGAEA.875575_031) fill with the closest CTD sensor observation (PANGAEA.875576_062). If a bottle observation for total chlorophyll a is missing (PANGAEA.875569_131) fill it with the closest CTD sensor observation (PANGAEA.875576_067).
+
+
+```{r}
+simple_replace <- function(.data, varname, target, replace){
+  .data %>% 
+    mutate("{varname}" := if_else(is.na({{ target }}), {{ replace }}, {{ target }})) %>% 
+    relocate({varname}, .before = {{ target }} )
+}
+
+tara_biosamples_joined02_subset_replaced <- tara_biosamples_joined02_subset %>%
+  simple_replace("no3_bot_ctd",         no3_bot, no3_ctd) %>% 
+  simple_replace("chla_bot_ctd",       chla_bot, chla_ctd_cal) %>% 
+  relocate(chla_ctd_cal, .after=chla_ctd)
 ```
 
 Fix some stuff with dates
@@ -190,7 +554,7 @@ statistical_mode <- function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
-tara_biosamples_joined02_replaced <- tara_biosamples_joined02_replaced %>% 
+tara_biosamples_joined02_subset_replaced <- tara_biosamples_joined02_subset_replaced %>% 
   # convert the date_time to only date. This ensures that when you are grouping
   # by tara_station and date_time that you don't expand the results to include
   # multiple times within a single station
@@ -205,9 +569,9 @@ tara_biosamples_joined02_replaced <- tara_biosamples_joined02_replaced %>%
 Now after we have filled observations with data internally available from the Tara Pangaea collection, we need to find which stations still have missing data observations for one or more these variables.
 
 ```{r}
-target_vars <- c("density", "temperature", "salinity", "chl_a", "dO2", "DIN", "NO2", "PO4", "SiO2", "FeT_dw_pg", "DIN_dw_pg", "NO2_dw_pg")
+target_vars <- c("density_ctd", "temperature_ctd", "salinity_ctd", "do2_ctd", "chla_bot_ctd", "no3_bot_ctd", "no2_bot", "po4_bot", "sio2_bot")
 
-missing <- tara_biosamples_joined02_replaced %>% 
+missing <- tara_biosamples_joined02_subset_replaced %>% 
   filter(if_any(all_of(target_vars), is.na)) %>%
   summarise(across(all_of(target_vars), ~any(is.na(.))),
             .by = c(tara_station, env_ontology, depth, depth_min, depth_max, latitude, longitude, date_time))
@@ -219,8 +583,7 @@ Most missing observations are because of PO4 and SiO2
 missing %>% 
   summarize(across(all_of(target_vars), sum))
 ```
-
-And this is for 58 different tara stations
+And this is for 57 different tara stations
 
 ```{r}
 distinct(missing, tara_station) %>% 
@@ -279,13 +642,16 @@ Pangaea variable descriptions:
 -   `sra_run_acc_num` - NCBI Sequence Read Archive sequencing run accession number
 -   `sra_exp_acc_num` - NCBI Sequence Read Archive sequencing experiment accession number
 -   `sra_study_acc_num` - NCBI BioProject accession number
--   `biosample_acc_num` - Biosample accession number registered at the EBI BioSamples database (http://www.ebi.ac.uk/biosamples/). From Pangaea
--   `ena_acc_num` - ENA sample accession number (ERS_num) registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)
+-   `biosample_acc_num` - (no longer in table) Biosample accession number registered at the EBI BioSamples database (http://www.ebi.ac.uk/biosamples/). From Pangaea
+-   `ena_acc_num` - (no longer in table) ENA sample accession number (ERS_num) registered at the European Nucleotides Archive (http://www.ebi.ac.uk/ENA/)
 -   `tara_station` - Tara station identifier
 -   `env_ontology` - \[abbreviation\], full name (ENVO:ID) from which this sample was collected terms registered at EnvO, the Environmental Ontology (http://environmentontology.org/)
 -   `latitude` - Latitude of Tara station
 -   `longitude` - Longitude of Tara station
 -   `date_time` - Sampling date at Tara station
+-   `depth` - Sampling depth at Tara station
+-   `depth_min` - Shallowest depth of the depth range from which sample was collected
+-   `depth_max` - Deepest depth of the depth range from which sample was collected
 -   `size_low_thresh` - Lower threshold of the size fraction (µm) used on board to prepare sample
 -   `size_high_thresh` - Upper threshold of the size fraction (µm) used on board to prepare sample
 -   `ocean_id` - Geographic name/locality (Locality) of ocean and sea regions. Extracted from IHO General Sea Areas (1953) registered at www.marineregions.org (URI: http://marineregions.org/)
@@ -293,30 +659,30 @@ Pangaea variable descriptions:
 -   `longhurst_biome` - Geographic name/locality (Locality) of marine biomes. From Longhurst (2007) (URI: http://www.sciencedirect.com/science/book/9780124555211)
 -   `bathy_depth` - Mean value of the bathymetric depth \[m\] at the Tara sample. Extracted from IHO-IOC GEBCO Gazetteer of Undersea Feature Names (URI: http://www.gebco.net)
 -   `dist_to_coastline` - Great circle spherical distances (in kilometers) from Tara sample coordinate to the nearest coastline using the natural earth 110 scale coastline feature. This includes mostly continental coastlines (i.e., no small islands) and 110 resolution was deliberately chosen to exclude coastlines of small features.
--   `depth` - Sampling depth at Tara station
--   `depth_min` - Shallowest depth of the depth range from which sample was collected
--   `depth_max` - Deepest depth of the depth range from which sample was collected
--   `temperature` - Temperature, water \[°C\] (Temp) calculated from in situ sensor data, calibrated using factory settings
--   `salinity` - Salinity \[PSU\] (Sal) calculated from in situ sensor data, calibrated using factory settings
--   `density` - Density, sigma-theta \[kg/m^3^\] (Sigma-theta) calculated from in situ sensor data, calibrated using factory settings.
--   `chl_a` - Chlorophyll a \[mg/m^3^\] (Chl a) calculated from in situ sensor data, NPQ cor. and calibrated using water samples
--   `dO2`- Oxygen \[µmol/kg\] (O2) calculated from in situ sensor data, calibrated using WOA09 climatology
--   `DIN` - Combined Nitrate and Nitrite \[µmol/L\] calculated from bottle measurements on water samples
--   `NO2` - Nitrite \[µmol/L\] calculated from bottle measurements on water samples
--   `PO4` - Phosphate \[µmol/L\] calculated from bottle measurements on water samples
--   `SiO2` - Silica \[µmol/L\] calculated from bottle measurements on water samples
--   `FeT_dw_pg` - Total iron \[mmol Fe m^-3^\] **at depth of 5 meters** from MIT Darwin model
--   `DIN_dw_pg` - Dissolved inorganic nitrogen (nitrate + nitrite) \[mmol N m^-3^\] **at depth of 5 meters** from MIT Darwin model
--   `NO2_dw_pg` - Nitrite \[mmol N m^-3^\] **at depth of 5 meters** from MIT Darwin model
+-   `density_ctd` - Density, sigma-theta \[kg/m^3^\] (Sigma-theta) calculated from in situ sensor data, calibrated using factory settings.
+-   `temperature_ctd` - Temperature, water \[°C\] (Temp) calculated from in situ sensor data, calibrated using factory settings
+-   `salinity_ctd` - Salinity \[PSU\] (Sal) calculated from in situ sensor data, calibrated using factory settings
+-   `do2_ctd`- Oxygen \[µmol/kg\] (O2) calculated from in situ sensor data, calibrated using WOA09 climatology
+-   `chla_bot_ctd` - Chlorophyll a \[mg/m^3^\] (Chl a) from bottles, measured by HPLC. Missing values replaced with CTD fluorescence calibrated to bottle samples.
+-   `chla_bot` - Chlorophyll a \[mg/m^3^\] (Chl a) from bottles, measured by HPLC. 
+-   `chla_ctd` - Chlorophyll a \[mg/m^3^\] (Chl a) calculated from in situ sensor data, NPQ corrected using water samples
+-   `chla_ctd_cal` - Chlorophyll a \[mg/m^3^\] (Chl a) calculated from in situ sensor data, NPQ corrected using water samples, calibrated to the HPLC bottle data using linear regression
+-   `no3_bot_ctd` - Combined Nitrate and Nitrite \[µmol/L\] calculated from bottle measurements on water samples.  Missing values replaced with CTD NO3 concentrations
+-   `no3_bot` - Combined Nitrate and Nitrite \[µmol/L\] calculated from bottle measurements on water samples. 
+-   `no3_ctd` - Combined Nitrate and Nitrite \[µmol/L\] calculated from in situ CTD measurements.
+-   `no2_bot` - Nitrite \[µmol/L\] calculated from bottle measurements on water samples
+-   `po4_bot` - Phosphate \[µmol/L\] calculated from bottle measurements on water samples
+-   `sio2_bot` - Silica \[µmol/L\] calculated from bottle measurements on water samples
+-   `fet_dw_pg` - Total iron \[mmol Fe m^-3^\] **at depth of 5 meters** from MIT Darwin model
+-   `din_dw_pg` - Dissolved inorganic nitrogen (nitrate + nitrite) \[mmol N m^-3^\] **at depth of 5 meters** from MIT Darwin model
+-   `no2_dw_pg` - Nitrite \[mmol N m^-3^\] **at depth of 5 meters** from MIT Darwin model
 
 Now do the final joining to the full imputed data set, replace missing values with the imputed values, and select key variables
 
 ```{r}
-tara_pangaea_env_master_record <- left_join(tara_biosamples_joined02_replaced, ocean_feats_df, by = join_by(tara_station)) %>% 
-  dplyr::select(tara_barcode_num, sra_acc_num:ena_acc_num, tara_station:date_time, size_low_thresh, size_high_thresh,
-         ocean_id, longhurst_code, longhurst_biome, bathy_depth, dist_to_coastline,
-         depth:depth_max, temperature, salinity, density, chl_a,
-         dO2, DIN, NO2, PO4, SiO2, FeT_dw_pg, DIN_dw_pg, NO2_dw_pg) %>% 
+tara_pangaea_env_master_record <- left_join(tara_biosamples_joined02_subset_replaced, ocean_feats_df, by = join_by(tara_station)) %>% 
+  relocate(depth_min, depth_max, .after = depth) %>% 
+  relocate(ocean_id:dist_to_coastline, .after = size_high_thresh) %>% 
   readr::write_tsv(here::here("data", "tara", "tara_pangaea_env_master_record.tsv"))
 ```
 
@@ -373,7 +739,9 @@ darwin_3day_combined <- left_join(tblDarwin_Nutrient,
                          depth, date_time, lat_dw, lon_dw, depth_dw, time_dw)) %>% 
   dplyr::left_join(tara_biosamples, by = join_by(tara_barcode_num, tara_station)) %>% 
   dplyr::relocate(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, sra_run_acc_num, 
-                  sra_exp_acc_num, sra_study_acc_num, tara_station, latitude, longitude, depth, date_time)
+                  sra_exp_acc_num, sra_study_acc_num, tara_station, latitude, longitude, depth, date_time) %>% 
+  dplyr::rename(fe_dw3d = FeT, po4_dw3d = PO4, no3_dw3d = DIN, sio2_dw3d = SiO2, do2_dw3d = O2,
+               chla_dw3d = CHL, nppv_dw3d = primary_production)
 ```
 
 Check if some observations are missing. It is only because irradiance_reflectance_wavebands are missing in some samples. Not a big deal...
@@ -508,8 +876,10 @@ pisces_combined <- readr::read_tsv(here::here("data", "tara", "pisces_subsets", 
   left_join(dplyr::select(tara_pangaea_env_master_record, 
                           tara_barcode_num:tara_station, latitude, longitude, date_time, depth)) %>% 
   dplyr::relocate(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, sra_run_acc_num, 
-                  sra_exp_acc_num, sra_study_acc_num, biosample_acc_num,	ena_acc_num, tara_station, latitude, 
-                  longitude, depth, date_time)
+                  sra_exp_acc_num, sra_study_acc_num, tara_station, latitude, 
+                  longitude, depth, date_time) %>% 
+  dplyr::rename(chla_ps = chl, fe_ps = fe, no3_ps = no3, nppv_ps = nppv, do2_ps = o2, ph_ps = ph, 
+                phyc_ps = phyc, po4_ps = po4, sio2_ps = si, spco2_ps = spco2)
 ```
 
 Check if some observations are missing. Nothing missing.
@@ -523,4 +893,208 @@ Write results
 
 ```{r}
 write_tsv(pisces_combined, here::here("data", "tara", "tara_pisces_combined.tsv"))
+```
+
+# Finalize output with no missing data
+
+We will move forward using the Pisces model to replace missing data. Pisces generally performs best in terms of matching the results coming from Pangaea (see section below for explanations and visualizations).
+
+```{r}
+df <- left_join(tara_pangaea_env_master_record, pisces_combined,
+                by = join_by(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, 
+                             sra_run_acc_num, sra_exp_acc_num, sra_study_acc_num, 
+                             tara_station, latitude, longitude, date_time, depth)) %>% 
+  simple_replace("do2", do2_ctd, do2_ps) %>% 
+  simple_replace("chla", chla_bot_ctd, chla_ps) %>% 
+  simple_replace("no3", no3_bot_ctd, no3_ps) %>% 
+  simple_replace("po4", po4_bot, po4_ps) %>% 
+  simple_replace("sio2", sio2_bot, sio2_ps) %>% 
+  dplyr::select(tara_barcode_num:dist_to_coastline, 
+                density=density_ctd, 
+                temperature=temperature_ctd,
+                salinity=salinity_ctd,
+                do2, chla, no3, po4, sio2,
+                fe_ps, nppv_ps)
+```
+
+## Impute remaining missing observations
+
+There are three Tara stations with missing observations in density, salinity, and temperature. These variables are not in the model output I downloaded so we will instead impute them based on data in the other samples.  `TARA_011` is missing chl_a, density, salinity and temperature, while the others are missing only chl_a
+
+Since this is only a few missing observations, we are going to impute them using the [`missRanger` package](https://mayer79.github.io/missRanger/index.html), which uses the [`missForest` random forest imputation approach.](https://doi.org/10.1093/bioinformatics/btr597)
+
+```{r}
+# First only subset variables of interest and make the data unique
+df1 <- df %>% 
+  select(tara_station, depth, bathy_depth:nppv_ps) %>% 
+  distinct()
+
+df1_missing <- df1 %>% 
+  filter(if_any(depth:last_col(), is.na))
+
+df1_missing
+```
+
+Run the missRanger algorithm to impute missing values. We impute density, temperature, salinity, chl_a by depth, density, temperature, salinity, chl_a, dO2, DIN, NO2, FeT, PO4, SiO2
+
+```{r}
+#| output: false
+# set seed for reproducibility
+library(missRanger)
+set.seed(35782)
+df2 <- missRanger::missRanger(df1, . ~ . - tara_station, pmm.k = 10, num.trees = 500)
+```
+
+```{r}
+df2_addback <- semi_join(df2, df1_missing,
+          by = join_by(tara_station, depth, bathy_depth, dist_to_coastline)) %>% 
+  dplyr::select(tara_station, depth, density:salinity) %>% 
+  right_join(., df, by = join_by(tara_station, depth)) %>% 
+  simple_replace("density", density.y, density.x) %>% 
+  simple_replace("temperature", temperature.y, temperature.x) %>% 
+  simple_replace("salinity", salinity.y, salinity.x) %>% 
+  select(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, 
+         sra_run_acc_num, sra_exp_acc_num, sra_study_acc_num, tara_station, 
+         env_ontology, latitude, longitude, date_time, depth, 
+         depth_min, depth_max, size_low_thresh, size_high_thresh, 
+         ocean_id, longhurst_biome, longhurst_code, bathy_depth, 
+         dist_to_coastline, density, temperature, salinity, do2, 
+         chla, no3, po4, sio2, fe_ps, nppv_ps)
+```
+
+Now there is no missing data
+
+```{r}
+df2_addback %>% 
+  filter(if_any(depth:last_col(), is.na))
+```
+
+## Write output
+
+```{r}
+readr::write_tsv(df2_addback, here::here("data", "tara", "tara_final_nomissing.tsv"))
+```
+
+# Comparison of modeled variables to in situ
+
+Here we want to just take a look at how well the modeled values match the values from the compiled Tara data
+
+```{r}
+# Join every thing first
+df <- left_join(tara_pangaea_env_master_record, pisces_combined,
+                by = join_by(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, 
+                             sra_run_acc_num, sra_exp_acc_num, sra_study_acc_num, 
+                             tara_station, latitude, longitude, date_time, depth)) %>% 
+  left_join(darwin_3day_combined,
+            by = join_by(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, 
+                             sra_run_acc_num, sra_exp_acc_num, sra_study_acc_num, 
+                             tara_station, latitude, longitude, date_time, depth)) %>% 
+  left_join(darwin_clim_combined,
+            by = join_by(tara_barcode_num, sra_acc_num, sra_biosample_acc_num, 
+                         sra_run_acc_num, sra_exp_acc_num, sra_study_acc_num, 
+                         tara_station, latitude, longitude, date_time, depth, 
+                         lat_dw, lon_dw, depth_dw, time_dw))
+```
+
+## Nitrate
+
+For the bottle data from Pangaea Pisces performs best and has the highest correlation (0.914)
+
+```{r}
+#| fig-width: 8
+#| fig-height: 8
+#| warning: false
+#| eval: true
+#| echo: false
+library(GGally)
+df %>% 
+  dplyr::select(no3_bot_ctd, no3_ps, no3_dw3d, NO3_darwin_clim) %>% 
+  distinct() %>% 
+  ggpairs()
+```
+
+## Chlorophyll a
+
+Chlorophyll doesn't seem to perform very well. But this makes sense also since it varies greatly on much shorter time and space scales that the models may have trouble resolving. Chlorophyll bottle data has the best correlation with Pisces (0.338)
+
+```{r}
+#| fig-width: 6
+#| fig-height: 6
+#| warning: false
+#| eval: true
+#| echo: false
+library(GGally)
+df %>% 
+  dplyr::select(chla_bot_ctd, chla_ps, chla_dw3d) %>% 
+  distinct() %>% 
+  ggpairs()
+```
+
+## Nitrite
+
+Nitrite is basically terrible. But only Darwin model even attempts to resolve nitrite anyway...
+
+```{r}
+#| fig-width: 4
+#| fig-height: 4
+#| warning: false
+#| eval: true
+#| echo: false
+library(GGally)
+df %>% 
+  dplyr::select(no2_bot, 
+                NO2_darwin_clim) %>% 
+  distinct() %>% 
+  ggpairs()
+```
+
+## Oxygen
+
+All models can match oxygen from the Tara samples well. Pisces does very well (correlation 0.886) but it is not the highest (0.962).
+
+```{r}
+#| fig-width: 8
+#| fig-height: 8
+#| warning: false
+#| eval: true
+#| echo: false
+library(GGally)
+df %>% 
+  dplyr::select(do2_ctd, do2_ps, do2_dw3d, O2_darwin_clim) %>% 
+  distinct() %>% 
+  ggpairs()
+```
+
+## Phosphate
+
+All models can match phosphate from the Tara samples well. Pisces does very well (correlation 0.886) but it is not the highest (0.902).
+
+```{r}
+#| fig-width: 8
+#| fig-height: 8
+#| warning: false
+#| eval: true
+#| echo: false
+library(GGally)
+df %>% 
+  dplyr::select(po4_bot, po4_ps, po4_dw3d, PO4_darwin_clim) %>% 
+  distinct() %>% 
+  ggpairs()
+```
+
+## Silicate
+
+All models can match silicate from the Tara samples well. Pisces does very well (correlation 0.92) but it is not the highest (0.949).
+
+```{r}
+#| fig-width: 8
+#| fig-height: 8
+#| warning: false
+#| eval: true
+#| echo: false
+library(GGally)
+df %>% 
+  dplyr::select(sio2_bot, sio2_ps, sio2_dw3d, SiO2_darwin_clim) %>% 
+  distinct() %>% 
+  ggpairs()
 ```
